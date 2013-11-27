@@ -11,3 +11,7 @@
 *.lai
 *.la
 *.a
+
+# User-local Visual Studio files
+*.sdf
+*.vcxproj.filters
