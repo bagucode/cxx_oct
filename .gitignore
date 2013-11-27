@@ -15,3 +15,6 @@
 # User-local Visual Studio files
 *.sdf
 *.vcxproj.filters
+Debug/
+Release/
+x64/
