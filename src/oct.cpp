@@ -1,9 +1,5 @@
 #include <iostream>
 #include <cassert>
-#include <cstddef>
-#include <cstring>
-
-#include <unordered_map>
 
 // @ Primitives
 
@@ -306,7 +302,7 @@ static Uword getFieldSize(TypeRef* type) {
   case KIND_POB:
     return sizeof(void*) * 2;
   default:
-    assert(false && "Unrecognized type kind");
+    assert(False && "Unrecognized type kind");
   };
 }
 
@@ -323,7 +319,7 @@ static Uword getObjectSize(TypeRef* type, void* obj) {
     return getObjectSize(pob->vtable->type, pob->ref);
   } break;
   default:
-    assert(false && "Unrecognized type kind");
+    assert(False && "Unrecognized type kind");
   };
 }
 
@@ -338,7 +334,7 @@ static Uword getFieldAlignment(TypeRef* type) {
   case KIND_POB:
     return sizeof(void*);
   default:
-    assert(false && "Unrecognized type kind");
+    assert(False && "Unrecognized type kind");
   };
 }
 
@@ -460,7 +456,7 @@ static void copy(TypeRef* type, void* src, void* dest) {
     }
   } break;
   default:
-    assert(false && "Unrecognized type kind");
+    assert(False && "Unrecognized type kind");
   }
 }
 
@@ -482,7 +478,7 @@ static void defaultInitObject(TypeRef* type, void* obj) {
     // Should probably be able to default-init protocol objects too.
     // The ref object they contain should be easy to init, the hard part is the vtable.
     // No plan for that yet. Need to store in hashtable in runtime (global?) like in oct3
-    assert(false && "Attempt to default-initialize a protocol object (not supported yet)");
+    assert(False && "Attempt to default-initialize a protocol object (not supported yet)");
   } break;
   case KIND_ARR: {
     void** objAsRef = (void**)obj;
@@ -495,7 +491,7 @@ static void defaultInitObject(TypeRef* type, void* obj) {
     }
   } break;
   default:
-    assert(false && "Unrecognized type kind");
+    assert(False && "Unrecognized type kind");
   }
 }
 
@@ -533,7 +529,7 @@ static void move(TypeRef* type, void* src, void* dest) {
     srcAsPob->vtable = nullptr;
   } break;
   default:
-    assert(false && "Unrecognized type kind");
+    assert(False && "Unrecognized type kind");
   }
 }
 
