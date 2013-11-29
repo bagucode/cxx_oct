@@ -4,6 +4,7 @@
 namespace octarine {
 
 	struct TypeT;
+
 	typedef TypeT* Type;
 
 }

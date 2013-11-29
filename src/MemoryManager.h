@@ -9,12 +9,10 @@
 namespace octarine {
 
 	struct MemoryManagerT;
+
 	typedef MemoryManagerT MemoryManager;
 
-	struct MemoryManagerProtocol {
-		Object(*rawAlloc)(ThreadContext tc, MemoryManager mm, Type t);
-		Object(*allocAndInit)(ThreadContext tc, MemoryManager mm, Type t);
-	};
+	Object alloc(ThreadContext tc, MemoryManager mm, Type t);
 
 }
 

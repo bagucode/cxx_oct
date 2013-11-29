@@ -6,11 +6,10 @@
 namespace octarine {
 
 	struct ObjectT;
+
 	typedef ObjectT* Object;
 
-	struct ObjectProtocol {
-		Type(*getType)(Object obj);
-	};
+	Type typeOf(Object obj);
 
 }
 
