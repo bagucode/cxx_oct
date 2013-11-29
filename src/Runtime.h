@@ -8,13 +8,18 @@
 
 namespace octarine {
 
-	struct RuntimeT;
+	struct RuntimeImpl;
 
-	typedef RuntimeT* Runtime;
+	class Runtime {
+	private:
+		RuntimeImpl* _impl;
+	public:
+		Runtime();
+		~Runtime();
+		void registerFunction(ThreadContext tc, Namespace ns, Function f);
+		ThreadContext getThreadContext();
+	};
 
-	void registerFunction(ThreadContext tc, Runtime rt, Namespace ns, Function f);
-	ThreadContext getThreadContext(Runtime rt);
-	Runtime createRuntime();
 }
 
 #endif
