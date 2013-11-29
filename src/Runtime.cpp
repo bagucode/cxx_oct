@@ -44,25 +44,27 @@ namespace octarine {
 		}
 	};
 
-	struct RuntimeT {
+	struct RuntimeImpl {
 		TLS tls;
 	};
 
-	void registerFunction(ThreadContext tc, Runtime rt, Namespace ns, Function f) {
+	Runtime::Runtime(): _impl(new RuntimeImpl) {
 	}
 
-	ThreadContext getThreadContext(Runtime rt) {
+	Runtime::~Runtime() {
+		delete _impl;
+	}
+
+	static void _registerFunction(ThreadContext tc, Runtime* rt, Namespace ns, Function f) {
 
 	}
 
-	Runtime createRuntime() {
-		Runtime rt = new RuntimeT;
-
-		return rt;
+	void Runtime::registerFunction(ThreadContext tc, Namespace ns, Function f) {
+		_registerFunction(tc, this, ns, f);
 	}
 
-	void destroyRuntime(Runtime rt) {
-		delete rt;
+	ThreadContext Runtime::getThreadContext() {
+
 	}
 
 }
