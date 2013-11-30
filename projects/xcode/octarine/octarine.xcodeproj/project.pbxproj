@@ -1,0 +1,255 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0405C374184A3BFA003CCC15 /* MemoryManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0405C368184A3BFA003CCC15 /* MemoryManager.cpp */; };
+		0405C375184A3BFA003CCC15 /* oct.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0405C36C184A3BFA003CCC15 /* oct.cpp */; };
+		0405C376184A3BFA003CCC15 /* Runtime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0405C36F184A3BFA003CCC15 /* Runtime.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		0405C359184A3B7B003CCC15 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0405C35B184A3B7B003CCC15 /* octarine */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = octarine; sourceTree = BUILT_PRODUCTS_DIR; };
+		0405C367184A3BFA003CCC15 /* Function.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Function.h; path = ../../../../src/Function.h; sourceTree = "<group>"; };
+		0405C368184A3BFA003CCC15 /* MemoryManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MemoryManager.cpp; path = ../../../../src/MemoryManager.cpp; sourceTree = "<group>"; };
+		0405C369184A3BFA003CCC15 /* MemoryManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MemoryManager.h; path = ../../../../src/MemoryManager.h; sourceTree = "<group>"; };
+		0405C36A184A3BFA003CCC15 /* Namespace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Namespace.h; path = ../../../../src/Namespace.h; sourceTree = "<group>"; };
+		0405C36B184A3BFA003CCC15 /* Object.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Object.h; path = ../../../../src/Object.h; sourceTree = "<group>"; };
+		0405C36C184A3BFA003CCC15 /* oct.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = oct.cpp; path = ../../../../src/oct.cpp; sourceTree = "<group>"; };
+		0405C36D184A3BFA003CCC15 /* Parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Parser.h; path = ../../../../src/Parser.h; sourceTree = "<group>"; };
+		0405C36E184A3BFA003CCC15 /* Primitives.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Primitives.h; path = ../../../../src/Primitives.h; sourceTree = "<group>"; };
+		0405C36F184A3BFA003CCC15 /* Runtime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Runtime.cpp; path = ../../../../src/Runtime.cpp; sourceTree = "<group>"; };
+		0405C370184A3BFA003CCC15 /* Runtime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Runtime.h; path = ../../../../src/Runtime.h; sourceTree = "<group>"; };
+		0405C371184A3BFA003CCC15 /* String.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = String.h; path = ../../../../src/String.h; sourceTree = "<group>"; };
+		0405C372184A3BFA003CCC15 /* ThreadContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadContext.h; path = ../../../../src/ThreadContext.h; sourceTree = "<group>"; };
+		0405C373184A3BFA003CCC15 /* Type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Type.h; path = ../../../../src/Type.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0405C358184A3B7B003CCC15 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0405C352184A3B7B003CCC15 = {
+			isa = PBXGroup;
+			children = (
+				0405C35D184A3B7B003CCC15 /* octarine */,
+				0405C35C184A3B7B003CCC15 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		0405C35C184A3B7B003CCC15 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0405C35B184A3B7B003CCC15 /* octarine */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0405C35D184A3B7B003CCC15 /* octarine */ = {
+			isa = PBXGroup;
+			children = (
+				0405C367184A3BFA003CCC15 /* Function.h */,
+				0405C368184A3BFA003CCC15 /* MemoryManager.cpp */,
+				0405C369184A3BFA003CCC15 /* MemoryManager.h */,
+				0405C36A184A3BFA003CCC15 /* Namespace.h */,
+				0405C36B184A3BFA003CCC15 /* Object.h */,
+				0405C36C184A3BFA003CCC15 /* oct.cpp */,
+				0405C36D184A3BFA003CCC15 /* Parser.h */,
+				0405C36E184A3BFA003CCC15 /* Primitives.h */,
+				0405C36F184A3BFA003CCC15 /* Runtime.cpp */,
+				0405C370184A3BFA003CCC15 /* Runtime.h */,
+				0405C371184A3BFA003CCC15 /* String.h */,
+				0405C372184A3BFA003CCC15 /* ThreadContext.h */,
+				0405C373184A3BFA003CCC15 /* Type.h */,
+			);
+			path = octarine;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0405C35A184A3B7B003CCC15 /* octarine */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0405C364184A3B7B003CCC15 /* Build configuration list for PBXNativeTarget "octarine" */;
+			buildPhases = (
+				0405C357184A3B7B003CCC15 /* Sources */,
+				0405C358184A3B7B003CCC15 /* Frameworks */,
+				0405C359184A3B7B003CCC15 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = octarine;
+			productName = octarine;
+			productReference = 0405C35B184A3B7B003CCC15 /* octarine */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0405C353184A3B7B003CCC15 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0500;
+			};
+			buildConfigurationList = 0405C356184A3B7B003CCC15 /* Build configuration list for PBXProject "octarine" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 0405C352184A3B7B003CCC15;
+			productRefGroup = 0405C35C184A3B7B003CCC15 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0405C35A184A3B7B003CCC15 /* octarine */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0405C357184A3B7B003CCC15 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0405C375184A3BFA003CCC15 /* oct.cpp in Sources */,
+				0405C376184A3BFA003CCC15 /* Runtime.cpp in Sources */,
+				0405C374184A3BFA003CCC15 /* MemoryManager.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0405C362184A3B7B003CCC15 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		0405C363184A3B7B003CCC15 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		0405C365184A3B7B003CCC15 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		0405C366184A3B7B003CCC15 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0405C356184A3B7B003CCC15 /* Build configuration list for PBXProject "octarine" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0405C362184A3B7B003CCC15 /* Debug */,
+				0405C363184A3B7B003CCC15 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0405C364184A3B7B003CCC15 /* Build configuration list for PBXNativeTarget "octarine" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0405C365184A3B7B003CCC15 /* Debug */,
+				0405C366184A3B7B003CCC15 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0405C353184A3B7B003CCC15 /* Project object */;
+}

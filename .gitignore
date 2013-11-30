@@ -19,3 +19,6 @@ Debug/
 Release/
 x64/
 *.opensdf
+
+# User-local XCode files
+xcuserdata/
