@@ -79,10 +79,6 @@ namespace octarine {
 
 	typedef void* Address;
 
-#ifndef NDEBUG
-#define DEBUG
-#endif
-
 }
 
 #else

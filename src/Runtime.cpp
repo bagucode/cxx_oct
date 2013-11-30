@@ -39,6 +39,7 @@ namespace octarine {
 			#ifdef WINDOWS
 				return TlsGetValue(threadLocalStorage);
 			#elif defined (MACOSX)
+                return nullptr;
 			#else
 			#endif
 		}
@@ -64,7 +65,7 @@ namespace octarine {
 	}
 
 	ThreadContext Runtime::getThreadContext() {
-
+        return nullptr;
 	}
 
 }

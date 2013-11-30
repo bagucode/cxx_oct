@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0405C374184A3BFA003CCC15 /* MemoryManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0405C368184A3BFA003CCC15 /* MemoryManager.cpp */; };
-		0405C375184A3BFA003CCC15 /* oct.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0405C36C184A3BFA003CCC15 /* oct.cpp */; };
 		0405C376184A3BFA003CCC15 /* Runtime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0405C36F184A3BFA003CCC15 /* Runtime.cpp */; };
 /* End PBXBuildFile section */
 
@@ -31,7 +30,6 @@
 		0405C369184A3BFA003CCC15 /* MemoryManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MemoryManager.h; path = ../../../../src/MemoryManager.h; sourceTree = "<group>"; };
 		0405C36A184A3BFA003CCC15 /* Namespace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Namespace.h; path = ../../../../src/Namespace.h; sourceTree = "<group>"; };
 		0405C36B184A3BFA003CCC15 /* Object.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Object.h; path = ../../../../src/Object.h; sourceTree = "<group>"; };
-		0405C36C184A3BFA003CCC15 /* oct.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = oct.cpp; path = ../../../../src/oct.cpp; sourceTree = "<group>"; };
 		0405C36D184A3BFA003CCC15 /* Parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Parser.h; path = ../../../../src/Parser.h; sourceTree = "<group>"; };
 		0405C36E184A3BFA003CCC15 /* Primitives.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Primitives.h; path = ../../../../src/Primitives.h; sourceTree = "<group>"; };
 		0405C36F184A3BFA003CCC15 /* Runtime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Runtime.cpp; path = ../../../../src/Runtime.cpp; sourceTree = "<group>"; };
@@ -76,7 +74,6 @@
 				0405C369184A3BFA003CCC15 /* MemoryManager.h */,
 				0405C36A184A3BFA003CCC15 /* Namespace.h */,
 				0405C36B184A3BFA003CCC15 /* Object.h */,
-				0405C36C184A3BFA003CCC15 /* oct.cpp */,
 				0405C36D184A3BFA003CCC15 /* Parser.h */,
 				0405C36E184A3BFA003CCC15 /* Primitives.h */,
 				0405C36F184A3BFA003CCC15 /* Runtime.cpp */,
@@ -138,7 +135,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0405C375184A3BFA003CCC15 /* oct.cpp in Sources */,
 				0405C376184A3BFA003CCC15 /* Runtime.cpp in Sources */,
 				0405C374184A3BFA003CCC15 /* MemoryManager.cpp in Sources */,
 			);

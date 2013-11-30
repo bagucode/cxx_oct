@@ -71,10 +71,6 @@ typedef I32 Word;
 typedef U32 Uword;
 #endif
 
-#ifndef NDEBUG
-#define DEBUG
-#endif
-
 #else
 
 #define LINUX
