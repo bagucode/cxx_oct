@@ -25,18 +25,18 @@
 
 /* Begin PBXFileReference section */
 		0405C35B184A3B7B003CCC15 /* octarine */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = octarine; sourceTree = BUILT_PRODUCTS_DIR; };
-		0405C367184A3BFA003CCC15 /* Function.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Function.h; path = ../../../../src/Function.h; sourceTree = "<group>"; };
-		0405C368184A3BFA003CCC15 /* MemoryManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MemoryManager.cpp; path = ../../../../src/MemoryManager.cpp; sourceTree = "<group>"; };
-		0405C369184A3BFA003CCC15 /* MemoryManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MemoryManager.h; path = ../../../../src/MemoryManager.h; sourceTree = "<group>"; };
-		0405C36A184A3BFA003CCC15 /* Namespace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Namespace.h; path = ../../../../src/Namespace.h; sourceTree = "<group>"; };
-		0405C36B184A3BFA003CCC15 /* Object.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Object.h; path = ../../../../src/Object.h; sourceTree = "<group>"; };
-		0405C36D184A3BFA003CCC15 /* Parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Parser.h; path = ../../../../src/Parser.h; sourceTree = "<group>"; };
-		0405C36E184A3BFA003CCC15 /* Primitives.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Primitives.h; path = ../../../../src/Primitives.h; sourceTree = "<group>"; };
-		0405C36F184A3BFA003CCC15 /* Runtime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Runtime.cpp; path = ../../../../src/Runtime.cpp; sourceTree = "<group>"; };
-		0405C370184A3BFA003CCC15 /* Runtime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Runtime.h; path = ../../../../src/Runtime.h; sourceTree = "<group>"; };
-		0405C371184A3BFA003CCC15 /* String.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = String.h; path = ../../../../src/String.h; sourceTree = "<group>"; };
-		0405C372184A3BFA003CCC15 /* ThreadContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadContext.h; path = ../../../../src/ThreadContext.h; sourceTree = "<group>"; };
-		0405C373184A3BFA003CCC15 /* Type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Type.h; path = ../../../../src/Type.h; sourceTree = "<group>"; };
+		0405C367184A3BFA003CCC15 /* Function.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = Function.h; path = ../../../src/Function.h; sourceTree = "<group>"; };
+		0405C368184A3BFA003CCC15 /* MemoryManager.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = MemoryManager.cpp; path = ../../../src/MemoryManager.cpp; sourceTree = "<group>"; };
+		0405C369184A3BFA003CCC15 /* MemoryManager.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = MemoryManager.h; path = ../../../src/MemoryManager.h; sourceTree = "<group>"; };
+		0405C36A184A3BFA003CCC15 /* Namespace.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = Namespace.h; path = ../../../src/Namespace.h; sourceTree = "<group>"; };
+		0405C36B184A3BFA003CCC15 /* Object.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = Object.h; path = ../../../src/Object.h; sourceTree = "<group>"; };
+		0405C36D184A3BFA003CCC15 /* Parser.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = Parser.h; path = ../../../src/Parser.h; sourceTree = "<group>"; };
+		0405C36E184A3BFA003CCC15 /* Primitives.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = Primitives.h; path = ../../../src/Primitives.h; sourceTree = "<group>"; };
+		0405C36F184A3BFA003CCC15 /* Runtime.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Runtime.cpp; path = ../../../src/Runtime.cpp; sourceTree = "<group>"; };
+		0405C370184A3BFA003CCC15 /* Runtime.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = Runtime.h; path = ../../../src/Runtime.h; sourceTree = "<group>"; };
+		0405C371184A3BFA003CCC15 /* String.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = String.h; path = ../../../src/String.h; sourceTree = "<group>"; };
+		0405C372184A3BFA003CCC15 /* ThreadContext.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = ThreadContext.h; path = ../../../src/ThreadContext.h; sourceTree = "<group>"; };
+		0405C373184A3BFA003CCC15 /* Type.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = Type.h; path = ../../../src/Type.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -244,6 +244,7 @@
 				0405C366184A3B7B003CCC15 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
