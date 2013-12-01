@@ -1,11 +1,11 @@
 #ifndef OCT_STRING_H
 #define OCT_STRING_H
 
+#include "Typedefs.h"
+
 namespace octarine {
-
-	struct StringT;
-
-	typedef StringT* String;
+    
+    String createString(ThreadContext tc, const char* cstr);
 
 }
 

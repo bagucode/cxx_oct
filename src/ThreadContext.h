@@ -1,11 +1,14 @@
 #ifndef OCT_THREADCONTEXT_H
 #define OCT_THREADCONTEXT_H
 
+#include "Typedefs.h"
+
 namespace octarine {
 
-	struct ThreadContextT;
-
-	typedef ThreadContextT* ThreadContext;
+    ThreadContext createThreadContext(MemoryManager mm);
+    void destroyThreadContext(ThreadContext tc);
+    
+    ThreadContext getCurrentThreadContext();
 
 }
 

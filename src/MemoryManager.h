@@ -2,17 +2,16 @@
 #define OCT_MEMORYMANAGER_H
 
 #include "Primitives.h"
-#include "Type.h"
-#include "ThreadContext.h"
-#include "Object.h"
+#include "Typedefs.h"
 
 namespace octarine {
 
-	struct MemoryManagerT;
-
-	typedef MemoryManagerT MemoryManager;
-
-	Object alloc(ThreadContext tc, MemoryManager mm, Type t);
+    MemoryManager createMemoryManager();
+    void destroyMemoryManager(MemoryManager mm);
+    
+    Object allocRaw(MemoryManager mm, Uword size);
+    
+    Object alloc(ThreadContext tc, MemoryManager mm, Type t);
 
 }
 

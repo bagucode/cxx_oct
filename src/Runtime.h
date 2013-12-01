@@ -1,24 +1,14 @@
 #ifndef OCT_RUNTIME_H
 #define OCT_RUNTIME_H
 
-#include "ThreadContext.h"
-#include "Namespace.h"
-#include "Function.h"
-#include "String.h"
+#include "Typedefs.h"
 
 namespace octarine {
 
-	struct RuntimeImpl;
+    Runtime createRuntime();
+    void destroyRuntime(Runtime rt);
 
-	class Runtime {
-	private:
-		RuntimeImpl* _impl;
-	public:
-		Runtime();
-		~Runtime();
-		void registerFunction(ThreadContext tc, Namespace ns, Function f);
-		ThreadContext getThreadContext();
-	};
+    void registerFunction(ThreadContext tc, Runtime rt, Namespace ns, Function f);
 
 }
 

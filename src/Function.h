@@ -1,14 +1,10 @@
 #ifndef OCT_FUNCTION_H
 #define OCT_FUNCTION_H
 
-#include "Type.h"
-#include "Object.h"
+#include "Typedefs.h"
 
 namespace octarine {
 
-	struct FunctionT;
-
-	typedef FunctionT* Function;
 
 }
 

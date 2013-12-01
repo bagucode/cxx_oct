@@ -20,5 +20,6 @@ Release/
 x64/
 *.opensdf
 
-# User-local XCode files
+# User-local XCode and other Mac OS X files
 xcuserdata/
+.DS_Store

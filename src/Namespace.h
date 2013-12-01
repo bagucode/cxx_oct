@@ -3,10 +3,7 @@
 
 namespace octarine {
 
-	struct NamespaceT;
-
-	typedef NamespaceT* Namespace;
-
+    
 }
 
 #endif
