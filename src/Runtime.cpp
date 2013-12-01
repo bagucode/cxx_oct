@@ -8,17 +8,25 @@ namespace octarine {
 
 	struct RuntimeT {
         MemoryManager sharedMemory;
+        
 	};
 
     Runtime createRuntime() {
-        return nullptr;
+        Runtime rt = new RuntimeT;
+        rt->sharedMemory = createMemoryManager();
+        return rt;
     }
 
 	void destroyRuntime(Runtime rt) {
-        
+        destroyMemoryManager(rt->sharedMemory);
+        delete rt;
     }
 
-	void registerFunction(ThreadContext tc, Runtime rt, Namespace ns, Function f) {
-
-	}
+    void registerFunction(ThreadContext tc, Namespace ns, Function f) {
+        
+    }
+    
+    Object eval(ThreadContext tc, String source) {
+        return nullptr;
+    }
 }

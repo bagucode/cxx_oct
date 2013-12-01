@@ -6,9 +6,12 @@
 namespace octarine {
 
     Runtime createRuntime();
+
     void destroyRuntime(Runtime rt);
 
-    void registerFunction(ThreadContext tc, Runtime rt, Namespace ns, Function f);
+    void registerFunction(ThreadContext tc, Namespace ns, Function f);
+    
+    Object eval(ThreadContext tc, String source);
 
 }
 

@@ -243,6 +243,10 @@
 		0405C366184A3B7B003CCC15 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_OPTIMIZATION_LEVEL = fast;
+				GCC_UNROLL_LOOPS = YES;
+				LLVM_LTO = YES;
+				LLVM_VECTORIZE_LOOPS = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

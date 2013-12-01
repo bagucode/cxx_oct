@@ -7,6 +7,7 @@
 namespace octarine {
 
     MemoryManager createMemoryManager();
+
     void destroyMemoryManager(MemoryManager mm);
     
     Object allocRaw(MemoryManager mm, Uword size);

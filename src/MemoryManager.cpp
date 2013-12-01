@@ -8,11 +8,12 @@ namespace octarine {
     };
     
     MemoryManager createMemoryManager() {
-        return nullptr;
+        MemoryManager mm = new MemoryManagerT;
+        return mm;
     }
 
     void destroyMemoryManager(MemoryManager mm) {
-        
+        delete mm;
     }
     
     Object allocRaw(MemoryManager mm, Uword size) {
