@@ -8,11 +8,13 @@ namespace octarine {
     static TLS tls;
     
     struct ThreadContextT {
+        Runtime runtime;
         MemoryManager memoryManager;
     };
     
-    ThreadContext createThreadContext(MemoryManager mm) {
+    ThreadContext createThreadContext(Runtime rt, MemoryManager mm) {
         ThreadContext tc = (ThreadContext)allocRaw(mm, sizeof(ThreadContextT));
+        tc->runtime = rt;
         tc->memoryManager = mm;
         tls.set(tc);
         return tc;
@@ -23,8 +25,12 @@ namespace octarine {
         destroyMemoryManager(tc->memoryManager);
     }
 
-    ThreadContext currentThreadContext() {
+    ThreadContext getThreadContext() {
         return (ThreadContext)tls.get();
     }
     
+    Runtime getRuntime(ThreadContext tc) {
+        return tc->runtime;
+    }
+
 }

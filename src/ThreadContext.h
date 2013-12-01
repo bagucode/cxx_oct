@@ -5,10 +5,13 @@
 
 namespace octarine {
 
-    ThreadContext createThreadContext(MemoryManager mm);
+    ThreadContext createThreadContext(Runtime rt, MemoryManager mm);
+    
     void destroyThreadContext(ThreadContext tc);
     
-    ThreadContext getCurrentThreadContext();
+    ThreadContext getThreadContext();
+    
+    Runtime getRuntime(ThreadContext tc);
 
 }
 
