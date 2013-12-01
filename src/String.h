@@ -8,11 +8,9 @@ namespace octarine {
     
     String createString(ThreadContext tc, const char* cstr);
     
-    String intern(Runtime rt, String s);
-    
     Uword hash(ThreadContext tc, String s);
     
-    Bool equals(ThreadContext tc, String s);
+    Bool equals(ThreadContext tc, String s1, String s2);
 
 }
 

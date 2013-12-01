@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0405C374184A3BFA003CCC15 /* MemoryManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0405C368184A3BFA003CCC15 /* MemoryManager.cpp */; };
 		0405C376184A3BFA003CCC15 /* Runtime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0405C36F184A3BFA003CCC15 /* Runtime.cpp */; };
+		04063B3E184B6819001E2D58 /* Namespace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04063B3D184B6819001E2D58 /* Namespace.cpp */; };
 		04644AE4184A5A3F0080EFD8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04644AE3184A5A3F0080EFD8 /* main.cpp */; };
 		04644AE7184A65CF0080EFD8 /* ThreadContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04644AE6184A65CF0080EFD8 /* ThreadContext.cpp */; };
 		04644AEA184A79A20080EFD8 /* Exception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04644AE9184A79A20080EFD8 /* Exception.cpp */; };
@@ -42,6 +43,7 @@
 		0405C372184A3BFA003CCC15 /* ThreadContext.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = ThreadContext.h; path = ../../../src/ThreadContext.h; sourceTree = SOURCE_ROOT; };
 		0405C373184A3BFA003CCC15 /* Type.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = Type.h; path = ../../../src/Type.h; sourceTree = SOURCE_ROOT; };
 		04063B3C184B3150001E2D58 /* Typedefs.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = Typedefs.h; path = ../../../src/Typedefs.h; sourceTree = SOURCE_ROOT; };
+		04063B3D184B6819001E2D58 /* Namespace.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Namespace.cpp; path = ../../../src/Namespace.cpp; sourceTree = SOURCE_ROOT; };
 		04644AE3184A5A3F0080EFD8 /* main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = main.cpp; path = ../../../src/main.cpp; sourceTree = SOURCE_ROOT; };
 		04644AE5184A62880080EFD8 /* ThreadLocalStorage.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = ThreadLocalStorage.h; path = ../../../src/ThreadLocalStorage.h; sourceTree = SOURCE_ROOT; };
 		04644AE6184A65CF0080EFD8 /* ThreadContext.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ThreadContext.cpp; path = ../../../src/ThreadContext.cpp; sourceTree = SOURCE_ROOT; };
@@ -99,6 +101,7 @@
 				04644AE8184A69460080EFD8 /* Exception.h */,
 				04644AE9184A79A20080EFD8 /* Exception.cpp */,
 				04644AEB184A79BC0080EFD8 /* String.cpp */,
+				04063B3D184B6819001E2D58 /* Namespace.cpp */,
 			);
 			path = octarine;
 			sourceTree = "<group>";
@@ -159,6 +162,7 @@
 				04644AE4184A5A3F0080EFD8 /* main.cpp in Sources */,
 				04644AEC184A79BC0080EFD8 /* String.cpp in Sources */,
 				04644AE7184A65CF0080EFD8 /* ThreadContext.cpp in Sources */,
+				04063B3E184B6819001E2D58 /* Namespace.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

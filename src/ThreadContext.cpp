@@ -10,12 +10,14 @@ namespace octarine {
     struct ThreadContextT {
         Runtime runtime;
         MemoryManager memoryManager;
+        Namespace currentNs;
     };
     
-    ThreadContext createThreadContext(Runtime rt, MemoryManager mm) {
+    ThreadContext createThreadContext(Runtime rt, MemoryManager mm, Namespace initialNs) {
         ThreadContext tc = (ThreadContext)allocRaw(mm, sizeof(ThreadContextT));
         tc->runtime = rt;
         tc->memoryManager = mm;
+        tc->currentNs = initialNs;
         tls.set(tc);
         return tc;
     }
@@ -32,5 +34,18 @@ namespace octarine {
     Runtime getRuntime(ThreadContext tc) {
         return tc->runtime;
     }
+    
+    MemoryManager getMemoryManager(ThreadContext tc) {
+        return tc->memoryManager;
+    }
 
+    Namespace getNamespace(ThreadContext tc) {
+        return tc->currentNs;
+    }
+    
+    Namespace setNamespace(ThreadContext tc, Namespace ns) {
+        Namespace old = tc->currentNs;
+        tc->currentNs = ns;
+        return old;
+    }
 }

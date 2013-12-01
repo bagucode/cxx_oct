@@ -12,6 +12,8 @@ namespace octarine {
     void registerFunction(ThreadContext tc, Namespace ns, Function f);
     
     Object eval(ThreadContext tc, String source);
+    
+    Object intern(ThreadContext tc, Object o);
 
 }
 

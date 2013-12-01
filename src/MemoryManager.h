@@ -13,7 +13,7 @@ namespace octarine {
     Object allocRaw(MemoryManager mm, Uword size);
     
     Object alloc(ThreadContext tc, MemoryManager mm, Type t);
-
+    
 }
 
 #endif
