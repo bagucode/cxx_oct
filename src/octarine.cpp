@@ -119,6 +119,9 @@ namespace octarine {
 	struct ObjectT;
 	typedef ObjectT* Object;
 
+	struct ObjectHeaderT;
+	typedef ObjectHeaderT* ObjectHeader;
+
 	struct ReaderT;
 	typedef ReaderT* Reader;
 
@@ -138,6 +141,8 @@ namespace octarine {
 	typedef ExceptionT* Exception;
 
 	// ## 30 Function declarations
+    
+    static ObjectHeader getHeader(ThreadContext tc, Object obj);
 
 	static Uword getSize(ThreadContext tc, Type t);
 
@@ -300,7 +305,7 @@ namespace octarine {
 		Uword size;
 	};
 
-	struct ObjectHeader {
+	struct ObjectHeaderT {
 		Type type;
 		Uword object;
 	};
@@ -374,29 +379,29 @@ namespace octarine {
 	}
 
 	static Object allocRaw(SharedMemoryManager mm, Uword size) {
-		Uword allocSize = sizeof(ObjectHeader) + size;
-		ObjectHeader* oh = (ObjectHeader*)::operator new(allocSize);
+		Uword allocSize = sizeof(ObjectHeaderT) + size;
+		ObjectHeader oh = (ObjectHeader)::operator new(allocSize);
 		oh->type = nullptr;
 		return (Object) &oh->object;
 	}
 
 	static Object alloc(ThreadContext tc, SharedMemoryManager mm, Type t) {
-		Uword allocSize = sizeof(ObjectHeader) + getSize(tc, t);
-		ObjectHeader* oh = (ObjectHeader*)::operator new(allocSize);
+		Uword allocSize = sizeof(ObjectHeaderT) + getSize(tc, t);
+		ObjectHeader oh = (ObjectHeader)::operator new(allocSize);
 		oh->type = t;
 		return (Object) &oh->object;
 	}
 
 	static Object allocRaw(ThreadMemoryManager mm, Uword size) {
-		Uword allocSize = sizeof(ObjectHeader) + size;
-		ObjectHeader* oh = (ObjectHeader*)::operator new(allocSize);
+		Uword allocSize = sizeof(ObjectHeaderT) + size;
+		ObjectHeader oh = (ObjectHeader)::operator new(allocSize);
 		oh->type = nullptr;
 		return (Object) &oh->object;
 	}
 
 	static Object alloc(ThreadContext tc, ThreadMemoryManager mm, Type t) {
-		Uword allocSize = sizeof(ObjectHeader) + getSize(tc, t);
-		ObjectHeader* oh = (ObjectHeader*)::operator new(allocSize);
+		Uword allocSize = sizeof(ObjectHeaderT) + getSize(tc, t);
+		ObjectHeader oh = (ObjectHeader)::operator new(allocSize);
 		oh->type = t;
 		return (Object) &oh->object;
 	}
@@ -425,9 +430,14 @@ namespace octarine {
 	static Bool equals(ThreadContext tc, Namespace ns, Object obj) {
 
 	}
+    
+    static ObjectHeader getHeader(ThreadContext tc, Object obj) {
+        return (ObjectHeader)(((U8*)obj) - sizeof(ObjectHeaderT) + sizeof(Uword));
+    }
 
 	static Type getType(ThreadContext tc, Object obj) {
-
+        ObjectHeader header = getHeader(tc, obj);
+        return header->type;
 	}
 
 	static Uword hash(ThreadContext tc, Object o) {
