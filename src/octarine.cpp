@@ -58,12 +58,18 @@
 #include <Windows.h>
 #else
 #include <inttypes.h>
+#include <pthread.h>
 #endif
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+#include <algorithm>
+#include <mutex>
 
 namespace octarine {
-    
-    // ## 20 Type declarations and typedefs
-    
+
+	// ## 20 Type declarations and typedefs
+
 #ifdef WINDOWS
 	typedef __int8           I8;
 	typedef unsigned __int8  U8;
@@ -74,7 +80,7 @@ namespace octarine {
 	typedef __int64          I64;
 	typedef unsigned __int64 U64;
 #else
-    typedef int8_t   I8;
+	typedef int8_t   I8;
 	typedef uint8_t  U8;
 	typedef int16_t  I16;
 	typedef uint16_t U16;
@@ -96,100 +102,374 @@ namespace octarine {
 #endif
 	typedef void* Address;
 
-    struct FunctionT;
+	struct FunctionT;
 	typedef FunctionT* Function;
-    
-    struct MemoryManagerT;
-    typedef MemoryManagerT* MemoryManager;
-    
+
+	struct MemoryManagerT;
+	typedef MemoryManagerT* MemoryManager;
+
 	struct NamespaceT;
 	typedef NamespaceT* Namespace;
-    
-    struct ObjectT;
+
+	struct ObjectT;
 	typedef ObjectT* Object;
-    
-    struct ReaderT;
-    typedef ReaderT* Reader;
-    
+
+	struct ReaderT;
+	typedef ReaderT* Reader;
+
 	struct RuntimeT;
-    typedef RuntimeT* Runtime;
-    
+	typedef RuntimeT* Runtime;
+
 	struct StringT;
-    typedef StringT* String;
-    
+	typedef StringT* String;
+
 	struct ThreadContextT;
-    typedef ThreadContextT* ThreadContext;
-    
+	typedef ThreadContextT* ThreadContext;
+
 	struct TypeT;
 	typedef TypeT* Type;
-    
-    struct ExceptionT;
-    typedef ExceptionT* Exception;
 
-    // ## 30 Function declarations
-    
-    MemoryManager createMemoryManager();
-    
-    void destroyMemoryManager(MemoryManager mm);
-    
-    Object allocRaw(MemoryManager mm, Uword size);
-    
-    Object alloc(ThreadContext tc, MemoryManager mm, Type t);
-    
-    Namespace createNamespace(Runtime rt, String name);
-    
-    Object bind(ThreadContext tc, Namespace ns, String name, Object obj);
-    
-    Type getNamespaceType(Runtime rt);
-    
-    Bool equals(ThreadContext tc, Namespace ns, Object obj);
+	struct ExceptionT;
+	typedef ExceptionT* Exception;
 
-	Type getType(ThreadContext tc, Object obj);
-    
-    Uword hash(ThreadContext tc, Object o);
-    
-    Bool equals(ThreadContext tc, Object o1, Object o2);
-    
-    Object makeShared(ThreadContext tc, Object o);
+	// ## 30 Function declarations
 
-    Runtime createRuntime();
-    
-    void destroyRuntime(Runtime rt);
-    
-    void registerFunction(ThreadContext tc, Namespace ns, Function f);
-    
-    Object eval(ThreadContext tc, String source);
-    
-    Object intern(ThreadContext tc, Object o);
+	static MemoryManager createMemoryManager();
 
-    String createString(ThreadContext tc, const char* cstr);
-    
-    Uword hash(ThreadContext tc, String s);
-    
-    Bool equals(ThreadContext tc, String s1, String s2);
+	static void destroyMemoryManager(MemoryManager mm);
 
-    ThreadContext createThreadContext(Runtime rt, MemoryManager mm, Namespace initialNs);
-    
-    void destroyThreadContext(ThreadContext tc);
-    
-    ThreadContext getThreadContext();
-    
-    Runtime getRuntime(ThreadContext tc);
-    
-    MemoryManager getMemoryManager(ThreadContext tc);
-    
-    Namespace getNamespace(ThreadContext tc);
-    
-    Namespace setNamespace(ThreadContext tc, Namespace ns);
+	static Object allocRaw(MemoryManager mm, Uword size);
 
-    Exception createException(ThreadContext tc, String message);
-    
-    String getMessage(ThreadContext tc, Exception e);
+	static Object alloc(ThreadContext tc, MemoryManager mm, Type t);
 
-    // ## 40 Type definitions
+	static Namespace createNamespace(ThreadContext tc, String name);
+
+	static Object bind(ThreadContext tc, Namespace ns, String name, Object obj);
+
+	static Type getNamespaceType(Runtime rt);
+
+	static Bool equals(ThreadContext tc, Namespace ns, Object obj);
+
+	static Type getType(ThreadContext tc, Object obj);
+
+	static Uword hash(ThreadContext tc, Object o);
+
+	static Bool equals(ThreadContext tc, Object o1, Object o2);
+
+	static String makeShared(ThreadContext tc, String s);
+
+	static Namespace makeShared(ThreadContext tc, Namespace s);
+
+	static Runtime createRuntime();
+
+	static void destroyRuntime(Runtime rt);
+
+	static void registerFunction(ThreadContext tc, Namespace ns, Function f);
+
+	static Object eval(ThreadContext tc, String source);
+
+	static Object intern(ThreadContext tc, Object o);
+
+	static String createString(ThreadContext tc, const char* cstr);
+
+	static Uword hash(ThreadContext tc, String s);
+
+	static Bool equals(ThreadContext tc, String s1, String s2);
+
+	static ThreadContext createThreadContext(Runtime rt, MemoryManager mm, Namespace initialNs);
+
+	static void destroyThreadContext(ThreadContext tc);
+
+	static ThreadContext getThreadContext();
+
+	static Runtime getRuntime(ThreadContext tc);
+
+	static MemoryManager getMemoryManager(ThreadContext tc);
+
+	static Namespace getNamespace(ThreadContext tc);
+
+	static Namespace setNamespace(ThreadContext tc, Namespace ns);
+
+	static Exception createException(ThreadContext tc, String message);
+
+	static String getMessage(ThreadContext tc, Exception e);
+
+	// ## 40 Type definitions
+
+	// STL Integration
+}
+namespace std {
+	template <>
+	struct hash<octarine::String> {
+		size_t operator()(const octarine::String& s) const {
+			return octarine::hash(octarine::getThreadContext(), s);
+		}
+	};
+
+	template<>
+	struct equal_to<octarine::String> {
+		bool operator()(const octarine::String& s1, const octarine::String& s2) const {
+			return octarine::equals(octarine::getThreadContext(), s1, s2) == True ? true : false;
+		}
+	};
+
+	template<>
+	struct hash<octarine::Object> {
+		size_t operator()(const octarine::Object& o) const {
+			return octarine::hash(octarine::getThreadContext(), o);
+		}
+	};
+
+	template<>
+	struct equal_to<octarine::Object> {
+		bool operator()(const octarine::Object& o1, const octarine::Object& o2) {
+			return octarine::equals(octarine::getThreadContext(), o1, o2) == True ? true : false;
+		}
+	};
+}
+namespace octarine {
+
+	// Platform support
+
+	class TLS {
+	private:
+#ifdef WINDOWS
+		DWORD threadLocalStorage;
+#elif defined (MACOSX)
+		pthread_key_t threadLocalStorage;
+#else
+#endif
+	public:
+		TLS() {
+#ifdef WINDOWS
+			threadLocalStorage = TlsAlloc();
+#elif defined (MACOSX)
+			pthread_key_create(&threadLocalStorage, nullptr);
+#else
+#endif
+		}
+
+		~TLS() {
+#ifdef WINDOWS
+			TlsFree(threadLocalStorage);
+#elif defined (MACOSX)
+			pthread_key_delete(threadLocalStorage);
+#else
+#endif
+		}
+
+		void set(void* value) {
+#ifdef WINDOWS
+			TlsSetValue(threadLocalStorage, value);
+#elif defined (MACOSX)
+			pthread_setspecific(threadLocalStorage, value);
+#else
+#endif
+		}
+
+		void* get() {
+#ifdef WINDOWS
+			return TlsGetValue(threadLocalStorage);
+#elif defined (MACOSX)
+			return pthread_getspecific(threadLocalStorage);
+#else
+#endif
+		}
+	};
+
+	// Octarine types
+
+	struct MemoryManagerT {
+		Uword hello;
+	};
+
+	struct NamespaceT {
+		String name;
+	};
+
+	struct StringT {
+		Uword length;
+		U8* utf8data; // Just use platform strings?
+	};
+
+	struct BuiltInTypes {
+		Type namespaceType;
+	};
+
+	struct ThreadContextT {
+		Runtime runtime;
+		MemoryManager memoryManager;
+		Namespace currentNs;
+	};
+
+	struct RuntimeT {
+		std::mutex namespaceMutex;
+		std::unordered_map<String, Namespace> namespaces;
+		std::mutex threadContextMutex;
+		std::vector<ThreadContext> threadContexts;
+		std::mutex internedObjectsMutex;
+		std::unordered_set<Object> internedObjects;
+		BuiltInTypes builtInTypes;
+	};
 
     // ## 50 Function definitions
-    
+
+	// Global thread local var for getting at the current thread context when it is impossible
+	// to pass it along. For example when integrating with the STL or in callbacks from C code.
+	static TLS tls;
+
+	static MemoryManager createMemoryManager() {
+		MemoryManager mm = new MemoryManagerT;
+		return mm;
+	}
+
+	static void destroyMemoryManager(MemoryManager mm) {
+		delete mm;
+	}
+
+	static Object allocRaw(MemoryManager mm, Uword size) {
+		// TODO: allocate space for Object header as well and return pointer
+		// to memory after the header.
+		return (Object)::operator new(size);
+	}
+
+	static Object alloc(ThreadContext tc, MemoryManager mm, Type t) {
+		return nullptr;
+	}
+
+	static Namespace createNamespace(ThreadContext tc, String name) {
+		MemoryManager mm = getMemoryManager(tc);
+		Runtime rt = getRuntime(tc);
+		Namespace ns = (Namespace) allocRaw(mm, sizeof(NamespaceT));
+		ns->name = name;
+		rt->namespaces[name] = ns;
+		return makeShared(tc, ns);
+	}
+
+	static Object bind(ThreadContext tc, Namespace ns, String name, Object obj) {
+
+	}
+
+	static Type getNamespaceType(Runtime rt) {
+		return rt->builtInTypes.namespaceType;
+	}
+
+	static Bool equals(ThreadContext tc, Namespace ns, Object obj) {
+
+	}
+
+	static Type getType(ThreadContext tc, Object obj) {
+
+	}
+
+	static Uword hash(ThreadContext tc, Object o) {
+
+	}
+
+	static Bool equals(ThreadContext tc, Object o1, Object o2) {
+
+	}
+
+	static String makeShared(ThreadContext tc, String s) {
+
+	}
+
+	static Namespace makeShared(ThreadContext tc, Namespace s) {
+
+	}
+
+	static Runtime createRuntime() {
+		Runtime rt = new RuntimeT;
+		// Create main thread context, with its own memory manager
+		ThreadContext mainTc = createThreadContext(rt, createMemoryManager(), nullptr);
+		rt->threadContexts.push_back(mainTc);
+		// Create main namespace
+		setNamespace(mainTc, createNamespace(rt, createString(mainTc, "octarine")));
+		return rt;
+	}
+
+	static void destroyRuntime(Runtime rt) {
+		std::for_each(rt->threadContexts.begin(), rt->threadContexts.end(), destroyThreadContext);
+		delete rt;
+	}
+
+	static void registerFunction(ThreadContext tc, Namespace ns, Function f) {
+
+	}
+
+	static Object eval(ThreadContext tc, String source) {
+
+	}
+
+	static Object intern(ThreadContext tc, Object o) {
+		Runtime rt = getRuntime(tc);
+		std::lock_guard<std::mutex> lock(rt->internedObjectsMutex);
+		std::unordered_set<Object>::const_iterator i = rt->internedObjects.find(o);
+		if (i == rt->internedObjects.end()) {
+			// Not found, copy to global memory and insert.
+			return nullptr;
+		}
+		else {
+			return *i;
+		}
+	}
+
+	static String createString(ThreadContext tc, const char* cstr) {
+
+	}
+
+	static Uword hash(ThreadContext tc, String s) {
+
+	}
+
+	static Bool equals(ThreadContext tc, String s1, String s2) {
+
+	}
+
+	static ThreadContext createThreadContext(Runtime rt, MemoryManager mm, Namespace initialNs) {
+		ThreadContext tc = (ThreadContext) allocRaw(mm, sizeof(ThreadContextT));
+		tc->runtime = rt;
+		tc->memoryManager = mm;
+		tc->currentNs = initialNs;
+		tls.set(tc);
+		return tc;
+	}
+
+	static void destroyThreadContext(ThreadContext tc) {
+		tls.set(nullptr);
+		destroyMemoryManager(tc->memoryManager);
+	}
+
+	static ThreadContext getThreadContext() {
+		return (ThreadContext) tls.get();
+	}
+
+	static Runtime getRuntime(ThreadContext tc) {
+		return tc->runtime;
+	}
+
+	static MemoryManager getMemoryManager(ThreadContext tc) {
+		return tc->memoryManager;
+	}
+
+	static Namespace getNamespace(ThreadContext tc) {
+		return tc->currentNs;
+	}
+
+	static Namespace setNamespace(ThreadContext tc, Namespace ns) {
+		Namespace old = tc->currentNs;
+		tc->currentNs = ns;
+		return old;
+	}
+
+	static Exception createException(ThreadContext tc, String message) {
+
+	}
+
+	static String getMessage(ThreadContext tc, Exception e) {
+
+	}
+
     
 }
 

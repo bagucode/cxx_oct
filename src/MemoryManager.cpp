@@ -8,8 +8,6 @@ namespace octarine {
     };
     
     MemoryManager createMemoryManager() {
-        MemoryManager mm = new MemoryManagerT;
-        return mm;
     }
 
     void destroyMemoryManager(MemoryManager mm) {

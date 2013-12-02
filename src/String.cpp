@@ -7,10 +7,6 @@
 
 namespace octarine {
     
-    struct StringT {
-        Uword length;
-        U8* utf8data; // Just use platform strings?
-    };
 
     String createString(ThreadContext tc, const char* cstr) {
         return nullptr;

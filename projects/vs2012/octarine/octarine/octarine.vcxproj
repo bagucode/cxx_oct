@@ -139,21 +139,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\main.cpp" />
     <ClCompile Include="..\..\..\..\src\MemoryManager.cpp" />
+    <ClCompile Include="..\..\..\..\src\Namespace.cpp" />
     <ClCompile Include="..\..\..\..\src\oct.cpp" />
+    <ClCompile Include="..\..\..\..\src\octarine.cpp" />
     <ClCompile Include="..\..\..\..\src\Runtime.cpp" />
+    <ClCompile Include="..\..\..\..\src\String.cpp" />
+    <ClCompile Include="..\..\..\..\src\ThreadContext.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\Exception.h" />
     <ClInclude Include="..\..\..\..\src\MemoryManager.h" />
     <ClInclude Include="..\..\..\..\src\Namespace.h" />
     <ClInclude Include="..\..\..\..\src\Object.h" />
-    <ClInclude Include="..\..\..\..\src\Parser.h" />
     <ClInclude Include="..\..\..\..\src\Primitives.h" />
     <ClInclude Include="..\..\..\..\src\Function.h" />
+    <ClInclude Include="..\..\..\..\src\Reader.h" />
     <ClInclude Include="..\..\..\..\src\Runtime.h" />
     <ClInclude Include="..\..\..\..\src\String.h" />
     <ClInclude Include="..\..\..\..\src\ThreadContext.h" />
+    <ClInclude Include="..\..\..\..\src\ThreadLocalStorage.h" />
     <ClInclude Include="..\..\..\..\src\Type.h" />
+    <ClInclude Include="..\..\..\..\src\Typedefs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

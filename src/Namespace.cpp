@@ -6,10 +6,6 @@
 
 namespace octarine {
     
-    struct NamespaceT {
-        String name;
-    };
-
     Object bind(ThreadContext tc, Namespace ns, String name, Object obj) {
         return nullptr;
     }
