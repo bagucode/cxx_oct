@@ -197,6 +197,8 @@ namespace octarine {
 
 	static Runtime getRuntime(ThreadContext tc);
 
+	static SharedMemoryManager getSharedMemoryManager(Runtime rt);
+
 	static ThreadMemoryManager getThreadMemoryManager(ThreadContext tc);
 
 	static Namespace getNamespace(ThreadContext tc);
@@ -298,7 +300,7 @@ namespace octarine {
 
 	struct ObjectHeader {
 		Type type;
-		U8 object[0];
+		Uword object;
 	};
 
 	struct SharedMemoryManagerT {
@@ -329,7 +331,7 @@ namespace octarine {
 	};
 
 	struct RuntimeT {
-		SharedMemoryManager SharedMemoryManager;
+		SharedMemoryManager sharedMemoryManager;
 		std::mutex namespaceMutex;
 		std::unordered_map<String, Namespace> namespaces;
 		std::mutex threadContextMutex;
@@ -429,15 +431,22 @@ namespace octarine {
 	}
 
 	static String makeShared(ThreadContext tc, String s) {
+		Runtime rt = getRuntime(tc);
+		String sharedS = (String) alloc(tc, getSharedMemoryManager(rt), getStringType(rt));
 
+		return sharedNs;
 	}
 
 	static Namespace makeShared(ThreadContext tc, Namespace s) {
-		
+		Runtime rt = getRuntime(tc);
+		Namespace sharedNs = (Namespace)alloc(tc, getSharedMemoryManager(rt), getNamespaceType(rt));
+		sharedNs->name = makeShared(tc, s->name);
+		return sharedNs;
 	}
 
 	static Runtime createRuntime() {
 		Runtime rt = new RuntimeT;
+		rt->sharedMemoryManager = createSharedMemoryManager();
 		// Create main thread context, with its own memory manager
 		ThreadContext mainTc = createThreadContext(rt, createThreadMemoryManager(), nullptr);
 		rt->threadContexts.push_back(mainTc);
@@ -504,6 +513,10 @@ namespace octarine {
 
 	static Runtime getRuntime(ThreadContext tc) {
 		return tc->runtime;
+	}
+
+	static SharedMemoryManager getSharedMemoryManager(Runtime rt) {
+		return rt->sharedMemoryManager;
 	}
 
 	static ThreadMemoryManager getThreadMemoryManager(ThreadContext tc) {
