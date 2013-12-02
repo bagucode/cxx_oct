@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0402A7A2184C65ED008DFEBE /* octarine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0402A7A1184C65ED008DFEBE /* octarine.cpp */; };
 		0405C374184A3BFA003CCC15 /* MemoryManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0405C368184A3BFA003CCC15 /* MemoryManager.cpp */; };
 		0405C376184A3BFA003CCC15 /* Runtime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0405C36F184A3BFA003CCC15 /* Runtime.cpp */; };
 		04063B3E184B6819001E2D58 /* Namespace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04063B3D184B6819001E2D58 /* Namespace.cpp */; };
@@ -29,6 +30,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0402A7A1184C65ED008DFEBE /* octarine.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = octarine.cpp; path = ../../../src/octarine.cpp; sourceTree = SOURCE_ROOT; };
 		0405C35B184A3B7B003CCC15 /* octarine */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = octarine; sourceTree = BUILT_PRODUCTS_DIR; };
 		0405C367184A3BFA003CCC15 /* Function.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = Function.h; path = ../../../src/Function.h; sourceTree = SOURCE_ROOT; };
 		0405C368184A3BFA003CCC15 /* MemoryManager.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = MemoryManager.cpp; path = ../../../src/MemoryManager.cpp; sourceTree = SOURCE_ROOT; };
@@ -102,6 +104,7 @@
 				04644AE9184A79A20080EFD8 /* Exception.cpp */,
 				04644AEB184A79BC0080EFD8 /* String.cpp */,
 				04063B3D184B6819001E2D58 /* Namespace.cpp */,
+				0402A7A1184C65ED008DFEBE /* octarine.cpp */,
 			);
 			path = octarine;
 			sourceTree = "<group>";
@@ -158,6 +161,7 @@
 			files = (
 				0405C376184A3BFA003CCC15 /* Runtime.cpp in Sources */,
 				04644AEA184A79A20080EFD8 /* Exception.cpp in Sources */,
+				0402A7A2184C65ED008DFEBE /* octarine.cpp in Sources */,
 				0405C374184A3BFA003CCC15 /* MemoryManager.cpp in Sources */,
 				04644AE4184A5A3F0080EFD8 /* main.cpp in Sources */,
 				04644AEC184A79BC0080EFD8 /* String.cpp in Sources */,
