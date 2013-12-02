@@ -65,6 +65,8 @@
 #include <vector>
 #include <algorithm>
 #include <mutex>
+#include <memory>
+#include <cstring>
 
 namespace octarine {
 
@@ -322,6 +324,7 @@ namespace octarine {
 
 	struct BuiltInTypes {
 		Type namespaceType;
+		Type stringType;
 	};
 
 	struct ThreadContextT {
@@ -410,6 +413,10 @@ namespace octarine {
 
 	}
 
+	static Type getStringType(Runtime rt) {
+		return rt->builtInTypes.stringType;
+	}
+
 	static Type getNamespaceType(Runtime rt) {
 		return rt->builtInTypes.namespaceType;
 	}
@@ -432,9 +439,13 @@ namespace octarine {
 
 	static String makeShared(ThreadContext tc, String s) {
 		Runtime rt = getRuntime(tc);
-		String sharedS = (String) alloc(tc, getSharedMemoryManager(rt), getStringType(rt));
-
-		return sharedNs;
+		SharedMemoryManager mm = getSharedMemoryManager(rt);
+		size_t len = strlen((const char*) s->utf8data); // To get the byte length. s->length is number of codepoints
+		String sharedS = (String) alloc(tc, mm, getStringType(rt));
+		sharedS->utf8data = (U8*) allocRaw(mm, len + 1);
+		memcpy(sharedS->utf8data, s->utf8data, len + 1);
+		sharedS->length = s->length;
+		return sharedS;
 	}
 
 	static Namespace makeShared(ThreadContext tc, Namespace s) {
