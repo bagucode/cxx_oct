@@ -375,7 +375,7 @@ namespace octarine {
 	}
 
 	static Namespace makeShared(ThreadContext tc, Namespace s) {
-
+		return nullptr;
 	}
 
 	static Runtime createRuntime() {
@@ -384,7 +384,7 @@ namespace octarine {
 		ThreadContext mainTc = createThreadContext(rt, createMemoryManager(), nullptr);
 		rt->threadContexts.push_back(mainTc);
 		// Create main namespace
-		setNamespace(mainTc, createNamespace(rt, createString(mainTc, "octarine")));
+		setNamespace(mainTc, createNamespace(mainTc, createString(mainTc, "octarine")));
 		return rt;
 	}
 
@@ -415,15 +415,15 @@ namespace octarine {
 	}
 
 	static String createString(ThreadContext tc, const char* cstr) {
-
+		return nullptr;
 	}
 
 	static Uword hash(ThreadContext tc, String s) {
-
+		return 0;
 	}
 
 	static Bool equals(ThreadContext tc, String s1, String s2) {
-
+		return False;
 	}
 
 	static ThreadContext createThreadContext(Runtime rt, MemoryManager mm, Namespace initialNs) {
