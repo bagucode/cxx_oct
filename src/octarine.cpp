@@ -105,8 +105,11 @@ namespace octarine {
 	struct FunctionT;
 	typedef FunctionT* Function;
 
-	struct MemoryManagerT;
-	typedef MemoryManagerT* MemoryManager;
+	struct SharedMemoryManagerT;
+	typedef SharedMemoryManagerT* SharedMemoryManager;
+
+	struct ThreadMemoryManagerT;
+	typedef ThreadMemoryManagerT* ThreadMemoryManager;
 
 	struct NamespaceT;
 	typedef NamespaceT* Namespace;
@@ -134,13 +137,23 @@ namespace octarine {
 
 	// ## 30 Function declarations
 
-	static MemoryManager createMemoryManager();
+	static Uword getSize(ThreadContext tc, Type t);
 
-	static void destroyMemoryManager(MemoryManager mm);
+	static SharedMemoryManager createSharedMemoryManager();
 
-	static Object allocRaw(MemoryManager mm, Uword size);
+	static void destroySharedMemoryManager(SharedMemoryManager mm);
 
-	static Object alloc(ThreadContext tc, MemoryManager mm, Type t);
+	static ThreadMemoryManager createThreadMemoryManager();
+
+	static void destroyThreadMemoryManager(ThreadMemoryManager mm);
+
+	static Object allocRaw(ThreadMemoryManager mm, Uword size);
+
+	static Object alloc(ThreadContext tc, ThreadMemoryManager mm, Type t);
+
+	static Object allocRaw(SharedMemoryManager mm, Uword size);
+
+	static Object alloc(ThreadContext tc, SharedMemoryManager mm, Type t);
 
 	static Namespace createNamespace(ThreadContext tc, String name);
 
@@ -176,7 +189,7 @@ namespace octarine {
 
 	static Bool equals(ThreadContext tc, String s1, String s2);
 
-	static ThreadContext createThreadContext(Runtime rt, MemoryManager mm, Namespace initialNs);
+	static ThreadContext createThreadContext(Runtime rt, ThreadMemoryManager mm, Namespace initialNs);
 
 	static void destroyThreadContext(ThreadContext tc);
 
@@ -184,7 +197,7 @@ namespace octarine {
 
 	static Runtime getRuntime(ThreadContext tc);
 
-	static MemoryManager getMemoryManager(ThreadContext tc);
+	static ThreadMemoryManager getThreadMemoryManager(ThreadContext tc);
 
 	static Namespace getNamespace(ThreadContext tc);
 
@@ -279,7 +292,20 @@ namespace octarine {
 
 	// Octarine types
 
-	struct MemoryManagerT {
+	struct TypeT {
+		Uword size;
+	};
+
+	struct ObjectHeader {
+		Type type;
+		U8 object[0];
+	};
+
+	struct SharedMemoryManagerT {
+		Uword hello;
+	};
+
+	struct ThreadMemoryManagerT {
 		Uword hello;
 	};
 
@@ -298,11 +324,12 @@ namespace octarine {
 
 	struct ThreadContextT {
 		Runtime runtime;
-		MemoryManager memoryManager;
+		ThreadMemoryManager ThreadMemoryManager;
 		Namespace currentNs;
 	};
 
 	struct RuntimeT {
+		SharedMemoryManager SharedMemoryManager;
 		std::mutex namespaceMutex;
 		std::unordered_map<String, Namespace> namespaces;
 		std::mutex threadContextMutex;
@@ -318,27 +345,58 @@ namespace octarine {
 	// to pass it along. For example when integrating with the STL or in callbacks from C code.
 	static TLS tls;
 
-	static MemoryManager createMemoryManager() {
-		MemoryManager mm = new MemoryManagerT;
+	static Uword getSize(ThreadContext tc, Type t) {
+		return t->size;
+	}
+
+	static SharedMemoryManager createSharedMemoryManager() {
+		SharedMemoryManager mm = new SharedMemoryManagerT;
 		return mm;
 	}
 
-	static void destroyMemoryManager(MemoryManager mm) {
+	static void destroySharedMemoryManager(SharedMemoryManager mm) {
 		delete mm;
 	}
 
-	static Object allocRaw(MemoryManager mm, Uword size) {
-		// TODO: allocate space for Object header as well and return pointer
-		// to memory after the header.
-		return (Object)::operator new(size);
+	static ThreadMemoryManager createThreadMemoryManager() {
+		ThreadMemoryManager mm = new ThreadMemoryManagerT;
+		return mm;
 	}
 
-	static Object alloc(ThreadContext tc, MemoryManager mm, Type t) {
-		return nullptr;
+	static void destroyThreadMemoryManager(ThreadMemoryManager mm) {
+		delete mm;
+	}
+
+	static Object allocRaw(SharedMemoryManager mm, Uword size) {
+		Uword allocSize = sizeof(ObjectHeader) + size;
+		ObjectHeader* oh = (ObjectHeader*)::operator new(allocSize);
+		oh->type = nullptr;
+		return (Object) &oh->object;
+	}
+
+	static Object alloc(ThreadContext tc, SharedMemoryManager mm, Type t) {
+		Uword allocSize = sizeof(ObjectHeader) + getSize(tc, t);
+		ObjectHeader* oh = (ObjectHeader*)::operator new(allocSize);
+		oh->type = t;
+		return (Object) &oh->object;
+	}
+
+	static Object allocRaw(ThreadMemoryManager mm, Uword size) {
+		Uword allocSize = sizeof(ObjectHeader) + size;
+		ObjectHeader* oh = (ObjectHeader*)::operator new(allocSize);
+		oh->type = nullptr;
+		return (Object) &oh->object;
+	}
+
+	static Object alloc(ThreadContext tc, ThreadMemoryManager mm, Type t) {
+		Uword allocSize = sizeof(ObjectHeader) + getSize(tc, t);
+		ObjectHeader* oh = (ObjectHeader*)::operator new(allocSize);
+		oh->type = t;
+		return (Object) &oh->object;
 	}
 
 	static Namespace createNamespace(ThreadContext tc, String name) {
-		MemoryManager mm = getMemoryManager(tc);
+		ThreadMemoryManager mm = getThreadMemoryManager(tc);
 		Runtime rt = getRuntime(tc);
 		Namespace ns = (Namespace) allocRaw(mm, sizeof(NamespaceT));
 		ns->name = name;
@@ -375,13 +433,13 @@ namespace octarine {
 	}
 
 	static Namespace makeShared(ThreadContext tc, Namespace s) {
-		return nullptr;
+		
 	}
 
 	static Runtime createRuntime() {
 		Runtime rt = new RuntimeT;
 		// Create main thread context, with its own memory manager
-		ThreadContext mainTc = createThreadContext(rt, createMemoryManager(), nullptr);
+		ThreadContext mainTc = createThreadContext(rt, createThreadMemoryManager(), nullptr);
 		rt->threadContexts.push_back(mainTc);
 		// Create main namespace
 		setNamespace(mainTc, createNamespace(mainTc, createString(mainTc, "octarine")));
@@ -426,10 +484,10 @@ namespace octarine {
 		return False;
 	}
 
-	static ThreadContext createThreadContext(Runtime rt, MemoryManager mm, Namespace initialNs) {
+	static ThreadContext createThreadContext(Runtime rt, ThreadMemoryManager mm, Namespace initialNs) {
 		ThreadContext tc = (ThreadContext) allocRaw(mm, sizeof(ThreadContextT));
 		tc->runtime = rt;
-		tc->memoryManager = mm;
+		tc->ThreadMemoryManager = mm;
 		tc->currentNs = initialNs;
 		tls.set(tc);
 		return tc;
@@ -437,7 +495,7 @@ namespace octarine {
 
 	static void destroyThreadContext(ThreadContext tc) {
 		tls.set(nullptr);
-		destroyMemoryManager(tc->memoryManager);
+		destroyThreadMemoryManager(tc->ThreadMemoryManager);
 	}
 
 	static ThreadContext getThreadContext() {
@@ -448,8 +506,8 @@ namespace octarine {
 		return tc->runtime;
 	}
 
-	static MemoryManager getMemoryManager(ThreadContext tc) {
-		return tc->memoryManager;
+	static ThreadMemoryManager getThreadMemoryManager(ThreadContext tc) {
+		return tc->ThreadMemoryManager;
 	}
 
 	static Namespace getNamespace(ThreadContext tc) {
