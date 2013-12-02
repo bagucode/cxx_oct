@@ -315,6 +315,7 @@ namespace octarine {
 
 	struct NamespaceT {
 		String name;
+		std::mutex mutex;
 	};
 
 	struct StringT {
