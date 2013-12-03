@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\Exception.cpp" />
+    <ClCompile Include="..\..\..\..\src\Field.cpp" />
     <ClCompile Include="..\..\..\..\src\main.cpp" />
     <ClCompile Include="..\..\..\..\src\MemoryManager.cpp" />
     <ClCompile Include="..\..\..\..\src\Namespace.cpp" />

@@ -5,13 +5,13 @@
 namespace octarine {
 
 	Field _TypeFields [] = {
-		{ UwordType, VALUE, offsetof(Type, size), "size" },
-		{ UwordType, VALUE, offsetof(Type, alignment), "alignment" },
-		{ ArrayType, VALUE, offsetof(Type, fields), "fields" }
+		{ UwordType, VALUE, offsetof(Type, _size), "size" },
+		{ UwordType, VALUE, offsetof(Type, _alignment), "alignment" },
+		{ ArrayType, VALUE, offsetof(Type, _fields), "fields" }
 	};
 
 	Array _TypeFieldsArray = {
-		FieldType,
+		Field::type,
 		3,
 		&_TypeFields
 	};
@@ -26,14 +26,14 @@ namespace octarine {
 
 	static void _init(Self* self) {
 		Type* t = (Type*) self;
-		t->alignment = 0;
-		t->fields.init();
-		t->size = 0;
+		t->_alignment = 0;
+		t->_fields.init();
+		t->_size = 0;
 	}
 
 	static void _destroy(Self* self) {
 		Type* t = (Type*) self;
-		t->fields.destroy();
+		t->_fields.destroy();
 	}
 
 	static Type* _type(Self* self) {
@@ -43,9 +43,9 @@ namespace octarine {
 	static Uword _hash(Self* self) {
 		Type* t = (Type*) self;
 		Uword hash = 17;
-		hash += t->size * 37;
-		hash += t->alignment * 37;
-		return hash + t->fields.hash() * 37;
+		hash += t->_size * 37;
+		hash += t->_alignment * 37;
+		return hash + t->_fields.hash() * 37;
 	}
 
 	static Bool _equals(Self* self, Object other) {
@@ -57,9 +57,9 @@ namespace octarine {
 		}
 		Type* t = (Type*) self;
 		Type* otherT = (Type*) other.self;
-		return t->size == otherT->size &&
-			t->alignment == otherT->alignment &&
-			t->fields.equals(&otherT->fields);
+		return t->_size == otherT->_size &&
+			t->_alignment == otherT->_alignment &&
+			t->_fields.equals(&otherT->_fields);
 	}
 
 	static void _trace(Self* self, MemoryManager mm) {
@@ -69,7 +69,7 @@ namespace octarine {
 		if (markResult == MemoryManagerMarkResult::ALREADY_MARKED) {
 			return;
 		}
-		t->fields.trace(mm);
+		t->_fields.trace(mm);
 	}
 
 	ObjectFunctions Type::objectFns = { _init, _destroy, _type, _hash, _equals, _trace };

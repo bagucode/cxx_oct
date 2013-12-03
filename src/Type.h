@@ -6,13 +6,12 @@
 namespace octarine {
 
 	struct Type {
-		Uword size;
-		Uword alignment;
-		Array fields;
+		Uword _size;
+		Uword _alignment;
+		Array _fields;
 
 		static Type* type;
 		static ObjectFunctions objectFns;
-
 		Object asObject();
 	};
 

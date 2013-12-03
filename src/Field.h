@@ -19,19 +19,10 @@ namespace octarine {
 		Uword _offset;
 		String _name;
 
-		// Object functions
-		void init();
-		void destroy();
-		Type* type();
-		Uword hash();
-		Bool equals(Type* other);
-		void trace(MemoryManager mm);
-
-		// Protocol casting functions
+		static Type* type;
+		static ObjectFunctions objectFns;
 		Object asObject();
 	};
-
-	Type* FieldType;
 
 }
 
