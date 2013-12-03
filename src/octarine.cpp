@@ -5,6 +5,7 @@
 // ## 00 Macro Definitions
 // ## 10 Includes
 // ## 20 Type declarations and typedefs
+// ## 21 Protocol Object Definitions
 // ## 30 Function declarations
 // ## 40 Type definitions
 // ## 50 Function definitions
@@ -67,6 +68,7 @@
 #include <mutex>
 #include <memory>
 #include <cstring>
+#include <string>
 
 namespace octarine {
 
@@ -104,6 +106,9 @@ namespace octarine {
 #endif
 	typedef void* Address;
 
+	struct FunctionSignatureT;
+	typedef FunctionSignatureT* FunctionSignature;
+
 	struct FunctionT;
 	typedef FunctionT* Function;
 
@@ -131,6 +136,9 @@ namespace octarine {
 	struct StringT;
 	typedef StringT* String;
 
+	struct SymbolT;
+	typedef SymbolT* Symbol;
+
 	struct ThreadContextT;
 	typedef ThreadContextT* ThreadContext;
 
@@ -139,6 +147,28 @@ namespace octarine {
 
 	struct ExceptionT;
 	typedef ExceptionT* Exception;
+
+	struct SelfT;
+	typedef SelfT* Self;
+
+	template <typename T>
+	struct Box {
+		Type type;
+		T instance;
+	};
+
+	// ## 21 Protocol Object Definitions
+
+	// CharStream protocol
+
+	struct CharStreamFunctions {
+		void(*readChar)(Self self, );
+	};
+
+	struct CharStream {
+		Self self;
+
+	};
 
 	// ## 30 Function declarations
     
@@ -178,23 +208,25 @@ namespace octarine {
 
 	static String makeShared(ThreadContext tc, String s);
 
+	static Symbol makeShared(ThreadContext tc, Symbol s);
+
 	static Namespace makeShared(ThreadContext tc, Namespace s);
 
 	static Runtime createRuntime();
 
 	static void destroyRuntime(Runtime rt);
 
-	static void registerFunction(ThreadContext tc, Namespace ns, Function f);
-
 	static Object eval(ThreadContext tc, String source);
-
-	static Object intern(ThreadContext tc, Object o);
 
 	static String createString(ThreadContext tc, const char* cstr);
 
 	static Uword hash(ThreadContext tc, String s);
 
+	static Uword hash(ThreadContext tc, Symbol s);
+
 	static Bool equals(ThreadContext tc, String s1, String s2);
+
+	static Bool equals(ThreadContext tc, Symbol s1, Symbol s2);
 
 	static ThreadContext createThreadContext(Runtime rt, ThreadMemoryManager mm, Namespace initialNs);
 
@@ -216,21 +248,27 @@ namespace octarine {
 
 	static String getMessage(ThreadContext tc, Exception e);
 
+	static Object read(ThreadContext tc, String s);
+
+	static String apply(ThreadContext tc, String s);
+
+
+
 	// ## 40 Type definitions
 
 	// STL Integration
 }
 namespace std {
 	template <>
-	struct hash<octarine::String> {
-		size_t operator()(const octarine::String& s) const {
+	struct hash<octarine::Symbol> {
+		size_t operator()(const octarine::Symbol& s) const {
 			return octarine::hash(octarine::getThreadContext(), s);
 		}
 	};
 
 	template<>
-	struct equal_to<octarine::String> {
-		bool operator()(const octarine::String& s1, const octarine::String& s2) const {
+	struct equal_to<octarine::Symbol> {
+		bool operator()(const octarine::Symbol& s1, const octarine::Symbol& s2) const {
 			return octarine::equals(octarine::getThreadContext(), s1, s2) == True ? true : false;
 		}
 	};
@@ -319,18 +357,17 @@ namespace octarine {
 	};
 
 	struct NamespaceT {
-		String name;
+		Symbol name;
 		std::mutex mutex;
+	};
+
+	struct SymbolT {
+		String name;
 	};
 
 	struct StringT {
 		Uword length;
 		U8* utf8data; // Just use platform strings?
-	};
-
-	struct BuiltInTypes {
-		Type namespaceType;
-		Type stringType;
 	};
 
 	struct ThreadContextT {
@@ -339,15 +376,21 @@ namespace octarine {
 		Namespace currentNs;
 	};
 
+	struct BuiltInTypes {
+		Type namespaceType;
+		Type stringType;
+	};
+
+	typedef Object(*ReadFunction)(ThreadContext tc, String first, String rest);
+
 	struct RuntimeT {
 		SharedMemoryManager sharedMemoryManager;
 		std::mutex namespaceMutex;
-		std::unordered_map<String, Namespace> namespaces;
+		std::unordered_map<Symbol, Namespace> namespaces;
 		std::mutex threadContextMutex;
 		std::vector<ThreadContext> threadContexts;
-		std::mutex internedObjectsMutex;
-		std::unordered_set<Object> internedObjects;
 		BuiltInTypes builtInTypes;
+		std::unordered_map<String, ReadFunction> readFunctions;
 	};
 
     // ## 50 Function definitions
@@ -406,7 +449,7 @@ namespace octarine {
 		return (Object) &oh->object;
 	}
 
-	static Namespace createNamespace(ThreadContext tc, String name) {
+	static Namespace createNamespace(ThreadContext tc, Symbol name) {
 		ThreadMemoryManager mm = getThreadMemoryManager(tc);
 		Runtime rt = getRuntime(tc);
 		Namespace ns = (Namespace) allocRaw(mm, sizeof(NamespaceT));
@@ -415,7 +458,7 @@ namespace octarine {
 		return makeShared(tc, ns);
 	}
 
-	static Object bind(ThreadContext tc, Namespace ns, String name, Object obj) {
+	static Object bind(ThreadContext tc, Namespace ns, Symbol name, Object obj) {
 
 	}
 
@@ -466,6 +509,14 @@ namespace octarine {
 		return sharedNs;
 	}
 
+	static Object readSymbol(ThreadContext tc, String first, String rest) {
+
+	}
+
+	static void registerReadFunctions(Runtime rt) {
+		
+	}
+
 	static Runtime createRuntime() {
 		Runtime rt = new RuntimeT;
 		rt->sharedMemoryManager = createSharedMemoryManager();
@@ -474,6 +525,7 @@ namespace octarine {
 		rt->threadContexts.push_back(mainTc);
 		// Create main namespace
 		setNamespace(mainTc, createNamespace(mainTc, createString(mainTc, "octarine")));
+		registerReadFunctions(rt);
 		return rt;
 	}
 
@@ -486,21 +538,13 @@ namespace octarine {
 
 	}
 
-	static Object eval(ThreadContext tc, String source) {
-
+	static Object read(ThreadContext tc, String s) {
+		char* 		
 	}
 
-	static Object intern(ThreadContext tc, Object o) {
-		Runtime rt = getRuntime(tc);
-		std::lock_guard<std::mutex> lock(rt->internedObjectsMutex);
-		std::unordered_set<Object>::const_iterator i = rt->internedObjects.find(o);
-		if (i == rt->internedObjects.end()) {
-			// Not found, copy to global memory and insert.
-			return nullptr;
-		}
-		else {
-			return *i;
-		}
+	static Object eval(ThreadContext tc, String source) {
+		Object ast = read(tc, source);
+		
 	}
 
 	static String createString(ThreadContext tc, const char* cstr) {
@@ -508,11 +552,34 @@ namespace octarine {
 	}
 
 	static Uword hash(ThreadContext tc, String s) {
-		return 0;
+		Uword hash = 823;
+		Uword len = strlen((const char*)s->utf8data);
+		char* c = (char*)s->utf8data;
+		while (*c) {
+			hash = hash + ((*c) * 37);
+			++c;
+		}
+		return hash;
 	}
 
 	static Bool equals(ThreadContext tc, String s1, String s2) {
-		return False;
+		if (s1->length != s2->length) {
+			return False;
+		}
+		Uword len1 = strlen((const char*) s1->utf8data);
+		Uword len2 = strlen((const char*) s2->utf8data);
+		if (len1 != len2) {
+			return False; // Throw exception here? This is weird.
+		}
+		return memcmp(s1->utf8data, s2->utf8data, len1) == 0;
+	}
+
+	static Uword hash(ThreadContext tc, Symbol s) {
+		return 37 * hash(tc, s->name);
+	}
+
+	static Bool equals(ThreadContext tc, Symbol s1, Symbol s2) {
+		return equals(tc, s1->name, s2->name);
 	}
 
 	static ThreadContext createThreadContext(Runtime rt, ThreadMemoryManager mm, Namespace initialNs) {
