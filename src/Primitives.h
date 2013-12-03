@@ -126,4 +126,26 @@ namespace octarine {
 
 #endif
 
+namespace octarine {
+
+	struct Type;
+
+	Type* U8Type;
+	Type* I8Type;
+	Type* U16Type;
+	Type* I16Type;
+	Type* U32Type;
+	Type* I32Type;
+	Type* U64Type;
+	Type* I64Type;
+	Type* F32Type;
+	Type* F64Type;
+	Type* BoolType;
+	Type* CharType;
+	Type* UwordType;
+	Type* WordType;
+	Type* AddressType;
+
+}
+
 #endif

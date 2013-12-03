@@ -1,16 +1,31 @@
 #ifndef OCT_STRING_H
 #define OCT_STRING_H
 
-#include "Typedefs.h"
-#include "Primitives.h"
+#include "Object.h"
+
+#include <string>
 
 namespace octarine {
-    
-    String createString(ThreadContext tc, const char* cstr);
-    
-    Uword hash(ThreadContext tc, String s);
-    
-    Bool equals(ThreadContext tc, String s1, String s2);
+
+	struct String {
+		std::string str; // TODO: Proper string. Probably use OS string types, they have unicode support.
+
+		// To support conversion from string literals in C++ code
+		String(const char* cstr);
+
+		// Object functions
+		void init();
+		void destroy();
+		Type* type();
+		Uword hash();
+		Bool equals(Type* other);
+		void trace(MemoryManager* mm);
+
+		// Protocol casting functions
+		Object asObject();
+	};
+
+	Type* StringType;
 
 }
 

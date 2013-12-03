@@ -157,6 +157,10 @@ namespace octarine {
 		T instance;
 	};
 
+	template <typename T>
+	struct Array {
+	};
+
 	// ## 21 Protocol Object Definitions
 
 	// CharStream protocol

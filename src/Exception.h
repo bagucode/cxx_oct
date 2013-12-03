@@ -1,13 +1,17 @@
 #ifndef OCT_EXCEPTION_H
 #define OCT_EXCEPTION_H
 
-#include "Typedefs.h"
+#include "String.h"
+#include "Object.h"
 
 namespace octarine {
-    
-    Exception createException(ThreadContext tc, String message);
-    String getMessage(ThreadContext tc, Exception e);
-    
+
+	struct Exception {
+		String message;
+
+		Object asObject();
+	};
+
 }
 
 #endif
