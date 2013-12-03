@@ -8,10 +8,7 @@
 namespace octarine {
 
 	struct String {
-		std::string str; // TODO: Proper string. Probably use OS string types, they have unicode support.
-
-		// To support conversion from string literals in C++ code
-		String(const char* cstr);
+		const char* str; // TODO: Proper string. Probably use OS string types, they have unicode support.
 
 		static Type* type;
 		static ObjectFunctions objectFns;

@@ -5,9 +5,9 @@
 namespace octarine {
 
 	Field _TypeFields [] = {
-		{ UwordType, VALUE, offsetof(Type, _size), "size" },
-		{ UwordType, VALUE, offsetof(Type, _alignment), "alignment" },
-		{ ArrayType, VALUE, offsetof(Type, _fields), "fields" }
+		{ UwordType, VALUE, offsetof(Type, _size), { "size" } },
+		{ UwordType, VALUE, offsetof(Type, _alignment), { "alignment" } },
+		{ ArrayType, VALUE, offsetof(Type, _fields), { "fields" } }
 	};
 
 	Array _TypeFieldsArray = {
@@ -32,8 +32,6 @@ namespace octarine {
 	}
 
 	static void _destroy(Self* self) {
-		Type* t = (Type*) self;
-		t->_fields.destroy();
 	}
 
 	static Type* _type(Self* self) {

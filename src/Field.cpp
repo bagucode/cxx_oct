@@ -5,10 +5,10 @@
 namespace octarine {
 
 	Field _FieldFields[] = {
-		{ Type::type, POINTER, offsetof(Field, _type), "type" },
-		{ UwordType, VALUE, offsetof(Field, _kind), "kind" },
-		{ UwordType, VALUE, offsetof(Field, _offset), "offset" },
-		{ String::type, VALUE, offsetof(Field, _name), "name"}
+		{ Type::type, POINTER, offsetof(Field, _type), { "type" } },
+		{ UwordType, VALUE, offsetof(Field, _kind), { "kind" } },
+		{ UwordType, VALUE, offsetof(Field, _offset), { "offset" } },
+		{ String::type, VALUE, offsetof(Field, _name), { "name" } }
 	};
 
 	Array _FieldFieldsArray = {
@@ -34,49 +34,51 @@ namespace octarine {
 	}
 
 	static void _destroy(Self* self) {
-		Field* f = (Field*) self;
-		t->fields.destroy();
 	}
 
-	static Type* _type(Self* self) {
-		return Type::type;
+	static Type* _typeFn(Self* self) {
+		return Field::type;
 	}
 
 	static Uword _hash(Self* self) {
 		Field* f = (Field*) self;
 		Uword hash = 17;
-		hash += t->size * 37;
-		hash += t->alignment * 37;
-		return hash + t->fields.hash() * 37;
+		hash += f->_kind * 37;
+		hash += f->_name.objectFns.hash((Self*)&f->_name) * 37;
+		hash += f->_offset * 37;
+		hash += f->_type->objectFns.hash((Self*)f->_type) * 37;
+		return hash;
 	}
 
 	static Bool _equals(Self* self, Object other) {
 		if (self == other.self) {
 			return True;
 		}
-		if (other.functions->type(other.self) != Type::type) {
+		if (other.functions->type(other.self) != Field::type) {
 			return False;
 		}
 		Field* f = (Field*) self;
-		Type* otherT = (Type*) other.self;
-		return t->size == otherT->size &&
-			t->alignment == otherT->alignment &&
-			t->fields.equals(&otherT->fields);
+		Field* otherF = (Field*) other.self;
+		return f->_kind == otherF->_kind &&
+			f->_name.objectFns.equals((Self*)&f->_name, otherF->_name.asObject()) &&
+			f->_offset == otherF->_offset &&
+			f->_type->objectFns.equals((Self*)f->_type, otherF->_type->asObject());
 	}
 
 	static void _trace(Self* self, MemoryManager mm) {
 		Field* f = (Field*) self;
 		Uword markResult;
-		mm.functions->mark(mm.self, t, &markResult);
+		mm.functions->mark(mm.self, f, &markResult);
 		if (markResult == MemoryManagerMarkResult::ALREADY_MARKED) {
 			return;
 		}
-		t->fields.trace(mm);
+		f->_name.objectFns.trace((Self*)&f->_name, mm);
+		f->_type->objectFns.trace((Self*)f->_type, mm);
 	}
 
-	ObjectFunctions Type::objectFns = { _init, _destroy, _type, _hash, _equals, _trace };
+	ObjectFunctions Field::objectFns = { _init, _destroy, _typeFn, _hash, _equals, _trace };
 
-	Object Type::asObject() {
+	Object Field::asObject() {
 		return{ (Self*)this, &Type::objectFns };
 	}
 

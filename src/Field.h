@@ -15,7 +15,7 @@ namespace octarine {
 
 	struct Field {
 		Type* _type;
-		FieldKind _kind;
+		Uword _kind;
 		Uword _offset;
 		String _name;
 
