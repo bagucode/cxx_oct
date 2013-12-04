@@ -11,8 +11,12 @@ namespace octarine {
 	struct MemoryManager;
 
 	struct Object {
-		Self* self;
-		ObjectFunctions* functions;
+		Self* mSelf;
+		ObjectFunctions* mFunctions;
+
+		static Type* sType;
+		static ObjectFunctions* sObjectFns;
+		Object asObject();
 	};
 
 	struct ObjectFunctions {
@@ -23,9 +27,11 @@ namespace octarine {
 		Bool(*equals)(Self* self, Object other);
 		void(*trace)(Self* self, MemoryManager mm);
 		// some function for getting metadata?
-	};
 
-	Type* ObjectType;
+		static Type* sType;
+		static ObjectFunctions* sObjectFns;
+		Object asObject();
+	};
 
 }
 

@@ -5,26 +5,15 @@
 
 namespace octarine {
 
-	struct Type;
-
 	struct Array {
 		Type* _type;
 		Uword _size;
 		Address _data;
 
-		// Object functions
-		void init();
-		void destroy();
-		Type* type();
-		Uword hash();
-		Bool equals(Array* other);
-		void trace(MemoryManager mm);
-
-		// Protocol casting functions
+		static Type* type;
+		static ObjectFunctions* objectFns;
 		Object asObject();
 	};
-
-	Type* ArrayType;
 
 }
 

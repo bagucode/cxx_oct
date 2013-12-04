@@ -14,13 +14,13 @@ namespace octarine {
 	struct Type;
 
 	struct Field {
-		Type* _type;
-		Uword _kind;
-		Uword _offset;
-		String _name;
+		Type* mType;
+		Uword mKind;
+		Uword mOffset;
+		String mName;
 
-		static Type* type;
-		static ObjectFunctions objectFns;
+		static Type* sType;
+		static ObjectFunctions* sObjectFns;
 		Object asObject();
 	};
 

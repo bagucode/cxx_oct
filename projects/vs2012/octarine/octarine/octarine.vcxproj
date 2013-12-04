@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\Array.cpp" />
     <ClCompile Include="..\..\..\..\src\Exception.cpp" />
     <ClCompile Include="..\..\..\..\src\Field.cpp" />
     <ClCompile Include="..\..\..\..\src\main.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="..\..\..\..\src\Function.h" />
     <ClInclude Include="..\..\..\..\src\MemoryManager.h" />
     <ClInclude Include="..\..\..\..\src\Namespace.h" />
+    <ClInclude Include="..\..\..\..\src\Nothing.h" />
     <ClInclude Include="..\..\..\..\src\Object.h" />
     <ClInclude Include="..\..\..\..\src\Primitives.h" />
     <ClInclude Include="..\..\..\..\src\Reader.h" />

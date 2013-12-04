@@ -8,14 +8,12 @@
 namespace octarine {
 
 	struct String {
-		const char* str; // TODO: Proper string. Probably use OS string types, they have unicode support.
+		const char* mStr; // TODO: Proper string. Probably use OS string types, they have unicode support.
 
-		static Type* type;
-		static ObjectFunctions objectFns;
+		static Type* sType;
+		static ObjectFunctions* sObjectFns;
 		Object asObject();
 	};
-
-	Type* StringType;
 
 }
 
