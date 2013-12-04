@@ -9,12 +9,13 @@ namespace octarine {
 	Field _TypeFields [] = {
 		{ UwordType, VALUE, offsetof(Type, mSize), { "size" } },
 		{ UwordType, VALUE, offsetof(Type, mAlignment), { "alignment" } },
-		{ Array::type, VALUE, offsetof(Type, mFields), { "fields" } },
+		{ Array::sType, VALUE, offsetof(Type, mFields), { "fields" } },
 		{ ObjectFunctions::sType, POINTER, offsetof(Type, mObjectFns), { "object-fns" } }
 	};
 
 	Array _TypeFieldsArray = {
 		Field::sType,
+		VALUE,
 		4,
 		&_TypeFields
 	};
@@ -30,7 +31,7 @@ namespace octarine {
 	static void _init(Self* self) {
 		Type* t = (Type*) self;
 		t->mAlignment = 0;
-		t->mFields.objectFns->init((Self*) &t->mFields);
+		t->mFields.sObjectFns->init((Self*) &t->mFields);
 		t->mSize = 0;
 		t->mObjectFns = Nothing::sObjectFns; // This could be a very bad idea...
 	}
@@ -47,7 +48,7 @@ namespace octarine {
 		Uword hash = 17;
 		hash += t->mSize * 37;
 		hash += t->mAlignment * 37;
-		return hash + t->mFields.objectFns->hash((Self*) &t->mFields) * 37;
+		return hash + t->mFields.sObjectFns->hash((Self*) &t->mFields) * 37;
 	}
 
 	static Bool _equals(Self* self, Object other) {
@@ -61,7 +62,7 @@ namespace octarine {
 		Type* otherT = (Type*) other.mSelf;
 		return t->mSize == otherT->mSize &&
 			t->mAlignment == otherT->mAlignment &&
-			t->mFields.objectFns->equals((Self*)&t->mFields, otherT->mFields.asObject());
+			t->mFields.sObjectFns->equals((Self*)&t->mFields, otherT->mFields.asObject());
 	}
 
 	static void _trace(Self* self, MemoryManager mm) {
@@ -71,12 +72,12 @@ namespace octarine {
 		if (markResult == MemoryManagerMarkResult::ALREADY_MARKED) {
 			return;
 		}
-		t->mFields.objectFns->trace((Self*) &t->mFields, mm);
+		t->mFields.sObjectFns->trace((Self*) &t->mFields, mm);
 	}
 
-	ObjectFunctions _objectFns = { _init, _destroy, _type, _hash, _equals, _trace };
+	ObjectFunctions _sObjectFns = { _init, _destroy, _type, _hash, _equals, _trace };
 	
-	ObjectFunctions* Type::sObjectFns = &_objectFns;
+	ObjectFunctions* Type::sObjectFns = &_sObjectFns;
 
 	Object Type::asObject() {
 		return{ (Self*)this, Type::sObjectFns };

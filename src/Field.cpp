@@ -14,6 +14,7 @@ namespace octarine {
 
 	Array _FieldFieldsArray = {
 		Field::sType,
+		VALUE,
 		4,
 		&_FieldFields
 	};
