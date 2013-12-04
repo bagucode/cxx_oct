@@ -7,10 +7,10 @@
 namespace octarine {
 
 	Field _ArrayFields[] = {
-		{ Type::sType, POINTER, offsetof(Array, mType), { "type" } },
-		{ UwordType, VALUE, offsetof(Array, mKind), { "kind" } },
-		{ UwordType, VALUE, offsetof(Array, mSize), { "size" } },
-		{ AddressType, VALUE, offsetof(Array, mData), { "data" } }
+		{ Type::sType, POINTER, offsetof(Array, mType), { 4, "type" } },
+		{ UwordType, VALUE, offsetof(Array, mKind), { 4, "kind" } },
+		{ UwordType, VALUE, offsetof(Array, mSize), { 4, "size" } },
+		{ AddressType, VALUE, offsetof(Array, mData), { 4, "data" } }
 	};
 
 	Array _ArrayFieldsArray = {
@@ -57,7 +57,7 @@ namespace octarine {
 			else {
 				arrayField = *((Self**) ((U8*) a->mData + i * sizeof(Address)));
 			}
-			hash += a->mType->mObjectFns->hash((Self*) arrayField);
+			hash += a->mType->mObjectFns->hash((Self*) arrayField) * 37;
 		}
 		return hash;
 	}

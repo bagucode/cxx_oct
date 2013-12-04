@@ -6,10 +6,10 @@
 namespace octarine {
 
 	Field _FieldFields[] = {
-		{ Type::sType, POINTER, offsetof(Field, mType), { "type" } },
-		{ UwordType, VALUE, offsetof(Field, mKind), { "kind" } },
-		{ UwordType, VALUE, offsetof(Field, mOffset), { "offset" } },
-		{ String::sType, VALUE, offsetof(Field, mName), { "name" } }
+		{ Type::sType, POINTER, offsetof(Field, mType), { 4, "type" } },
+		{ UwordType, VALUE, offsetof(Field, mKind), { 4, "kind" } },
+		{ UwordType, VALUE, offsetof(Field, mOffset), { 6, "offset" } },
+		{ String::sType, VALUE, offsetof(Field, mName), { 4, "name" } }
 	};
 
 	Array _FieldFieldsArray = {

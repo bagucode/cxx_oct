@@ -7,10 +7,10 @@
 namespace octarine {
 
 	Field _TypeFields [] = {
-		{ UwordType, VALUE, offsetof(Type, mSize), { "size" } },
-		{ UwordType, VALUE, offsetof(Type, mAlignment), { "alignment" } },
-		{ Array::sType, VALUE, offsetof(Type, mFields), { "fields" } },
-		{ ObjectFunctions::sType, POINTER, offsetof(Type, mObjectFns), { "object-fns" } }
+		{ UwordType, VALUE, offsetof(Type, mSize), { 4, "size" } },
+		{ UwordType, VALUE, offsetof(Type, mAlignment), { 9, "alignment" } },
+		{ Array::sType, VALUE, offsetof(Type, mFields), { 6, "fields" } },
+		{ ObjectFunctions::sType, POINTER, offsetof(Type, mObjectFns), { 10, "object-fns" } }
 	};
 
 	Array _TypeFieldsArray = {
