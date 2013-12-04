@@ -145,6 +145,7 @@
     <ClCompile Include="..\..\..\..\src\main.cpp" />
     <ClCompile Include="..\..\..\..\src\MemoryManager.cpp" />
     <ClCompile Include="..\..\..\..\src\Namespace.cpp" />
+    <ClCompile Include="..\..\..\..\src\Object.cpp" />
     <ClCompile Include="..\..\..\..\src\oct.cpp" />
     <ClCompile Include="..\..\..\..\src\octarine.cpp" />
     <ClCompile Include="..\..\..\..\src\Runtime.cpp" />
