@@ -73,6 +73,7 @@ namespace octarine {
 			return;
 		}
 		t->mFields.sObjectFns->trace((Self*) &t->mFields, mm);
+		t->mObjectFns->sObjectFns->trace((Self*) t->mObjectFns, mm);
 	}
 
 	ObjectFunctions _sObjectFns = { _init, _destroy, _type, _hash, _equals, _trace };
