@@ -7,7 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0402A7A2184C65ED008DFEBE /* octarine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0402A7A1184C65ED008DFEBE /* octarine.cpp */; };
+		04058C2718510A1300C3ABEC /* Array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C0C18510A1300C3ABEC /* Array.cpp */; };
+		04058C2818510A1300C3ABEC /* Exception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C0E18510A1300C3ABEC /* Exception.cpp */; };
+		04058C2918510A1300C3ABEC /* Field.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C1018510A1300C3ABEC /* Field.cpp */; };
+		04058C2A18510A1300C3ABEC /* MemoryManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C1318510A1300C3ABEC /* MemoryManager.cpp */; };
+		04058C2B18510A1300C3ABEC /* Namespace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C1518510A1300C3ABEC /* Namespace.cpp */; };
+		04058C2C18510A1300C3ABEC /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C1818510A1300C3ABEC /* Object.cpp */; };
+		04058C2D18510A1300C3ABEC /* oct.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C1A18510A1300C3ABEC /* oct.cpp */; };
+		04058C2E18510A1300C3ABEC /* Runtime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C1D18510A1300C3ABEC /* Runtime.cpp */; };
+		04058C2F18510A1300C3ABEC /* String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C1F18510A1300C3ABEC /* String.cpp */; };
+		04058C3018510A1300C3ABEC /* ThreadContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C2118510A1300C3ABEC /* ThreadContext.cpp */; };
+		04058C3118510A1300C3ABEC /* Type.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C2418510A1300C3ABEC /* Type.cpp */; };
 		04644AE4184A5A3F0080EFD8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04644AE3184A5A3F0080EFD8 /* main.cpp */; };
 /* End PBXBuildFile section */
 
@@ -24,7 +34,33 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0402A7A1184C65ED008DFEBE /* octarine.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = octarine.cpp; path = ../../../src/octarine.cpp; sourceTree = SOURCE_ROOT; };
+		04058C0C18510A1300C3ABEC /* Array.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Array.cpp; path = ../../../src/Array.cpp; sourceTree = SOURCE_ROOT; };
+		04058C0D18510A1300C3ABEC /* Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Array.h; path = ../../../src/Array.h; sourceTree = SOURCE_ROOT; };
+		04058C0E18510A1300C3ABEC /* Exception.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Exception.cpp; path = ../../../src/Exception.cpp; sourceTree = SOURCE_ROOT; };
+		04058C0F18510A1300C3ABEC /* Exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Exception.h; path = ../../../src/Exception.h; sourceTree = SOURCE_ROOT; };
+		04058C1018510A1300C3ABEC /* Field.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Field.cpp; path = ../../../src/Field.cpp; sourceTree = SOURCE_ROOT; };
+		04058C1118510A1300C3ABEC /* Field.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Field.h; path = ../../../src/Field.h; sourceTree = SOURCE_ROOT; };
+		04058C1218510A1300C3ABEC /* Function.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Function.h; path = ../../../src/Function.h; sourceTree = SOURCE_ROOT; };
+		04058C1318510A1300C3ABEC /* MemoryManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MemoryManager.cpp; path = ../../../src/MemoryManager.cpp; sourceTree = SOURCE_ROOT; };
+		04058C1418510A1300C3ABEC /* MemoryManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MemoryManager.h; path = ../../../src/MemoryManager.h; sourceTree = SOURCE_ROOT; };
+		04058C1518510A1300C3ABEC /* Namespace.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Namespace.cpp; path = ../../../src/Namespace.cpp; sourceTree = SOURCE_ROOT; };
+		04058C1618510A1300C3ABEC /* Namespace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Namespace.h; path = ../../../src/Namespace.h; sourceTree = SOURCE_ROOT; };
+		04058C1718510A1300C3ABEC /* Nothing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Nothing.h; path = ../../../src/Nothing.h; sourceTree = SOURCE_ROOT; };
+		04058C1818510A1300C3ABEC /* Object.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Object.cpp; path = ../../../src/Object.cpp; sourceTree = SOURCE_ROOT; };
+		04058C1918510A1300C3ABEC /* Object.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Object.h; path = ../../../src/Object.h; sourceTree = SOURCE_ROOT; };
+		04058C1A18510A1300C3ABEC /* oct.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = oct.cpp; path = ../../../src/oct.cpp; sourceTree = SOURCE_ROOT; };
+		04058C1B18510A1300C3ABEC /* Primitives.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Primitives.h; path = ../../../src/Primitives.h; sourceTree = SOURCE_ROOT; };
+		04058C1C18510A1300C3ABEC /* Reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reader.h; path = ../../../src/Reader.h; sourceTree = SOURCE_ROOT; };
+		04058C1D18510A1300C3ABEC /* Runtime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Runtime.cpp; path = ../../../src/Runtime.cpp; sourceTree = SOURCE_ROOT; };
+		04058C1E18510A1300C3ABEC /* Runtime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Runtime.h; path = ../../../src/Runtime.h; sourceTree = SOURCE_ROOT; };
+		04058C1F18510A1300C3ABEC /* String.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = String.cpp; path = ../../../src/String.cpp; sourceTree = SOURCE_ROOT; };
+		04058C2018510A1300C3ABEC /* String.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = String.h; path = ../../../src/String.h; sourceTree = SOURCE_ROOT; };
+		04058C2118510A1300C3ABEC /* ThreadContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ThreadContext.cpp; path = ../../../src/ThreadContext.cpp; sourceTree = SOURCE_ROOT; };
+		04058C2218510A1300C3ABEC /* ThreadContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadContext.h; path = ../../../src/ThreadContext.h; sourceTree = SOURCE_ROOT; };
+		04058C2318510A1300C3ABEC /* ThreadLocalStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadLocalStorage.h; path = ../../../src/ThreadLocalStorage.h; sourceTree = SOURCE_ROOT; };
+		04058C2418510A1300C3ABEC /* Type.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Type.cpp; path = ../../../src/Type.cpp; sourceTree = SOURCE_ROOT; };
+		04058C2518510A1300C3ABEC /* Type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Type.h; path = ../../../src/Type.h; sourceTree = SOURCE_ROOT; };
+		04058C2618510A1300C3ABEC /* Typedefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Typedefs.h; path = ../../../src/Typedefs.h; sourceTree = SOURCE_ROOT; };
 		0405C35B184A3B7B003CCC15 /* octarine */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = octarine; sourceTree = BUILT_PRODUCTS_DIR; };
 		04644AE3184A5A3F0080EFD8 /* main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = main.cpp; path = ../../../src/main.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -59,8 +95,34 @@
 		0405C35D184A3B7B003CCC15 /* octarine */ = {
 			isa = PBXGroup;
 			children = (
+				04058C0C18510A1300C3ABEC /* Array.cpp */,
+				04058C0D18510A1300C3ABEC /* Array.h */,
+				04058C0E18510A1300C3ABEC /* Exception.cpp */,
+				04058C0F18510A1300C3ABEC /* Exception.h */,
+				04058C1018510A1300C3ABEC /* Field.cpp */,
+				04058C1118510A1300C3ABEC /* Field.h */,
+				04058C1218510A1300C3ABEC /* Function.h */,
+				04058C1318510A1300C3ABEC /* MemoryManager.cpp */,
+				04058C1418510A1300C3ABEC /* MemoryManager.h */,
+				04058C1518510A1300C3ABEC /* Namespace.cpp */,
+				04058C1618510A1300C3ABEC /* Namespace.h */,
+				04058C1718510A1300C3ABEC /* Nothing.h */,
+				04058C1818510A1300C3ABEC /* Object.cpp */,
+				04058C1918510A1300C3ABEC /* Object.h */,
+				04058C1A18510A1300C3ABEC /* oct.cpp */,
+				04058C1B18510A1300C3ABEC /* Primitives.h */,
+				04058C1C18510A1300C3ABEC /* Reader.h */,
+				04058C1D18510A1300C3ABEC /* Runtime.cpp */,
+				04058C1E18510A1300C3ABEC /* Runtime.h */,
+				04058C1F18510A1300C3ABEC /* String.cpp */,
+				04058C2018510A1300C3ABEC /* String.h */,
+				04058C2118510A1300C3ABEC /* ThreadContext.cpp */,
+				04058C2218510A1300C3ABEC /* ThreadContext.h */,
+				04058C2318510A1300C3ABEC /* ThreadLocalStorage.h */,
+				04058C2418510A1300C3ABEC /* Type.cpp */,
+				04058C2518510A1300C3ABEC /* Type.h */,
+				04058C2618510A1300C3ABEC /* Typedefs.h */,
 				04644AE3184A5A3F0080EFD8 /* main.cpp */,
-				0402A7A1184C65ED008DFEBE /* octarine.cpp */,
 			);
 			path = octarine;
 			sourceTree = "<group>";
@@ -115,8 +177,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0402A7A2184C65ED008DFEBE /* octarine.cpp in Sources */,
+				04058C2A18510A1300C3ABEC /* MemoryManager.cpp in Sources */,
+				04058C3018510A1300C3ABEC /* ThreadContext.cpp in Sources */,
+				04058C2B18510A1300C3ABEC /* Namespace.cpp in Sources */,
+				04058C3118510A1300C3ABEC /* Type.cpp in Sources */,
+				04058C2F18510A1300C3ABEC /* String.cpp in Sources */,
 				04644AE4184A5A3F0080EFD8 /* main.cpp in Sources */,
+				04058C2818510A1300C3ABEC /* Exception.cpp in Sources */,
+				04058C2E18510A1300C3ABEC /* Runtime.cpp in Sources */,
+				04058C2C18510A1300C3ABEC /* Object.cpp in Sources */,
+				04058C2918510A1300C3ABEC /* Field.cpp in Sources */,
+				04058C2D18510A1300C3ABEC /* oct.cpp in Sources */,
+				04058C2718510A1300C3ABEC /* Array.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
