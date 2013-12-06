@@ -169,7 +169,6 @@
     <ClInclude Include="..\..\..\..\src\ThreadContext.h" />
     <ClInclude Include="..\..\..\..\src\ThreadLocalStorage.h" />
     <ClInclude Include="..\..\..\..\src\Type.h" />
-    <ClInclude Include="..\..\..\..\src\Typedefs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

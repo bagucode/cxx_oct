@@ -1,6 +1,7 @@
 #include "Object.h"
 #include "Field.h"
 #include "Type.h"
+#include "MemoryManager.h"
 
 #include <stddef.h>
 #include <memory>
@@ -64,10 +65,10 @@ namespace octarine {
 			o->mSelf == otherO->mSelf;
 	}
 
-	static void _trace(Self* self, MemoryManager mm) {
+	static void _trace(Self* self, MemoryManager* mm) {
 		Object* o = (Object*) self;
 		Uword markResult;
-		mm.functions->mark(mm.self, o, &markResult);
+		mm->mFunctions->mark(mm->mSelf, o, &markResult);
 		if (markResult == MemoryManagerMarkResult::ALREADY_MARKED) {
 			return;
 		}

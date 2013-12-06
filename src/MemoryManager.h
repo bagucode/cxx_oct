@@ -9,8 +9,12 @@ namespace octarine {
 	struct Object;
 
 	struct MemoryManager {
-		Self* self;
-		MemoryManagerFunctions* functions;
+		Self* mSelf;
+		MemoryManagerFunctions* mFunctions;
+
+		static Type* sType;
+		static ObjectFunctions* sObjectFns;
+		Object asObject();
 	};
 
 	enum MemoryManagerMarkResult {

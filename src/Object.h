@@ -2,13 +2,11 @@
 #define OCT_OBJECT_H
 
 #include "Primitives.h"
-#include "MemoryManager.h"
 
 namespace octarine {
 
 	struct Self;
 	struct ObjectFunctions;
-	struct MemoryManager;
 
 	struct Object {
 		Self* mSelf;
