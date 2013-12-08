@@ -60,22 +60,15 @@ namespace octarine {
 	}
     
 	static void _trace(Self* self, MemoryManager* mm) {
-		MemoryManager* m = (MemoryManager*) self;
-		Uword markResult;
-		mm->mFunctions->mark(mm->mSelf, m, &markResult);
-		if (markResult == MemoryManagerMarkResult::ALREADY_MARKED) {
-			return;
-		}
-		m->mFunctions->trace(o->mSelf, mm);
-		m->mFunctions->sObjectFns->trace((Self*) o->mFunctions, mm);
+		// Yeah.
 	}
     
 	ObjectFunctions _objectFns = { _init, _destroy, _type, _hash, _equals, _trace };
     
-	ObjectFunctions* Object::sObjectFns = &_objectFns;
+	ObjectFunctions* MemoryManager::sObjectFns = &_objectFns;
     
-	Object Object::asObject() {
-		return{ (Self*)this, Object::sObjectFns };
+	Object MemoryManager::asObject() {
+		return{ (Self*)this, MemoryManager::sObjectFns };
 	}
 
 }
