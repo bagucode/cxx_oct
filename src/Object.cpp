@@ -48,7 +48,7 @@ namespace octarine {
 		Object* o = (Object*) self;
 		Uword hash = 17;
 		hash += ((Uword)o->mSelf) * 37;
-		hash += ((Uword) o->mFunctions) * 37;
+		hash += o->mFunctions->sObjectFns->hash((Self*)o->mFunctions) * 37;
 		return hash;
 	}
 
@@ -61,8 +61,8 @@ namespace octarine {
 		}
 		Object* o = (Object*) self;
 		Object* otherO = (Object*) other.mSelf; // it's an Object-Object!
-		return o->mFunctions == otherO->mFunctions &&
-			o->mSelf == otherO->mSelf;
+		return o->mSelf == otherO->mSelf &&
+            o->mFunctions->sObjectFns->equals((Self*)o->mFunctions, otherO->mFunctions->asObject());
 	}
 
 	static void _trace(Self* self, MemoryManager* mm) {
