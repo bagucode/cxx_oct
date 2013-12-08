@@ -1,7 +1,7 @@
 #ifndef OCT_MEMORYMANAGER_H
 #define OCT_MEMORYMANAGER_H
 
-#include "Primitives.h"
+#include "Object.h"
 
 namespace octarine {
 
@@ -29,8 +29,6 @@ namespace octarine {
 		void(*alloc)(Self* self, Type t, Object* ret);
 		void(*mark)(Self* self, Address location, Uword* ret);
 	};
-
-	Type* MemoryManagerType;
 
 }
 
