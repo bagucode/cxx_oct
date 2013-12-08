@@ -60,7 +60,6 @@
 		04058C2318510A1300C3ABEC /* ThreadLocalStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadLocalStorage.h; path = ../../../src/ThreadLocalStorage.h; sourceTree = SOURCE_ROOT; };
 		04058C2418510A1300C3ABEC /* Type.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Type.cpp; path = ../../../src/Type.cpp; sourceTree = SOURCE_ROOT; };
 		04058C2518510A1300C3ABEC /* Type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Type.h; path = ../../../src/Type.h; sourceTree = SOURCE_ROOT; };
-		04058C2618510A1300C3ABEC /* Typedefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Typedefs.h; path = ../../../src/Typedefs.h; sourceTree = SOURCE_ROOT; };
 		0405C35B184A3B7B003CCC15 /* octarine */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = octarine; sourceTree = BUILT_PRODUCTS_DIR; };
 		04644AE3184A5A3F0080EFD8 /* main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = main.cpp; path = ../../../src/main.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -121,7 +120,6 @@
 				04058C2318510A1300C3ABEC /* ThreadLocalStorage.h */,
 				04058C2418510A1300C3ABEC /* Type.cpp */,
 				04058C2518510A1300C3ABEC /* Type.h */,
-				04058C2618510A1300C3ABEC /* Typedefs.h */,
 				04644AE3184A5A3F0080EFD8 /* main.cpp */,
 			);
 			path = octarine;

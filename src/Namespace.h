@@ -2,7 +2,6 @@
 #define OCT_NAMESPACE_H
 
 #include "Primitives.h"
-#include "Typedefs.h"
 
 namespace octarine {
 

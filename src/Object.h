@@ -7,6 +7,7 @@ namespace octarine {
 
 	struct Self;
 	struct ObjectFunctions;
+    struct MemoryManager;
 
 	struct Object {
 		Self* mSelf;
@@ -23,7 +24,7 @@ namespace octarine {
 		Type*(*type)(Self* self);
 		Uword(*hash)(Self* self);
 		Bool(*equals)(Self* self, Object other);
-		void(*trace)(Self* self, MemoryManager mm);
+		void(*trace)(Self* self, MemoryManager* mm);
 		// some function for getting metadata?
 
 		static Type* sType;
