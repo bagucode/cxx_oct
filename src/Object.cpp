@@ -143,10 +143,10 @@ namespace octarine {
 		return memcmp(of, otherOF, sizeof(ObjectFunctions));
 	}
 
-	static void _traceF(Self* self, MemoryManager mm) {
+	static void _traceF(Self* self, MemoryManager* mm) {
 		ObjectFunctions* of = (ObjectFunctions*) self;
 		Uword markResult;
-		mm.functions->mark(mm.self, of, &markResult);
+		mm->mFunctions->mark(mm->mSelf, of, &markResult);
 	}
 
 	ObjectFunctions _objectFunctionsFns = { _initF, _destroyF, _typeF, _hashF, _equalsF, _traceF };
