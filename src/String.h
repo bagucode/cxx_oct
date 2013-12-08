@@ -3,8 +3,6 @@
 
 #include "Object.h"
 
-#include <string>
-
 namespace octarine {
 
 	struct String {

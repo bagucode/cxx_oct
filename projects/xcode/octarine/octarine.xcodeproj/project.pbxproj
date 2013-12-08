@@ -13,7 +13,6 @@
 		04058C2A18510A1300C3ABEC /* MemoryManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C1318510A1300C3ABEC /* MemoryManager.cpp */; };
 		04058C2B18510A1300C3ABEC /* Namespace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C1518510A1300C3ABEC /* Namespace.cpp */; };
 		04058C2C18510A1300C3ABEC /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C1818510A1300C3ABEC /* Object.cpp */; };
-		04058C2D18510A1300C3ABEC /* oct.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C1A18510A1300C3ABEC /* oct.cpp */; };
 		04058C2E18510A1300C3ABEC /* Runtime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C1D18510A1300C3ABEC /* Runtime.cpp */; };
 		04058C2F18510A1300C3ABEC /* String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C1F18510A1300C3ABEC /* String.cpp */; };
 		04058C3018510A1300C3ABEC /* ThreadContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C2118510A1300C3ABEC /* ThreadContext.cpp */; };
@@ -48,7 +47,6 @@
 		04058C1718510A1300C3ABEC /* Nothing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Nothing.h; path = ../../../src/Nothing.h; sourceTree = SOURCE_ROOT; };
 		04058C1818510A1300C3ABEC /* Object.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Object.cpp; path = ../../../src/Object.cpp; sourceTree = SOURCE_ROOT; };
 		04058C1918510A1300C3ABEC /* Object.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Object.h; path = ../../../src/Object.h; sourceTree = SOURCE_ROOT; };
-		04058C1A18510A1300C3ABEC /* oct.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = oct.cpp; path = ../../../src/oct.cpp; sourceTree = SOURCE_ROOT; };
 		04058C1B18510A1300C3ABEC /* Primitives.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Primitives.h; path = ../../../src/Primitives.h; sourceTree = SOURCE_ROOT; };
 		04058C1C18510A1300C3ABEC /* Reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reader.h; path = ../../../src/Reader.h; sourceTree = SOURCE_ROOT; };
 		04058C1D18510A1300C3ABEC /* Runtime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Runtime.cpp; path = ../../../src/Runtime.cpp; sourceTree = SOURCE_ROOT; };
@@ -108,7 +106,6 @@
 				04058C1718510A1300C3ABEC /* Nothing.h */,
 				04058C1818510A1300C3ABEC /* Object.cpp */,
 				04058C1918510A1300C3ABEC /* Object.h */,
-				04058C1A18510A1300C3ABEC /* oct.cpp */,
 				04058C1B18510A1300C3ABEC /* Primitives.h */,
 				04058C1C18510A1300C3ABEC /* Reader.h */,
 				04058C1D18510A1300C3ABEC /* Runtime.cpp */,
@@ -185,7 +182,6 @@
 				04058C2E18510A1300C3ABEC /* Runtime.cpp in Sources */,
 				04058C2C18510A1300C3ABEC /* Object.cpp in Sources */,
 				04058C2918510A1300C3ABEC /* Field.cpp in Sources */,
-				04058C2D18510A1300C3ABEC /* oct.cpp in Sources */,
 				04058C2718510A1300C3ABEC /* Array.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -1,6 +1,7 @@
 #include "String.h"
 #include "Field.h"
 #include "Type.h"
+#include "MemoryManager.h"
 
 #include <stddef.h>
 #include <memory>
@@ -65,14 +66,14 @@ namespace octarine {
 		return memcmp(s->mData, otherS->mData, s->mSize) == 0;
 	}
 
-	static void _trace(Self* self, MemoryManager mm) {
+	static void _trace(Self* self, MemoryManager* mm) {
 		String* s = (String*) self;
 		Uword markResult;
-		mm.functions->mark(mm.self, s, &markResult);
+		mm->mFunctions->mark(mm->mSelf, s, &markResult);
 		if (markResult == MemoryManagerMarkResult::ALREADY_MARKED) {
 			return;
 		}
-		mm.functions->mark(mm.self, (Address)s->mData, &markResult);
+		mm->mFunctions->mark(mm->mSelf, (Address)s->mData, &markResult);
 	}
 
 	ObjectFunctions _objectFns = { _init, _destroy, _type, _hash, _equals, _trace };
