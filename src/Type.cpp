@@ -2,6 +2,7 @@
 #include "Field.h"
 #include "Array.h"
 #include "Nothing.h"
+#include "MemoryManager.h"
 #include <stddef.h>
 
 namespace octarine {
@@ -65,10 +66,10 @@ namespace octarine {
 			t->mFields.sObjectFns->equals((Self*)&t->mFields, otherT->mFields.asObject());
 	}
 
-	static void _trace(Self* self, MemoryManager mm) {
+	static void _trace(Self* self, MemoryManager* mm) {
 		Type* t = (Type*) self;
 		Uword markResult;
-		mm.functions->mark(mm.self, t, &markResult);
+		mm->mFunctions->mark(mm->mSelf, t, &markResult);
 		if (markResult == MemoryManagerMarkResult::ALREADY_MARKED) {
 			return;
 		}

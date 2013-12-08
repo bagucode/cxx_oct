@@ -1,4 +1,4 @@
-#include "octarine.cpp"
+#include "Runtime.h"
 
 using namespace octarine;
 
