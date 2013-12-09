@@ -39,7 +39,7 @@ namespace octarine {
 	static void _destroy(Self* self) {
 	}
 
-	static Type* mTypeFn(Self* self) {
+	static Type* _type(Self* self) {
 		return Field::sType;
 	}
 
@@ -79,7 +79,7 @@ namespace octarine {
 		f->mType->sObjectFns->trace((Self*)f->mType, mm);
 	}
 
-	ObjectFunctions _objectFns = { _init, _destroy, mTypeFn, _hash, _equals, _trace };
+	ObjectFunctions _objectFns = { _type, _init, _destroy, _hash, _equals, _trace };
 
 	ObjectFunctions* Field::sObjectFns = &_objectFns;
 

@@ -26,6 +26,7 @@ namespace octarine {
 	};
 
 	struct MemoryManagerFunctions {
+		Type*(*type)(Self* self);
 		void(*alloc)(Self* self, Type t, Object* ret);
 		void(*mark)(Self* self, Address location, Uword* ret);
 

@@ -76,7 +76,7 @@ namespace octarine {
 		mm->mFunctions->mark(mm->mSelf, (Address)s->mData, &markResult);
 	}
 
-	ObjectFunctions _objectFns = { _init, _destroy, _type, _hash, _equals, _trace };
+	ObjectFunctions _objectFns = { _type, _init, _destroy, _hash, _equals, _trace };
 
 	ObjectFunctions* String::sObjectFns = &_objectFns;
 

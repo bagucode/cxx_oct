@@ -77,7 +77,7 @@ namespace octarine {
 		t->mObjectFns->sObjectFns->trace((Self*) t->mObjectFns, mm);
 	}
 
-	ObjectFunctions _sObjectFns = { _init, _destroy, _type, _hash, _equals, _trace };
+	ObjectFunctions _sObjectFns = { _type, _init, _destroy, _hash, _equals, _trace };
 	
 	ObjectFunctions* Type::sObjectFns = &_sObjectFns;
 

@@ -19,9 +19,9 @@ namespace octarine {
 	};
 
 	struct ObjectFunctions {
+		Type*(*type)(Self* self);
 		void(*init)(Self* self);
 		void(*destroy)(Self* self);
-		Type*(*type)(Self* self);
 		Uword(*hash)(Self* self);
 		Bool(*equals)(Self* self, Object other);
 		void(*trace)(Self* self, MemoryManager* mm);

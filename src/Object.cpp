@@ -76,7 +76,7 @@ namespace octarine {
 		o->mFunctions->sObjectFns->trace((Self*) o->mFunctions, mm);
 	}
 
-	ObjectFunctions _objectFns = { _init, _destroy, _type, _hash, _equals, _trace };
+	ObjectFunctions _objectFns = { _type, _init, _destroy, _hash, _equals, _trace };
 
 	ObjectFunctions* Object::sObjectFns = &_objectFns;
 
@@ -149,7 +149,7 @@ namespace octarine {
 		mm->mFunctions->mark(mm->mSelf, of, &markResult);
 	}
 
-	ObjectFunctions _objectFunctionsFns = { _initF, _destroyF, _typeF, _hashF, _equalsF, _traceF };
+	ObjectFunctions _objectFunctionsFns = { _typeF, _initF, _destroyF, _hashF, _equalsF, _traceF };
 
 	ObjectFunctions* ObjectFunctions::sObjectFns = &_objectFunctionsFns;
 

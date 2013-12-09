@@ -119,7 +119,7 @@ namespace octarine {
 		}
 	}
 
-	ObjectFunctions _objectFns = { _init, _destroy, _type, _hash, _equals, _trace };
+	ObjectFunctions _objectFns = { _type, _init, _destroy, _hash, _equals, _trace };
 
 	ObjectFunctions* Array::sObjectFns = &_objectFns;
 

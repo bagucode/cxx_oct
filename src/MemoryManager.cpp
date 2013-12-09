@@ -63,7 +63,7 @@ namespace octarine {
 		// Yeah.
 	}
     
-	ObjectFunctions _objectFns = { _init, _destroy, _type, _hash, _equals, _trace };
+	ObjectFunctions _objectFns = { _type, _init, _destroy, _hash, _equals, _trace };
     
 	ObjectFunctions* MemoryManager::sObjectFns = &_objectFns;
     
