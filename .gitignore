@@ -23,3 +23,6 @@ x64/
 # User-local XCode and other Mac OS X files
 xcuserdata/
 .DS_Store
+
+# Generated code
+octarine_generated.cpp
