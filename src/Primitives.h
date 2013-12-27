@@ -128,23 +128,65 @@ namespace octarine {
 
 namespace octarine {
 
-	struct Type;
-
-	Type* U8Type;
-	Type* I8Type;
-	Type* U16Type;
-	Type* I16Type;
-	Type* U32Type;
-	Type* I32Type;
-	Type* U64Type;
-	Type* I64Type;
-	Type* F32Type;
-	Type* F64Type;
-	Type* BoolType;
-	Type* CharType;
-	Type* UwordType;
-	Type* WordType;
-	Type* AddressType;
+    // Typedefs
+    
+    struct Type_t;
+    typedef Type_t* Type;
+    
+    struct MemoryManager_t;
+    typedef MemoryManager_t* MemoryManager;
+    
+    struct Field_t;
+    typedef Field_t* Field;
+    
+    template <typename T>
+    struct Array_t {
+        Uword size;
+        T data[];
+    };
+    
+    template <typename T>
+    using Array = Array_t<T>*;
+    
+    struct Any {
+        Type type;
+        void* object;
+    };
+    
+    struct String_t;
+    typedef String_t* String;
+    
+    struct FunctionSignature_t;
+    typedef FunctionSignature_t* FunctionSignature;
+    
+    struct Namespace_t;
+    typedef Namespace_t* Namespace;
+    
+    struct Symbol_t;
+    typedef Symbol_t* Symbol;
+    
+    struct Runtime_t;
+    typedef Runtime_t* Runtime;
+    
+    struct ThreadContext_t;
+    typedef ThreadContext_t* ThreadContext;
+    
+    // Static type references for the primitive types
+	Type U8Type;
+	Type I8Type;
+	Type U16Type;
+	Type I16Type;
+	Type U32Type;
+	Type I32Type;
+	Type U64Type;
+	Type I64Type;
+	Type F32Type;
+	Type F64Type;
+	Type BoolType;
+	Type CharType;
+	Type UwordType;
+	Type WordType;
+	Type AddressType;
 
 }
 

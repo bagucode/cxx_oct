@@ -117,6 +117,27 @@ typedef void* Address;
 #endif
 ")
 
+(defn struct-type [name & members]
+  (assoc {:name name}
+    :members
+    (map (fn [mem] {:type (first mem)
+                    :name (second mem)})
+         members)))
+
+(defn array-type [element-type size]
+  {:element-type element-type
+   :size size})
+
+(defn emit-array-type [array-type]
+  (let [em-type-name (:name (:element-type array-type))]
+    (str "struct ArrayOf" em-type-name " {" \newline
+         "  Uword size;" \newline
+         "  " em-type-name " data[];" \newline
+         "};" \newline)))
+
+
+(defn vtable [type fns]
+  (str "struct " type ))
 
 
 (defn emit []

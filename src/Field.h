@@ -1,28 +1,24 @@
 #ifndef OCT_FIELD_H
 #define OCT_FIELD_H
 
-#include "Object.h"
-#include "String.h"
+#include "Primitives.h"
 
 namespace octarine {
+    
+    static Type type(Field f);
+    static Uword offset(Field f);
+    //static
 
-	enum FieldKind {
-		VALUE,
-		POINTER
-	};
-
-	struct Type;
-
-	struct Field {
-		Type* mType;
-		Uword mKind;
-		Uword mOffset;
-		String mName;
-
-		static Type* sType;
-		static ObjectFunctions* sObjectFns;
-		Object asObject();
-	};
+//	struct Field {
+//		Type* mType;
+//		Uword mKind;
+//		Uword mOffset;
+//		String mName;
+//
+//		static Type* sType;
+//		static ObjectFunctions* sObjectFns;
+//		Object asObject();
+//	};
 
 }
 

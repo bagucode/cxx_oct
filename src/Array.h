@@ -1,20 +1,20 @@
 #ifndef OCT_ARRAY_H
 #define OCT_ARRAY_H
 
-#include "Object.h"
+#include "Primitives.h"
 
 namespace octarine {
 
-	struct Array {
-		Type* mType;
-		Uword mKind; // FieldKind
-		Uword mSize;
-		Address mData;
-
-		static Type* sType;
-		static ObjectFunctions* sObjectFns;
-		Object asObject();
-	};
+//	struct Array {
+//		Type* mType;
+//		Uword mKind; // FieldKind
+//		Uword mSize;
+//		Address mData;
+//
+//		static Type* sType;
+//		static ObjectFunctions* sObjectFns;
+//		Object asObject();
+//	};
 
 }
 
