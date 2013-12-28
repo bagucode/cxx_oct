@@ -7,6 +7,8 @@ namespace octarine {
     
     static Symbol createSymbol(ThreadContext tc, String name);
     
+    static Type _typeOfSymbol(ThreadContext tc);
+    
 }
 
 #endif

@@ -2,24 +2,49 @@
 #include "ThreadContext.h"
 #include "Function.h"
 #include "Symbol.h"
+#include "String.h"
+#include "MemoryManager.h"
+#include "Array.h"
+#include "Type.h"
+#include "Variant.h"
 
 namespace octarine {
-    
-    static Type typeOf(Any a) {
-        return a.type;
-    }
-    
+
     static void init(Any a) {
-        a.type = nullptr;
-        a.object = nullptr;
+        a.type = NothingType;
+        a.object = (void*)&nil;
     }
+    
+    typedef void(*dtorSig)(void*);
     
     static void destroy(Any a) {
-        ThreadContext tc = currentContext();
-        Namespace ns = currentNamespace(tc);
-        Symbol destroyName = createSymbol(tc, createString(tc, "destroy"));
+        if(a.object == &nil) {
+            return;
+        }
+        if(typeKind(a.type) == TypeKindVariant) {
+            a = variantValue((Variant)a.object);
+        }
+        struct _r {
+            String destroyStr;
+            Symbol destroyName;
+            Array params;
+            Array rets;
+            FunctionSignature sig;
+        } r;
+        _zeroRoots(&r);
         
-        Address fn = findFunction(ns, destroyName, <#FunctionSignature fs#>)
+        ThreadContext tc = currentContext();
+        MemoryManager mm = contextMemoryManager(tc);
+        _ScopedRoots<_r> _sr(mm, &r);
+        
+        Namespace ns = currentNamespace(tc);
+        r.destroyStr = createString(tc, "destroy");
+        r.destroyName = createSymbol(tc, r.destroyStr);
+        r.rets = createArray(tc, _typeOfType(tc));
+        r.params = conj(r.rets, {_typeOfType(tc), _typeOfString(tc)});
+        r.sig = createFunctionSignature(tc, r.params, r.rets);
+        dtorSig dtor = (dtorSig)findFunction(ns, r.destroyName, r.sig);
+        dtor(a.object);
     }
     
     static Uword hash(Any a) {

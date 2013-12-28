@@ -5,7 +5,6 @@
 
 namespace octarine {
 
-    static Type typeOf(Any a);
     static void init(Any a);
     static void destroy(Any a);
     static Uword hash(Any a);

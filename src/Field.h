@@ -5,20 +5,11 @@
 
 namespace octarine {
     
-    static Type type(Field f);
+    static Type typeOfField(Field f);
     static Uword offset(Field f);
-    //static
-
-//	struct Field {
-//		Type* mType;
-//		Uword mKind;
-//		Uword mOffset;
-//		String mName;
-//
-//		static Type* sType;
-//		static ObjectFunctions* sObjectFns;
-//		Object asObject();
-//	};
+    static Field createField(ThreadContext tc, Type t, Uword offset);
+    
+    static Type _typeOfField(ThreadContext tc);
 
 }
 

@@ -8,6 +8,7 @@ namespace octarine {
     ThreadContext currentContext();
     Namespace currentNamespace(ThreadContext tc);
     Runtime runtime(ThreadContext tc);
+    MemoryManager contextMemoryManager(ThreadContext tc);
 
 }
 

@@ -7,6 +7,8 @@ namespace octarine {
 
     static String createString(ThreadContext tc, const char* str);
 
+    static Type _typeOfString(ThreadContext tc);
+
 }
 
 #endif

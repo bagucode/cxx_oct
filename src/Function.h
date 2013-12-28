@@ -5,7 +5,8 @@
 
 namespace octarine {
 
-    Address findFunction(Namespace ns, Symbol name, FunctionSignature fs);
+    static FunctionSignature createFunctionSignature(ThreadContext tc, Array parameterTypes, Array returnTypes);
+    static Address findFunction(Namespace ns, Symbol name, FunctionSignature fs);
 
 }
 

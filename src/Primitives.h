@@ -139,14 +139,8 @@ namespace octarine {
     struct Field_t;
     typedef Field_t* Field;
     
-    template <typename T>
-    struct Array_t {
-        Uword size;
-        T data[];
-    };
-    
-    template <typename T>
-    using Array = Array_t<T>*;
+    struct Array_t;
+    typedef Array_t* Array;
     
     struct Any {
         Type type;
@@ -171,7 +165,16 @@ namespace octarine {
     struct ThreadContext_t;
     typedef ThreadContext_t* ThreadContext;
     
+    struct Variant_t;
+    typedef Variant_t* Variant;
+    
+    struct Nothing {
+        Uword unused; // Just to make it have a size. Never used.
+    };
+    static const Nothing nil = {0};
+    
     // Static type references for the primitive types
+    // TODO: change to functions!
 	Type U8Type;
 	Type I8Type;
 	Type U16Type;
@@ -187,6 +190,7 @@ namespace octarine {
 	Type UwordType;
 	Type WordType;
 	Type AddressType;
+    Type NothingType;
 
 }
 

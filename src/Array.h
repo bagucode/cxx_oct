@@ -5,16 +5,8 @@
 
 namespace octarine {
 
-//	struct Array {
-//		Type* mType;
-//		Uword mKind; // FieldKind
-//		Uword mSize;
-//		Address mData;
-//
-//		static Type* sType;
-//		static ObjectFunctions* sObjectFns;
-//		Object asObject();
-//	};
+    static Array createArray(ThreadContext tc, Type elementType);
+    static Array conj(Array a, Any val);
 
 }
 
