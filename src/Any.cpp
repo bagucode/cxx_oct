@@ -2,6 +2,7 @@
 #include "Function.h"
 #include "Type.h"
 #include "Variant.h"
+#include "LLVMIncludes.h"
 
 namespace octarine {
 

@@ -26,3 +26,6 @@ xcuserdata/
 
 # Generated code
 octarine_generated.cpp
+
+# Dependencies
+3pp/

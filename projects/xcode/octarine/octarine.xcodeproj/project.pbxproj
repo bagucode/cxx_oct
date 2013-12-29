@@ -18,6 +18,7 @@
 		04058C3118510A1300C3ABEC /* Type.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C2418510A1300C3ABEC /* Type.cpp */; };
 		04644AE4184A5A3F0080EFD8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04644AE3184A5A3F0080EFD8 /* main.cpp */; };
 		04FF83D61870377B000E1BF6 /* Function.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04FF83D51870377B000E1BF6 /* Function.cpp */; };
+		04FF83D8187054DD000E1BF6 /* libLLVMCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04FF83D7187054DD000E1BF6 /* libLLVMCore.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -60,6 +61,8 @@
 		040FD045186EF6D7002FE745 /* Variant.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; name = Variant.h; path = ../../../src/Variant.h; sourceTree = SOURCE_ROOT; };
 		04644AE3184A5A3F0080EFD8 /* main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = main.cpp; path = ../../../src/main.cpp; sourceTree = SOURCE_ROOT; };
 		04FF83D51870377B000E1BF6 /* Function.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Function.cpp; path = ../../../src/Function.cpp; sourceTree = SOURCE_ROOT; };
+		04FF83D7187054DD000E1BF6 /* libLLVMCore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMCore.a; path = ../../../3pp/llvm/osx/lib/libLLVMCore.a; sourceTree = SOURCE_ROOT; };
+		04FF83D918707A68000E1BF6 /* LLVMIncludes.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = LLVMIncludes.h; path = ../../../src/LLVMIncludes.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04FF83D8187054DD000E1BF6 /* libLLVMCore.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,6 +80,7 @@
 		0405C352184A3B7B003CCC15 = {
 			isa = PBXGroup;
 			children = (
+				04FF83D7187054DD000E1BF6 /* libLLVMCore.a */,
 				0405C35D184A3B7B003CCC15 /* octarine */,
 				0405C35C184A3B7B003CCC15 /* Products */,
 			);
@@ -118,6 +123,7 @@
 				04058C2418510A1300C3ABEC /* Type.cpp */,
 				04058C2518510A1300C3ABEC /* Type.h */,
 				040FD045186EF6D7002FE745 /* Variant.h */,
+				04FF83D918707A68000E1BF6 /* LLVMIncludes.h */,
 			);
 			path = octarine;
 			sourceTree = "<group>";
@@ -220,9 +226,9 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx;
+				SDKROOT = macosx10.8;
 			};
 			name = Debug;
 		};
@@ -252,14 +258,23 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
-				SDKROOT = macosx;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx10.8;
 			};
 			name = Release;
 		};
 		0405C365184A3B7B003CCC15 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../../../3pp/llvm/osx/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/mac/Projects/cxx_oct/3pp/llvm/osx/lib,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx10.8;
@@ -271,6 +286,15 @@
 			buildSettings = {
 				GCC_OPTIMIZATION_LEVEL = fast;
 				GCC_UNROLL_LOOPS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../../../3pp/llvm/osx/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/mac/Projects/cxx_oct/3pp/llvm/osx/lib,
+				);
 				LLVM_LTO = YES;
 				LLVM_VECTORIZE_LOOPS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
