@@ -1,8 +1,10 @@
-#include "Runtime.h"
+#include "LLVMIncludes.h"
 
-using namespace octarine;
+using namespace llvm;
 
 int main(int argc, char* argv[]) {
+    
+    InitializeNativeTarget();
     
     return 0;
 }

@@ -30,6 +30,14 @@
 		040A79D21874900600B98D5D /* libLLVMSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79C51874900600B98D5D /* libLLVMSupport.a */; };
 		040A79D31874900600B98D5D /* libLLVMTarget.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79C61874900600B98D5D /* libLLVMTarget.a */; };
 		040A79D41874900600B98D5D /* libLLVMTransformUtils.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79C71874900600B98D5D /* libLLVMTransformUtils.a */; };
+		040A79D71874A51B00B98D5D /* libLLVMX86Desc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79D61874A51B00B98D5D /* libLLVMX86Desc.a */; };
+		040A79D91874A53800B98D5D /* libLLVMX86AsmPrinter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79D81874A53800B98D5D /* libLLVMX86AsmPrinter.a */; };
+		040A79DC1874A55B00B98D5D /* libLLVMX86CodeGen.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79DA1874A55B00B98D5D /* libLLVMX86CodeGen.a */; };
+		040A79DD1874A55B00B98D5D /* libLLVMX86Info.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79DB1874A55B00B98D5D /* libLLVMX86Info.a */; };
+		040A79DF1874A5A300B98D5D /* libLLVMSelectionDAG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79DE1874A5A300B98D5D /* libLLVMSelectionDAG.a */; };
+		040A79E31874A68300B98D5D /* libLLVMX86AsmParser.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79E01874A68300B98D5D /* libLLVMX86AsmParser.a */; };
+		040A79E41874A68300B98D5D /* libLLVMX86Disassembler.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79E11874A68300B98D5D /* libLLVMX86Disassembler.a */; };
+		040A79E51874A68300B98D5D /* libLLVMX86Utils.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79E21874A68300B98D5D /* libLLVMX86Utils.a */; };
 		04644AE4184A5A3F0080EFD8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04644AE3184A5A3F0080EFD8 /* main.cpp */; };
 		04FF83D61870377B000E1BF6 /* Function.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04FF83D51870377B000E1BF6 /* Function.cpp */; };
 		04FF83D8187054DD000E1BF6 /* libLLVMCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04FF83D7187054DD000E1BF6 /* libLLVMCore.a */; };
@@ -86,6 +94,14 @@
 		040A79C61874900600B98D5D /* libLLVMTarget.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMTarget.a; path = ../../../3pp/llvm/osx/lib/libLLVMTarget.a; sourceTree = "<group>"; };
 		040A79C71874900600B98D5D /* libLLVMTransformUtils.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMTransformUtils.a; path = ../../../3pp/llvm/osx/lib/libLLVMTransformUtils.a; sourceTree = "<group>"; };
 		040A79D5187494D500B98D5D /* Nothing.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = Nothing.h; path = ../../../src/Nothing.h; sourceTree = SOURCE_ROOT; };
+		040A79D61874A51B00B98D5D /* libLLVMX86Desc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMX86Desc.a; path = ../../../3pp/llvm/osx/lib/libLLVMX86Desc.a; sourceTree = "<group>"; };
+		040A79D81874A53800B98D5D /* libLLVMX86AsmPrinter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMX86AsmPrinter.a; path = ../../../3pp/llvm/osx/lib/libLLVMX86AsmPrinter.a; sourceTree = "<group>"; };
+		040A79DA1874A55B00B98D5D /* libLLVMX86CodeGen.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMX86CodeGen.a; path = ../../../3pp/llvm/osx/lib/libLLVMX86CodeGen.a; sourceTree = "<group>"; };
+		040A79DB1874A55B00B98D5D /* libLLVMX86Info.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMX86Info.a; path = ../../../3pp/llvm/osx/lib/libLLVMX86Info.a; sourceTree = "<group>"; };
+		040A79DE1874A5A300B98D5D /* libLLVMSelectionDAG.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMSelectionDAG.a; path = ../../../3pp/llvm/osx/lib/libLLVMSelectionDAG.a; sourceTree = "<group>"; };
+		040A79E01874A68300B98D5D /* libLLVMX86AsmParser.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMX86AsmParser.a; path = ../../../3pp/llvm/osx/lib/libLLVMX86AsmParser.a; sourceTree = "<group>"; };
+		040A79E11874A68300B98D5D /* libLLVMX86Disassembler.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMX86Disassembler.a; path = ../../../3pp/llvm/osx/lib/libLLVMX86Disassembler.a; sourceTree = "<group>"; };
+		040A79E21874A68300B98D5D /* libLLVMX86Utils.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMX86Utils.a; path = ../../../3pp/llvm/osx/lib/libLLVMX86Utils.a; sourceTree = "<group>"; };
 		040F11E6186DF95F00774857 /* Symbol.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = Symbol.h; path = ../../../src/Symbol.h; sourceTree = SOURCE_ROOT; };
 		040FD045186EF6D7002FE745 /* Variant.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; name = Variant.h; path = ../../../src/Variant.h; sourceTree = SOURCE_ROOT; };
 		04644AE3184A5A3F0080EFD8 /* main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = main.cpp; path = ../../../src/main.cpp; sourceTree = SOURCE_ROOT; };
@@ -99,6 +115,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				040A79E31874A68300B98D5D /* libLLVMX86AsmParser.a in Frameworks */,
+				040A79E41874A68300B98D5D /* libLLVMX86Disassembler.a in Frameworks */,
+				040A79E51874A68300B98D5D /* libLLVMX86Utils.a in Frameworks */,
+				040A79DF1874A5A300B98D5D /* libLLVMSelectionDAG.a in Frameworks */,
+				040A79DC1874A55B00B98D5D /* libLLVMX86CodeGen.a in Frameworks */,
+				040A79DD1874A55B00B98D5D /* libLLVMX86Info.a in Frameworks */,
+				040A79D91874A53800B98D5D /* libLLVMX86AsmPrinter.a in Frameworks */,
+				040A79D71874A51B00B98D5D /* libLLVMX86Desc.a in Frameworks */,
 				040A79C81874900600B98D5D /* libLLVMAnalysis.a in Frameworks */,
 				040A79C91874900600B98D5D /* libLLVMCodeGen.a in Frameworks */,
 				040A79CA1874900600B98D5D /* libLLVMExecutionEngine.a in Frameworks */,
@@ -123,6 +147,14 @@
 		0405C352184A3B7B003CCC15 = {
 			isa = PBXGroup;
 			children = (
+				040A79E01874A68300B98D5D /* libLLVMX86AsmParser.a */,
+				040A79E11874A68300B98D5D /* libLLVMX86Disassembler.a */,
+				040A79E21874A68300B98D5D /* libLLVMX86Utils.a */,
+				040A79DE1874A5A300B98D5D /* libLLVMSelectionDAG.a */,
+				040A79DA1874A55B00B98D5D /* libLLVMX86CodeGen.a */,
+				040A79DB1874A55B00B98D5D /* libLLVMX86Info.a */,
+				040A79D81874A53800B98D5D /* libLLVMX86AsmPrinter.a */,
+				040A79D61874A51B00B98D5D /* libLLVMX86Desc.a */,
 				040A79BB1874900600B98D5D /* libLLVMAnalysis.a */,
 				040A79BC1874900600B98D5D /* libLLVMCodeGen.a */,
 				040A79BD1874900600B98D5D /* libLLVMExecutionEngine.a */,
