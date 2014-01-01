@@ -16,6 +16,20 @@
 		04058C2F18510A1300C3ABEC /* String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C1F18510A1300C3ABEC /* String.cpp */; };
 		04058C3018510A1300C3ABEC /* ThreadContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C2118510A1300C3ABEC /* ThreadContext.cpp */; };
 		04058C3118510A1300C3ABEC /* Type.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04058C2418510A1300C3ABEC /* Type.cpp */; };
+		040A79BA18748E2B00B98D5D /* libLLVMJIT.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79B918748E2B00B98D5D /* libLLVMJIT.a */; };
+		040A79C81874900600B98D5D /* libLLVMAnalysis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79BB1874900600B98D5D /* libLLVMAnalysis.a */; };
+		040A79C91874900600B98D5D /* libLLVMCodeGen.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79BC1874900600B98D5D /* libLLVMCodeGen.a */; };
+		040A79CA1874900600B98D5D /* libLLVMExecutionEngine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79BD1874900600B98D5D /* libLLVMExecutionEngine.a */; };
+		040A79CB1874900600B98D5D /* libLLVMInstCombine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79BE1874900600B98D5D /* libLLVMInstCombine.a */; };
+		040A79CC1874900600B98D5D /* libLLVMipa.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79BF1874900600B98D5D /* libLLVMipa.a */; };
+		040A79CD1874900600B98D5D /* libLLVMMC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79C01874900600B98D5D /* libLLVMMC.a */; };
+		040A79CE1874900600B98D5D /* libLLVMObjCARCOpts.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79C11874900600B98D5D /* libLLVMObjCARCOpts.a */; };
+		040A79CF1874900600B98D5D /* libLLVMObject.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79C21874900600B98D5D /* libLLVMObject.a */; };
+		040A79D01874900600B98D5D /* libLLVMRuntimeDyld.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79C31874900600B98D5D /* libLLVMRuntimeDyld.a */; };
+		040A79D11874900600B98D5D /* libLLVMScalarOpts.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79C41874900600B98D5D /* libLLVMScalarOpts.a */; };
+		040A79D21874900600B98D5D /* libLLVMSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79C51874900600B98D5D /* libLLVMSupport.a */; };
+		040A79D31874900600B98D5D /* libLLVMTarget.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79C61874900600B98D5D /* libLLVMTarget.a */; };
+		040A79D41874900600B98D5D /* libLLVMTransformUtils.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 040A79C71874900600B98D5D /* libLLVMTransformUtils.a */; };
 		04644AE4184A5A3F0080EFD8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04644AE3184A5A3F0080EFD8 /* main.cpp */; };
 		04FF83D61870377B000E1BF6 /* Function.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04FF83D51870377B000E1BF6 /* Function.cpp */; };
 		04FF83D8187054DD000E1BF6 /* libLLVMCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04FF83D7187054DD000E1BF6 /* libLLVMCore.a */; };
@@ -57,6 +71,21 @@
 		04058C2418510A1300C3ABEC /* Type.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Type.cpp; path = ../../../src/Type.cpp; sourceTree = SOURCE_ROOT; };
 		04058C2518510A1300C3ABEC /* Type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Type.h; path = ../../../src/Type.h; sourceTree = SOURCE_ROOT; };
 		0405C35B184A3B7B003CCC15 /* octarine */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = octarine; sourceTree = BUILT_PRODUCTS_DIR; };
+		040A79B918748E2B00B98D5D /* libLLVMJIT.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMJIT.a; path = ../../../3pp/llvm/osx/lib/libLLVMJIT.a; sourceTree = "<group>"; };
+		040A79BB1874900600B98D5D /* libLLVMAnalysis.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMAnalysis.a; path = ../../../3pp/llvm/osx/lib/libLLVMAnalysis.a; sourceTree = "<group>"; };
+		040A79BC1874900600B98D5D /* libLLVMCodeGen.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMCodeGen.a; path = ../../../3pp/llvm/osx/lib/libLLVMCodeGen.a; sourceTree = "<group>"; };
+		040A79BD1874900600B98D5D /* libLLVMExecutionEngine.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMExecutionEngine.a; path = ../../../3pp/llvm/osx/lib/libLLVMExecutionEngine.a; sourceTree = "<group>"; };
+		040A79BE1874900600B98D5D /* libLLVMInstCombine.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMInstCombine.a; path = ../../../3pp/llvm/osx/lib/libLLVMInstCombine.a; sourceTree = "<group>"; };
+		040A79BF1874900600B98D5D /* libLLVMipa.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMipa.a; path = ../../../3pp/llvm/osx/lib/libLLVMipa.a; sourceTree = "<group>"; };
+		040A79C01874900600B98D5D /* libLLVMMC.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMMC.a; path = ../../../3pp/llvm/osx/lib/libLLVMMC.a; sourceTree = "<group>"; };
+		040A79C11874900600B98D5D /* libLLVMObjCARCOpts.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMObjCARCOpts.a; path = ../../../3pp/llvm/osx/lib/libLLVMObjCARCOpts.a; sourceTree = "<group>"; };
+		040A79C21874900600B98D5D /* libLLVMObject.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMObject.a; path = ../../../3pp/llvm/osx/lib/libLLVMObject.a; sourceTree = "<group>"; };
+		040A79C31874900600B98D5D /* libLLVMRuntimeDyld.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMRuntimeDyld.a; path = ../../../3pp/llvm/osx/lib/libLLVMRuntimeDyld.a; sourceTree = "<group>"; };
+		040A79C41874900600B98D5D /* libLLVMScalarOpts.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMScalarOpts.a; path = ../../../3pp/llvm/osx/lib/libLLVMScalarOpts.a; sourceTree = "<group>"; };
+		040A79C51874900600B98D5D /* libLLVMSupport.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMSupport.a; path = ../../../3pp/llvm/osx/lib/libLLVMSupport.a; sourceTree = "<group>"; };
+		040A79C61874900600B98D5D /* libLLVMTarget.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMTarget.a; path = ../../../3pp/llvm/osx/lib/libLLVMTarget.a; sourceTree = "<group>"; };
+		040A79C71874900600B98D5D /* libLLVMTransformUtils.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMTransformUtils.a; path = ../../../3pp/llvm/osx/lib/libLLVMTransformUtils.a; sourceTree = "<group>"; };
+		040A79D5187494D500B98D5D /* Nothing.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = Nothing.h; path = ../../../src/Nothing.h; sourceTree = SOURCE_ROOT; };
 		040F11E6186DF95F00774857 /* Symbol.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = Symbol.h; path = ../../../src/Symbol.h; sourceTree = SOURCE_ROOT; };
 		040FD045186EF6D7002FE745 /* Variant.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; name = Variant.h; path = ../../../src/Variant.h; sourceTree = SOURCE_ROOT; };
 		04644AE3184A5A3F0080EFD8 /* main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = main.cpp; path = ../../../src/main.cpp; sourceTree = SOURCE_ROOT; };
@@ -70,6 +99,20 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				040A79C81874900600B98D5D /* libLLVMAnalysis.a in Frameworks */,
+				040A79C91874900600B98D5D /* libLLVMCodeGen.a in Frameworks */,
+				040A79CA1874900600B98D5D /* libLLVMExecutionEngine.a in Frameworks */,
+				040A79CB1874900600B98D5D /* libLLVMInstCombine.a in Frameworks */,
+				040A79CC1874900600B98D5D /* libLLVMipa.a in Frameworks */,
+				040A79CD1874900600B98D5D /* libLLVMMC.a in Frameworks */,
+				040A79CE1874900600B98D5D /* libLLVMObjCARCOpts.a in Frameworks */,
+				040A79CF1874900600B98D5D /* libLLVMObject.a in Frameworks */,
+				040A79D01874900600B98D5D /* libLLVMRuntimeDyld.a in Frameworks */,
+				040A79D11874900600B98D5D /* libLLVMScalarOpts.a in Frameworks */,
+				040A79D21874900600B98D5D /* libLLVMSupport.a in Frameworks */,
+				040A79D31874900600B98D5D /* libLLVMTarget.a in Frameworks */,
+				040A79D41874900600B98D5D /* libLLVMTransformUtils.a in Frameworks */,
+				040A79BA18748E2B00B98D5D /* libLLVMJIT.a in Frameworks */,
 				04FF83D8187054DD000E1BF6 /* libLLVMCore.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -80,6 +123,20 @@
 		0405C352184A3B7B003CCC15 = {
 			isa = PBXGroup;
 			children = (
+				040A79BB1874900600B98D5D /* libLLVMAnalysis.a */,
+				040A79BC1874900600B98D5D /* libLLVMCodeGen.a */,
+				040A79BD1874900600B98D5D /* libLLVMExecutionEngine.a */,
+				040A79BE1874900600B98D5D /* libLLVMInstCombine.a */,
+				040A79BF1874900600B98D5D /* libLLVMipa.a */,
+				040A79C01874900600B98D5D /* libLLVMMC.a */,
+				040A79C11874900600B98D5D /* libLLVMObjCARCOpts.a */,
+				040A79C21874900600B98D5D /* libLLVMObject.a */,
+				040A79C31874900600B98D5D /* libLLVMRuntimeDyld.a */,
+				040A79C41874900600B98D5D /* libLLVMScalarOpts.a */,
+				040A79C51874900600B98D5D /* libLLVMSupport.a */,
+				040A79C61874900600B98D5D /* libLLVMTarget.a */,
+				040A79C71874900600B98D5D /* libLLVMTransformUtils.a */,
+				040A79B918748E2B00B98D5D /* libLLVMJIT.a */,
 				04FF83D7187054DD000E1BF6 /* libLLVMCore.a */,
 				0405C35D184A3B7B003CCC15 /* octarine */,
 				0405C35C184A3B7B003CCC15 /* Products */,
@@ -124,6 +181,7 @@
 				04058C2518510A1300C3ABEC /* Type.h */,
 				040FD045186EF6D7002FE745 /* Variant.h */,
 				04FF83D918707A68000E1BF6 /* LLVMIncludes.h */,
+				040A79D5187494D500B98D5D /* Nothing.h */,
 			);
 			path = octarine;
 			sourceTree = "<group>";
@@ -266,6 +324,8 @@
 		0405C365184A3B7B003CCC15 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -284,6 +344,8 @@
 		0405C366184A3B7B003CCC15 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				GCC_OPTIMIZATION_LEVEL = fast;
 				GCC_UNROLL_LOOPS = YES;
 				HEADER_SEARCH_PATHS = (

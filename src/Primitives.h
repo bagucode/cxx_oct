@@ -172,25 +172,6 @@ namespace octarine {
         Uword unused; // Just to make it have a size. Never used.
     };
     static const Nothing nil = {0};
-    
-    // Static type references for the primitive types
-    // TODO: change to functions!
-	Type U8Type;
-	Type I8Type;
-	Type U16Type;
-	Type I16Type;
-	Type U32Type;
-	Type I32Type;
-	Type U64Type;
-	Type I64Type;
-	Type F32Type;
-	Type F64Type;
-	Type BoolType;
-	Type CharType;
-	Type UwordType;
-	Type WordType;
-	Type AddressType;
-    Type NothingType;
 
 }
 

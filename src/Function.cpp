@@ -9,11 +9,11 @@
 namespace octarine {
     
     static FunctionSignature createFunctionSignature(ThreadContext tc, Array parameterTypes, Array returnTypes) {
-        
+        return nullptr;
     }
     
     static Address findFunction(Namespace ns, Symbol name, FunctionSignature fs) {
-        
+        return nullptr;
     }
     
     // Finds a function in the current namespace

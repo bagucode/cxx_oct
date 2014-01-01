@@ -2,12 +2,15 @@
 #include "Function.h"
 #include "Type.h"
 #include "Variant.h"
+#include "Nothing.h"
+#include "ThreadContext.h"
+
 #include "LLVMIncludes.h"
 
 namespace octarine {
 
     static void init(Any a) {
-        a.type = NothingType;
+        a.type = _typeOfNothing(currentContext());
         a.object = (void*)&nil;
     }
     
@@ -25,10 +28,11 @@ namespace octarine {
     }
     
     static Uword hash(Any a) {
-        
+        return 0;
     }
     
     static Bool equals(Any x, Any y) {
+        return False;
     }
     
     static void trace(Any a, MemoryManager mm) {
