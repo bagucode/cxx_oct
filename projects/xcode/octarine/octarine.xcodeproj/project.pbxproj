@@ -102,6 +102,7 @@
 		040A79E01874A68300B98D5D /* libLLVMX86AsmParser.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMX86AsmParser.a; path = ../../../3pp/llvm/osx/lib/libLLVMX86AsmParser.a; sourceTree = "<group>"; };
 		040A79E11874A68300B98D5D /* libLLVMX86Disassembler.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMX86Disassembler.a; path = ../../../3pp/llvm/osx/lib/libLLVMX86Disassembler.a; sourceTree = "<group>"; };
 		040A79E21874A68300B98D5D /* libLLVMX86Utils.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLLVMX86Utils.a; path = ../../../3pp/llvm/osx/lib/libLLVMX86Utils.a; sourceTree = "<group>"; };
+		040B0BC3187596A100E30A8D /* CallstubTable.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = CallstubTable.h; path = ../../../src/CallstubTable.h; sourceTree = SOURCE_ROOT; };
 		040F11E6186DF95F00774857 /* Symbol.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = Symbol.h; path = ../../../src/Symbol.h; sourceTree = SOURCE_ROOT; };
 		040FD045186EF6D7002FE745 /* Variant.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; name = Variant.h; path = ../../../src/Variant.h; sourceTree = SOURCE_ROOT; };
 		04644AE3184A5A3F0080EFD8 /* main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = main.cpp; path = ../../../src/main.cpp; sourceTree = SOURCE_ROOT; };
@@ -190,15 +191,18 @@
 				04058C1918510A1300C3ABEC /* Any.h */,
 				04058C0C18510A1300C3ABEC /* Array.cpp */,
 				04058C0D18510A1300C3ABEC /* Array.h */,
+				040B0BC3187596A100E30A8D /* CallstubTable.h */,
 				04058C1018510A1300C3ABEC /* Field.cpp */,
 				04058C1118510A1300C3ABEC /* Field.h */,
 				04FF83D51870377B000E1BF6 /* Function.cpp */,
 				04058C1218510A1300C3ABEC /* Function.h */,
+				04FF83D918707A68000E1BF6 /* LLVMIncludes.h */,
 				04644AE3184A5A3F0080EFD8 /* main.cpp */,
 				04058C1318510A1300C3ABEC /* MemoryManager.cpp */,
 				04058C1418510A1300C3ABEC /* MemoryManager.h */,
 				04058C1518510A1300C3ABEC /* Namespace.cpp */,
 				04058C1618510A1300C3ABEC /* Namespace.h */,
+				040A79D5187494D500B98D5D /* Nothing.h */,
 				04058C1B18510A1300C3ABEC /* Primitives.h */,
 				04058C1C18510A1300C3ABEC /* Reader.h */,
 				04058C1D18510A1300C3ABEC /* Runtime.cpp */,
@@ -212,8 +216,6 @@
 				04058C2418510A1300C3ABEC /* Type.cpp */,
 				04058C2518510A1300C3ABEC /* Type.h */,
 				040FD045186EF6D7002FE745 /* Variant.h */,
-				04FF83D918707A68000E1BF6 /* LLVMIncludes.h */,
-				040A79D5187494D500B98D5D /* Nothing.h */,
 			);
 			path = octarine;
 			sourceTree = "<group>";

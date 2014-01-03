@@ -153,6 +153,9 @@ namespace octarine {
     struct FunctionSignature_t;
     typedef FunctionSignature_t* FunctionSignature;
     
+    struct Function_t;
+    typedef Function_t* Function;
+    
     struct Namespace_t;
     typedef Namespace_t* Namespace;
     
@@ -172,6 +175,9 @@ namespace octarine {
         Uword unused; // Just to make it have a size. Never used.
     };
     static const Nothing nil = {0};
+    
+    struct CallstubTable_t;
+    typedef CallstubTable_t* CallstubTable;
 
 }
 
