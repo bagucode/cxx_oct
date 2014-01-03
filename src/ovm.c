@@ -121,6 +121,7 @@ typedef void* Address;
 // Typedefs
 
 struct StructField;
+typedef struct StructField StructField;
 
 struct StructInfo_t;
 typedef struct StructInfo_t* StructInfo;
@@ -135,10 +136,28 @@ struct ValType_t;
 typedef struct ValType_t* ValType;
 
 struct VarType_t;
-typedef struct VarType_t VarType;
+typedef struct VarType_t* VarType;
 
 struct Array_t;
 typedef struct Array_t* Array;
+
+struct String_t;
+typedef struct String_t* String;
+
+struct Symbol_t;
+typedef struct Symbol_t* Symbol;
+
+struct Vector_t;
+typedef struct Vector_t* Vector;
+
+struct Box_t;
+typedef struct Box_t Box;
+
+struct NamespaceEntry;
+typedef struct NamespaceEntry NamespaceEntry;
+
+struct Namespace_t;
+typedef struct Namespace_t* Namespace;
 
 // Structure definitions
 
@@ -160,8 +179,58 @@ struct StructInfo_t {
 struct Type_t {
     Uword variant;
     union {
-        
+        RefType ref;
+        ValType val;
+        VarType var;
     };
+};
+
+struct RefType_t {
+    StructInfo structInfo;
+};
+
+struct ValType_t {
+    StructInfo structInfo;
+};
+
+struct VarType_t {
+    Array variants; // Values or Types or a mix of both
+    Uword alignment;
+    Uword size;
+};
+
+struct Array_t {
+    Type elementType;
+    Uword size;
+    U8 data[];
+};
+
+struct String_t {
+    Uword size;
+    Array utf8Data;
+};
+
+struct Symbol_t {
+    String name;
+};
+
+struct Vector_t {
+    Array data;
+};
+
+struct Box_t {
+    Type type;
+    U8 data[];
+};
+
+struct NamespaceEntry {
+    String key;
+    Box value;
+};
+
+struct Namespace_t {
+    String name;
+    Vector entries;
 };
 
 int main(int argc, char* argv[]) {
