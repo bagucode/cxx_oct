@@ -262,7 +262,6 @@ struct Vector_t {
 
 struct Object_t {
     Type type;
-    Address data;
 };
 
 struct NamespaceEntry {
@@ -426,9 +425,10 @@ start:;
     }
 }
 
-static Object HeapAlloc(Heap heap, Type type) {
+static Address HeapAlloc(Heap heap, Type type) {
     Uword alignment = TypeGetAllocationAlignment(type);
-    Uword size = sizeof(struct Object_t);
+    Uword metaDataSize = sizeof(struct Object_t) + sizeof(Address);
+    Uword size = metaDataSize;
     size += alignment;
     size += TypeGetAllocationSize(type);
     
@@ -439,13 +439,16 @@ static Object HeapAlloc(Heap heap, Type type) {
     
     Object obj = block;
     obj->type = type;
-    obj->data = (Address)UwordAlignOn((Uword)(block + sizeof(struct Object_t)), alignment);
-    return obj;
+    Address ret = (Address)UwordAlignOn((Uword)(block + metaDataSize), alignment);
+    Address* backPtrLoc = ret - sizeof(Address);
+    (*backPtrLoc) = block;
+    return ret;
 }
 
 static Array HeapAllocArray(Context ctx, Heap heap, Type elementType, Uword size) {
     Uword alignment = TypeGetAllocationAlignment(elementType);
-    Uword allocSize = sizeof(struct Object_t);
+    Uword metaDataSize = sizeof(struct Object_t) + sizeof(Address);
+    Uword allocSize = metaDataSize;
     allocSize += sizeof(struct Array_t);
     allocSize += alignment;
     allocSize += (TypeGetAllocationSize(elementType) * size);
@@ -457,12 +460,14 @@ static Array HeapAllocArray(Context ctx, Heap heap, Type elementType, Uword size
     
     Object obj = block;
     obj->type = ArrayGetType(ctx);
-    obj->data = block + sizeof(struct Object_t);
+    Address arrLoc = block + metaDataSize;
+    Address* backPtrLoc = arrLoc - sizeof(Address);
+    (*backPtrLoc) = block;
     
-    Array arr = obj->data;
+    Array arr = arrLoc;
     arr->elementType = elementType;
     arr->size = size;
-    arr->data = (Address)UwordAlignOn((Uword)(obj->data + sizeof(struct Array_t)), alignment);
+    arr->data = (Address)UwordAlignOn((Uword)(arr + sizeof(struct Array_t)), alignment);
     
     return arr;
 }
@@ -500,11 +505,10 @@ static Type StructInfoGetType(Context ctx) {
 }
 
 static StructInfo StructInfoCreate(Context ctx, Array structFields) {
-    Object obj = HeapAlloc(HeapGetRuntimeHeap(ctx), StructInfoGetType(ctx));
-    if(!obj) {
+    StructInfo si = HeapAlloc(HeapGetRuntimeHeap(ctx), StructInfoGetType(ctx));
+    if(!si) {
         assert(False && "Ouch!"); // TODO: error handling
     }
-    StructInfo si = obj->data;
     Uword arrSize = ArrayGetSize(structFields);
     // TODO: check that the array actually contains structfields, and at least one.
     StructField* fields = ArrayGetFirstElement(structFields);
@@ -604,11 +608,18 @@ static Uword UwordAlignOn(Uword offset, Uword on) {
     return (offset + (on - 1)) & (~(on - 1));
 }
 
+// Object
+
+static Object ObjectGetMetaData(Address obj) {
+    return *((Address*)(obj - sizeof(Address)));
+}
+
 // Runtime
 
-static Object RuntimeInitAllocRawObject(Heap heap, Uword size, Uword alignment) {
+static Address RuntimeInitAllocRawObject(Heap heap, Uword size, Uword alignment) {
+    Uword metaDataSize = sizeof(struct Object_t) + sizeof(Address);
     size += alignment;
-    size += sizeof(struct Object_t);
+    size += metaDataSize;
 
     Address block = HeapAllocRaw(heap, size, sizeof(Address));
     if(!block) {
@@ -618,25 +629,30 @@ static Object RuntimeInitAllocRawObject(Heap heap, Uword size, Uword alignment) 
     Object obj = block;
     obj->type.variant = 0;
     obj->type.ref = NULL;
-    obj->data = (Address)UwordAlignOn((Uword)(block + sizeof(struct Object_t)), alignment);
-    return obj;
+    Address ret = (Address)UwordAlignOn((Uword)(block + metaDataSize), alignment);
+    Address* backPtrLoc = ret - sizeof(Address);
+    (*backPtrLoc) = block;
+    return ret;
 }
 
-static Object RuntimeInitAllocRefTypeObject(Runtime rt) {
-    Object raw = RuntimeInitAllocRawObject(rt->heap, sizeof(struct RefType_t), sizeof(Address));
-    raw->type = rt->builtinTypes.variadicTypes.type;
+static Address RuntimeInitAllocRefTypeObject(Runtime rt) {
+    Address raw = RuntimeInitAllocRawObject(rt->heap, sizeof(struct RefType_t), sizeof(Address));
+    Object o = ObjectGetMetaData(raw);
+    o->type = rt->builtinTypes.variadicTypes.type;
     return raw;
 }
 
-static Object RuntimeInitAllocValTypeObject(Runtime rt) {
-    Object raw = RuntimeInitAllocRawObject(rt->heap, sizeof(struct ValType_t), sizeof(Address));
-    raw->type = rt->builtinTypes.variadicTypes.type;
+static Address RuntimeInitAllocValTypeObject(Runtime rt) {
+    Address raw = RuntimeInitAllocRawObject(rt->heap, sizeof(struct ValType_t), sizeof(Address));
+    Object o = ObjectGetMetaData(raw);
+    o->type = rt->builtinTypes.variadicTypes.type;
     return raw;
 }
 
-static Object RuntimeInitAllocVarTypeObject(Runtime rt) {
-    Object raw = RuntimeInitAllocRawObject(rt->heap, sizeof(struct VarType_t), sizeof(Address));
-    raw->type = rt->builtinTypes.variadicTypes.type;
+static Address RuntimeInitAllocVarTypeObject(Runtime rt) {
+    Address raw = RuntimeInitAllocRawObject(rt->heap, sizeof(struct VarType_t), sizeof(Address));
+    Object o = ObjectGetMetaData(raw);
+    o->type = rt->builtinTypes.variadicTypes.type;
     return raw;
 }
 
@@ -644,9 +660,9 @@ static void RuntimeInitAllocAllPrimitiveTypes(Runtime rt) {
     Type* types = (Type*)&rt->builtinTypes.primitiveTypes;
     Uword numTypes = sizeof(struct BuiltinPrimitiveTypes_t) / sizeof(Type);
     for(Uword i = 0; i < numTypes; ++i) {
-        Object obj = RuntimeInitAllocValTypeObject(rt);
+        Address obj = RuntimeInitAllocValTypeObject(rt);
         types[i].variant = TYPE_VARIANT_VAL;
-        types[i].val = obj->data;
+        types[i].val = obj;
     }
 }
 
@@ -658,19 +674,20 @@ static void RuntimeInitAllocAllVarTypes(Runtime rt) {
         if((&types[i]) == (&rt->builtinTypes.variadicTypes.type)) {
             continue;
         }
-        Object obj = RuntimeInitAllocVarTypeObject(rt);
+        Address obj = RuntimeInitAllocVarTypeObject(rt);
         types[i].variant = TYPE_VARIANT_VAR;
-        types[i].val = obj->data;
+        types[i].val = obj;
     }
 }
 
 static void RuntimeInitAllocBuiltInTypes(Runtime rt) {
-    Object obj;
+    Address obj;
     
     rt->builtinTypes.variadicTypes.type.variant = TYPE_VARIANT_VAR;
     obj = RuntimeInitAllocRawObject(rt->heap, sizeof(struct VarType_t), sizeof(Address));
-    rt->builtinTypes.variadicTypes.type.var = obj->data;
-    obj->type = rt->builtinTypes.variadicTypes.type; // Type is of type type :)
+    rt->builtinTypes.variadicTypes.type.var = obj;
+    Object om = ObjectGetMetaData(obj);
+    om->type = rt->builtinTypes.variadicTypes.type; // Type is of type type :)
 
     RuntimeInitAllocAllPrimitiveTypes(rt);
     RuntimeInitAllocAllVarTypes(rt);
@@ -684,11 +701,12 @@ static void RuntimeInitCreateBuiltInTypes(Runtime rt) {
 
 static Runtime RuntimeCreate() {
     Heap rtHeap = HeapCreate(1024 * 1024);
-    Object rtObj = RuntimeInitAllocRawObject(rtHeap, sizeof(struct Runtime_t), sizeof(Address));
-    Runtime rt = rtObj->data;
+    Address rtAddr = RuntimeInitAllocRawObject(rtHeap, sizeof(struct Runtime_t), sizeof(Address));
+    Runtime rt = rtAddr;
     rt->heap = rtHeap;
     RuntimeInitCreateBuiltInTypes(rt);
-    rtObj->type = rt->builtinTypes.referenceTypes.runtime;
+    Object om = ObjectGetMetaData(rtAddr);
+    om->type = rt->builtinTypes.referenceTypes.runtime;
     
     return rt;
 }
