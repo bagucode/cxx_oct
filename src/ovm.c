@@ -179,6 +179,9 @@ typedef struct Vector_t* Vector;
 struct Object_t;
 typedef struct Object_t* Object;
 
+struct Value_t;
+typedef struct Value_t Value;
+
 struct NamespaceEntry;
 typedef struct NamespaceEntry NamespaceEntry;
 
@@ -269,9 +272,13 @@ struct Object_t {
     Type type;
 };
 
+struct Value_t {
+    Address data;
+};
+
 struct NamespaceEntry {
     String key;
-    Object value;
+    Value value;
 };
 
 struct Namespace_t {
@@ -305,6 +312,7 @@ struct BuiltinTypes_t {
         Type uword;
     } primitiveTypes;
     struct BuiltinValueTypes_t {
+        Type value;
         Type structField;
         Type namespaceEntry;
     } valueTypes;
@@ -883,6 +891,81 @@ static void RuntimeInitInitBuiltInTypes(Runtime rt) {
     sf[2].type = rt->builtinTypes.primitiveTypes.address;
     sf[2].offset = offsetof(struct Array_t, data);
     sf[2].name = RuntimeInitCreateString(rt, "data");
+    
+    // StructField
+    si = rt->builtinTypes.valueTypes.structField.val->structInfo;
+    RuntimeInitInitStructInfo(rt, si, addrSize, sizeof(StructField), 3);
+    sf = ArrayGetFirstElement(si->structFields);
+    sf[0].type = rt->builtinTypes.variadicTypes.type;
+    sf[0].offset = offsetof(StructField, type);
+    sf[0].name = RuntimeInitCreateString(rt, "type");
+    sf[1].type = rt->builtinTypes.referenceTypes.string;
+    sf[1].offset = offsetof(StructField, name);
+    sf[1].name = RuntimeInitCreateString(rt, "name");
+    sf[2].type = rt->builtinTypes.primitiveTypes.uword;
+    sf[2].offset = offsetof(StructField, offset);
+    sf[2].name = RuntimeInitCreateString(rt, "offset");
+    
+    // StructInfo
+    si = rt->builtinTypes.referenceTypes.structInfo.ref->structInfo;
+    RuntimeInitInitStructInfo(rt, si, addrSize, sizeof(struct StructInfo_t), 3);
+    sf = ArrayGetFirstElement(si->structFields);
+    sf[0].type = rt->builtinTypes.referenceTypes.array;
+    sf[0].offset = offsetof(struct StructInfo_t, structFields);
+    sf[0].name = RuntimeInitCreateString(rt, "fields");
+    sf[1].type = rt->builtinTypes.primitiveTypes.uword;
+    sf[1].offset = offsetof(struct StructInfo_t, alignment);
+    sf[1].name = RuntimeInitCreateString(rt, "alignment");
+    sf[2].type = rt->builtinTypes.primitiveTypes.uword;
+    sf[2].offset = offsetof(struct StructInfo_t, size);
+    sf[2].name = RuntimeInitCreateString(rt, "size");
+
+    // RefType
+    si = rt->builtinTypes.referenceTypes.refType.ref->structInfo;
+    RuntimeInitInitStructInfo(rt, si, addrSize, sizeof(struct RefType_t), 1);
+    sf = ArrayGetFirstElement(si->structFields);
+    sf[0].type = rt->builtinTypes.referenceTypes.structInfo;
+    sf[0].offset = offsetof(struct RefType_t, structInfo);
+    sf[0].name = RuntimeInitCreateString(rt, "structure");
+
+    // ValType
+    si = rt->builtinTypes.referenceTypes.valType.ref->structInfo;
+    RuntimeInitInitStructInfo(rt, si, addrSize, sizeof(struct ValType_t), 1);
+    sf = ArrayGetFirstElement(si->structFields);
+    sf[0].type = rt->builtinTypes.referenceTypes.structInfo;
+    sf[0].offset = offsetof(struct ValType_t, structInfo);
+    sf[0].name = RuntimeInitCreateString(rt, "structure");
+
+    // VarType
+    si = rt->builtinTypes.referenceTypes.varType.ref->structInfo;
+    RuntimeInitInitStructInfo(rt, si, addrSize, sizeof(struct VarType_t), 3);
+    sf = ArrayGetFirstElement(si->structFields);
+    sf[0].type = rt->builtinTypes.referenceTypes.array;
+    sf[0].offset = offsetof(struct VarType_t, variants);
+    sf[0].name = RuntimeInitCreateString(rt, "variants");
+    sf[1].type = rt->builtinTypes.primitiveTypes.uword;
+    sf[1].offset = offsetof(struct VarType_t, alignment);
+    sf[1].name = RuntimeInitCreateString(rt, "alignment");
+    sf[2].type = rt->builtinTypes.primitiveTypes.uword;
+    sf[2].offset = offsetof(struct VarType_t, size);
+    sf[2].name = RuntimeInitCreateString(rt, "size");
+    
+    // Type
+    rt->builtinTypes.variadicTypes.type.var->size = sizeof(struct Type_t);
+    rt->builtinTypes.variadicTypes.type.var->alignment = addrSize;
+    rt->builtinTypes.variadicTypes.type.var->variants = RuntimeInitAllocRawArray(rt, rt->builtinTypes.valueTypes.value, sizeof(Address), addrSize, 3);
+    Value* values = ArrayGetFirstElement(rt->builtinTypes.variadicTypes.type.var->variants);
+    values[0].data = AllocATypeInstanceOnRTHeapAndReturnIt
+    
+    // What the hell do I do with these "values"? They need to be able to be
+    // val type values and primitives as well as ref type values but the
+    // current type system only supports reference type values on the heap.
+    // Auto-boxing? It is kind of nice to have the distinction between ref and
+    // val types so that there does not need to be any special syntax for
+    // different types of allocations.
+    // Yes - auto-boxing will be fine. The Value type is treated specially, it
+    // is a "magic" type that refers to anything on the heap and may refer to
+    // heap-allocated var or val instances as well as regular ref instances.
 
 }
 
