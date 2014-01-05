@@ -42,7 +42,8 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <assert.h>
-
+#include <stddef.h>
+#include <string.h>
 
 #ifdef WINDOWS
 #include <Windows.h>
@@ -221,6 +222,7 @@ struct Type_t {
 
 struct StructField {
     Type type;
+    String name;
     Uword offset;
 };
 
@@ -488,6 +490,12 @@ static Heap HeapGetContextHeap(Context ctx) {
 
 static Heap HeapGetRuntimeHeap(Context ctx) {
     return ctx->runtime->heap;
+}
+
+// Array
+
+static Address ArrayGetFirstElement(Array arr) {
+    return arr->data;
 }
 
 // StructField
@@ -828,14 +836,54 @@ static void RuntimeInitInitPrimitiveTypes(Runtime rt) {
     RuntimeInitInitPrimitive(rt, &rt->builtinTypes.primitiveTypes.uword, wordSize, wordSize);
 }
 
+static Array RuntimeInitAllocStructFieldArray(Runtime rt, Uword size) {
+    return RuntimeInitAllocRawArray(rt, rt->builtinTypes.valueTypes.structField, sizeof(StructField), sizeof(Address), size);
+}
+
+static void RuntimeInitInitStructInfo(Runtime rt, StructInfo si, Uword alignment, Uword size, Uword numFields) {
+    si->alignment = alignment;
+    si->size = size;
+    si->structFields = RuntimeInitAllocStructFieldArray(rt, numFields);
+}
+
+static String RuntimeInitCreateString(Runtime rt, const char* str) {
+    String s = RuntimeInitAllocRawObject(rt->heap, sizeof(struct String_t), sizeof(Address));
+    Object om = ObjectGetMetaData(s);
+    om->type = rt->builtinTypes.referenceTypes.string;
+    s->size = strlen(str);
+    s->utf8Data = RuntimeInitAllocRawArray(rt, rt->builtinTypes.primitiveTypes.u8, 1, 1, s->size + 1);
+    U8* data = ArrayGetFirstElement(s->utf8Data);
+    memcpy(data, str, s->size + 1);
+    return s;
+}
+
 static void RuntimeInitInitBuiltInTypes(Runtime rt) {
     // The types have now been allocated, but not deeply. They are still missing
     // data members so they cannot be used yet.
     // In order to be able to use the regular heap allocation functions we have
     // to manually initialize all the types that the Type type depends upon.
     
-    // First, define all the primitives
+    StructInfo si;
+    StructField* sf;
+    Uword addrSize = sizeof(Address);
+    
+    // Primitives
     RuntimeInitInitPrimitiveTypes(rt);
+    
+    // Array
+    si = rt->builtinTypes.referenceTypes.array.ref->structInfo;
+    RuntimeInitInitStructInfo(rt, si, addrSize, sizeof(struct Array_t), 3);
+    sf = ArrayGetFirstElement(si->structFields);
+    sf[0].type = rt->builtinTypes.variadicTypes.type;
+    sf[0].offset = offsetof(struct Array_t, elementType);
+    sf[0].name = RuntimeInitCreateString(rt, "element-type");
+    sf[1].type = rt->builtinTypes.primitiveTypes.uword;
+    sf[1].offset = offsetof(struct Array_t, size);
+    sf[1].name = RuntimeInitCreateString(rt, "size");
+    sf[2].type = rt->builtinTypes.primitiveTypes.address;
+    sf[2].offset = offsetof(struct Array_t, data);
+    sf[2].name = RuntimeInitCreateString(rt, "data");
+
 }
 
 static void RuntimeInitCreateBuiltInTypes(Runtime rt) {
