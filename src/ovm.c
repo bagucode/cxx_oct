@@ -111,7 +111,7 @@ struct TLS_t {
 typedef struct TLS_t TLS_t;
 typedef TLS_t* TLS;
 
-static void TLS_create(TLS tls) {
+static void TLSCreate(TLS tls) {
 #ifdef WINDOWS
     tls->key = TlsAlloc();
 #else
@@ -119,7 +119,7 @@ static void TLS_create(TLS tls) {
 #endif
 }
 
-static void TLS_destroy(TLS tls) {
+static void TLSDestroy(TLS tls) {
 #ifdef WINDOWS
     TlsFree(tls->key);
 #else
@@ -127,7 +127,7 @@ static void TLS_destroy(TLS tls) {
 #endif
 }
 
-static void TLS_set(TLS tls, void* value) {
+static void TLSSet(TLS tls, void* value) {
 #ifdef WINDOWS
     TlsSetValue(tls->key, value);
 #else
@@ -135,7 +135,7 @@ static void TLS_set(TLS tls, void* value) {
 #endif
 }
 
-static void* TLS_get(TLS tls) {
+static void* TLSGet(TLS tls) {
 #ifdef WINDOWS
     return TlsGetValue(tls->key);
 #else
@@ -198,6 +198,9 @@ typedef struct Heap_t* Heap;
 
 struct BuiltinTypes_t;
 typedef struct BuiltinTypes_t BuiltinTypes;
+
+struct Nothing_t;
+typedef struct Nothing_t* Nothing;
 
 typedef void(*octFn)(Context ctx);
 
@@ -274,6 +277,10 @@ struct Namespace_t {
     Vector entries;
 };
 
+struct Nothing_t {
+    Uword nothing; // Struct must have a size, but this member is never used.
+};
+
 // This is used to avoid doing type lookups in the built in functions,
 // it is not strictly needed.
 struct BuiltinTypes_t {
@@ -291,6 +298,9 @@ struct BuiltinTypes_t {
         Type boolean;
         Type character;
         Type address;
+        Type nothing;
+        Type word;
+        Type uword;
     } primitiveTypes;
     struct BuiltinValueTypes_t {
         Type structField;
@@ -491,7 +501,7 @@ static Array StructFieldArrayCreate(Context ctx, Uword size) {
 }
 
 static Context ContextGetCurrent() {
-    return (Context)TLS_get(&currentContext);
+    return (Context)TLSGet(&currentContext);
 }
 
 static Type StructFieldGetFieldType(StructField* f) {
@@ -504,13 +514,30 @@ static Type StructInfoGetType(Context ctx) {
     return ctx->runtime->builtinTypes.referenceTypes.structInfo;
 }
 
+static StructInfo StructInfoCreatePrimitive(Context ctx, Uword size, Uword alignment) {
+    Heap rtHeap = HeapGetRuntimeHeap(ctx);
+    StructInfo si = HeapAlloc(rtHeap, StructInfoGetType(ctx));
+    if(!si) {
+        assert(False && "Ouch!"); // TODO: error handling
+    }
+    si->alignment = alignment;
+    si->size = size;
+    // TODO: make structFields a Variadic type so that this object allocation can
+    // be avoided.
+    si->structFields = HeapAllocArray(ctx, rtHeap, ctx->runtime->builtinTypes.primitiveTypes.nothing, 0);
+    if(!si->structFields) {
+        assert(False && "Ouch!"); // TODO: error handling
+    }
+    return si;
+}
+
 static StructInfo StructInfoCreate(Context ctx, Array structFields) {
     StructInfo si = HeapAlloc(HeapGetRuntimeHeap(ctx), StructInfoGetType(ctx));
     if(!si) {
         assert(False && "Ouch!"); // TODO: error handling
     }
     Uword arrSize = ArrayGetSize(structFields);
-    // TODO: check that the array actually contains structfields, and at least one.
+    // TODO: check that the array actually contains structfields, if it has any size.
     StructField* fields = ArrayGetFirstElement(structFields);
     Uword mySize = 0;
     Uword myAlignment = 0;
@@ -635,24 +662,59 @@ static Address RuntimeInitAllocRawObject(Heap heap, Uword size, Uword alignment)
     return ret;
 }
 
-static Address RuntimeInitAllocRefTypeObject(Runtime rt) {
+// This function cannot be used until all the built in types have been allocated
+// but they do not have to be initialized.
+static Array RuntimeInitAllocRawArray(Runtime rt, Type elementType, Uword elementSize, Uword elementAlignment, Uword arraySize) {
+    Uword metaDataSize = sizeof(struct Object_t) + sizeof(Address);
+    Uword allocSize = metaDataSize;
+    allocSize += sizeof(struct Array_t);
+    allocSize += elementAlignment;
+    allocSize += elementSize * arraySize;
+    
+    Address block = HeapAllocRaw(rt->heap, allocSize, sizeof(Address));
+    if(!block) {
+        return NULL;
+    }
+    
+    Object obj = block;
+    obj->type = rt->builtinTypes.referenceTypes.array;
+    Address arrLoc = block + metaDataSize;
+    Address* backPtrLoc = arrLoc - sizeof(Address);
+    (*backPtrLoc) = block;
+    
+    Array arr = arrLoc;
+    arr->elementType = elementType;
+    arr->size = arraySize;
+    arr->data = (Address)UwordAlignOn((Uword)(arr + sizeof(struct Array_t)), elementAlignment);
+    
+    return arr;
+}
+
+static RefType RuntimeInitAllocRefTypeObject(Runtime rt) {
     Address raw = RuntimeInitAllocRawObject(rt->heap, sizeof(struct RefType_t), sizeof(Address));
     Object o = ObjectGetMetaData(raw);
     o->type = rt->builtinTypes.variadicTypes.type;
     return raw;
 }
 
-static Address RuntimeInitAllocValTypeObject(Runtime rt) {
+static ValType RuntimeInitAllocValTypeObject(Runtime rt) {
     Address raw = RuntimeInitAllocRawObject(rt->heap, sizeof(struct ValType_t), sizeof(Address));
     Object o = ObjectGetMetaData(raw);
     o->type = rt->builtinTypes.variadicTypes.type;
     return raw;
 }
 
-static Address RuntimeInitAllocVarTypeObject(Runtime rt) {
+static VarType RuntimeInitAllocVarTypeObject(Runtime rt) {
     Address raw = RuntimeInitAllocRawObject(rt->heap, sizeof(struct VarType_t), sizeof(Address));
     Object o = ObjectGetMetaData(raw);
     o->type = rt->builtinTypes.variadicTypes.type;
+    return raw;
+}
+
+static StructInfo RuntimeInitAllocStructInfoObject(Runtime rt) {
+    Address raw = RuntimeInitAllocRawObject(rt->heap, sizeof(struct StructInfo_t), sizeof(Address));
+    Object o = ObjectGetMetaData(raw);
+    o->type = rt->builtinTypes.referenceTypes.structInfo;
     return raw;
 }
 
@@ -660,9 +722,9 @@ static void RuntimeInitAllocAllPrimitiveTypes(Runtime rt) {
     Type* types = (Type*)&rt->builtinTypes.primitiveTypes;
     Uword numTypes = sizeof(struct BuiltinPrimitiveTypes_t) / sizeof(Type);
     for(Uword i = 0; i < numTypes; ++i) {
-        Address obj = RuntimeInitAllocValTypeObject(rt);
         types[i].variant = TYPE_VARIANT_VAL;
-        types[i].val = obj;
+        types[i].val = RuntimeInitAllocValTypeObject(rt);
+        types[i].val->structInfo = RuntimeInitAllocStructInfoObject(rt);
     }
 }
 
@@ -674,29 +736,113 @@ static void RuntimeInitAllocAllVarTypes(Runtime rt) {
         if((&types[i]) == (&rt->builtinTypes.variadicTypes.type)) {
             continue;
         }
-        Address obj = RuntimeInitAllocVarTypeObject(rt);
         types[i].variant = TYPE_VARIANT_VAR;
-        types[i].val = obj;
+        types[i].var = RuntimeInitAllocVarTypeObject(rt);
+    }
+}
+
+static void RuntimeInitAllocAllReferenceTypes(Runtime rt) {
+    Type* types = (Type*)&rt->builtinTypes.referenceTypes;
+    Uword numTypes = sizeof(struct BuiltinReferenceTypes_t) / sizeof(Type);
+    for(Uword i = 0; i < numTypes; ++i) {
+        // For structInfo we just need to allocate the structInfo :)
+        if((&types[i]) == (&rt->builtinTypes.referenceTypes.structInfo)) {
+            types[i].ref->structInfo = RuntimeInitAllocStructInfoObject(rt);
+            continue;
+        }
+        types[i].variant = TYPE_VARIANT_REF;
+        types[i].ref = RuntimeInitAllocRefTypeObject(rt);
+        types[i].ref->structInfo = RuntimeInitAllocStructInfoObject(rt);
+    }
+}
+
+static void RuntimeInitAllocAllValueTypes(Runtime rt) {
+    Type* types = (Type*)&rt->builtinTypes.valueTypes;
+    Uword numTypes = sizeof(struct BuiltinValueTypes_t) / sizeof(Type);
+    for(Uword i = 0; i < numTypes; ++i) {
+        types[i].variant = TYPE_VARIANT_VAL;
+        types[i].val = RuntimeInitAllocValTypeObject(rt);
+        types[i].val->structInfo = RuntimeInitAllocStructInfoObject(rt);
     }
 }
 
 static void RuntimeInitAllocBuiltInTypes(Runtime rt) {
-    Address obj;
+
+    // Allocate the types for Type and StructInfo up front so that they
+    // can be used in the init functions.
     
     rt->builtinTypes.variadicTypes.type.variant = TYPE_VARIANT_VAR;
-    obj = RuntimeInitAllocRawObject(rt->heap, sizeof(struct VarType_t), sizeof(Address));
+    Address obj = RuntimeInitAllocRawObject(rt->heap, sizeof(struct VarType_t), sizeof(Address));
     rt->builtinTypes.variadicTypes.type.var = obj;
     Object om = ObjectGetMetaData(obj);
     om->type = rt->builtinTypes.variadicTypes.type; // Type is of type type :)
 
+    rt->builtinTypes.referenceTypes.structInfo.variant = TYPE_VARIANT_REF;
+    obj = RuntimeInitAllocRawObject(rt->heap, sizeof(struct RefType_t), sizeof(Address));
+    rt->builtinTypes.referenceTypes.structInfo.ref = obj;
+    om = ObjectGetMetaData(obj);
+    om->type = rt->builtinTypes.variadicTypes.type;
+    
     RuntimeInitAllocAllPrimitiveTypes(rt);
     RuntimeInitAllocAllVarTypes(rt);
+    RuntimeInitAllocAllReferenceTypes(rt);
+    RuntimeInitAllocAllValueTypes(rt);
+}
+
+static void RuntimeInitInitPrimitive(Runtime rt, Type* type, Uword size, Uword alignment) {
+    type->val->structInfo->alignment = alignment;
+    type->val->structInfo->size = size;
+    type->val->structInfo->structFields = RuntimeInitAllocRawArray(rt, rt->builtinTypes.primitiveTypes.nothing, size, alignment, 0);
+}
+
+static void RuntimeInitInitPrimitiveTypes(Runtime rt) {
+    RuntimeInitInitPrimitive(rt, &rt->builtinTypes.primitiveTypes.i8, 1, 1);
+    RuntimeInitInitPrimitive(rt, &rt->builtinTypes.primitiveTypes.u8, 1, 1);
+    RuntimeInitInitPrimitive(rt, &rt->builtinTypes.primitiveTypes.i16, 2, 2);
+    RuntimeInitInitPrimitive(rt, &rt->builtinTypes.primitiveTypes.u16, 2, 2);
+    RuntimeInitInitPrimitive(rt, &rt->builtinTypes.primitiveTypes.i32, 4, 4);
+    RuntimeInitInitPrimitive(rt, &rt->builtinTypes.primitiveTypes.u32, 4, 4);
+#ifdef OCT32
+#ifdef __GNUC__
+    Uword align64BitTypes = 4;
+#else
+    Uword align64BitTypes = 8;
+#endif
+#else
+    Uword align64BitTypes = 8;
+#endif
+    RuntimeInitInitPrimitive(rt, &rt->builtinTypes.primitiveTypes.i64, 8, align64BitTypes);
+    RuntimeInitInitPrimitive(rt, &rt->builtinTypes.primitiveTypes.u64, 8, align64BitTypes);
+    RuntimeInitInitPrimitive(rt, &rt->builtinTypes.primitiveTypes.f32, 4, 4);
+    RuntimeInitInitPrimitive(rt, &rt->builtinTypes.primitiveTypes.f64, 8, align64BitTypes);
+    RuntimeInitInitPrimitive(rt, &rt->builtinTypes.primitiveTypes.boolean, 1, 1);
+    RuntimeInitInitPrimitive(rt, &rt->builtinTypes.primitiveTypes.character, 4, 4);
+#ifdef OCT64
+    Uword wordSize = 8;
+#else
+    Uword wordSize = 4;
+#endif
+    RuntimeInitInitPrimitive(rt, &rt->builtinTypes.primitiveTypes.address, wordSize, wordSize);
+    RuntimeInitInitPrimitive(rt, &rt->builtinTypes.primitiveTypes.nothing, wordSize, wordSize);
+    RuntimeInitInitPrimitive(rt, &rt->builtinTypes.primitiveTypes.word, wordSize, wordSize);
+    RuntimeInitInitPrimitive(rt, &rt->builtinTypes.primitiveTypes.uword, wordSize, wordSize);
+}
+
+static void RuntimeInitInitBuiltInTypes(Runtime rt) {
+    // The types have now been allocated, but not deeply. They are still missing
+    // data members so they cannot be used yet.
+    // In order to be able to use the regular heap allocation functions we have
+    // to manually initialize all the types that the Type type depends upon.
+    
+    // First, define all the primitives
+    RuntimeInitInitPrimitiveTypes(rt);
 }
 
 static void RuntimeInitCreateBuiltInTypes(Runtime rt) {
     // The built in types are circular so we need to allocate memory
     // up front and use some uninitialized pointers to get it going.
     RuntimeInitAllocBuiltInTypes(rt);
+    RuntimeInitInitBuiltInTypes(rt);
 }
 
 static Runtime RuntimeCreate() {
