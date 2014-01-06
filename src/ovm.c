@@ -378,6 +378,7 @@ static Uword UwordAlignOn(Uword x, Uword alignOn);
 static Type ArrayGetType(Context ctx);
 static Uword ArrayGetSize(Array arr);
 static Address ArrayGetFirstElement(Array arr);
+static Type ObjectGetType(Address obj);
 
 // Heap
 
@@ -645,6 +646,47 @@ static Uword TypeGetFieldSize(Type type) {
     return 0;
 }
 
+static Type TypeCreateRefType(Runtime rt, StructInfo si) {
+    Type t;
+    t.variant = TYPE_VARIANT_REF;
+    // TODO: handle OOM
+    t.ref = HeapAlloc(rt->heap, rt->builtinTypes.referenceTypes.refType);
+    t.ref->structInfo = si;
+    return t;
+}
+
+static Type TypeCreateValType(Runtime rt, StructInfo si) {
+    Type t;
+    t.variant = TYPE_VARIANT_VAL;
+    // TODO: handle OOM
+    t.val = HeapAlloc(rt->heap, rt->builtinTypes.referenceTypes.valType);
+    t.val->structInfo = si;
+    return t;
+}
+
+static Type TypeCreateVarType(Runtime rt, Array variants) {
+    Type t;
+    t.variant = TYPE_VARIANT_VAR;
+    // TODO: handle OOM
+    t.var = HeapAlloc(rt->heap, rt->builtinTypes.referenceTypes.varType);
+    t.var->variants = variants;
+    Uword numValues = ArrayGetSize(variants);
+    Value* v = ArrayGetFirstElement(variants);
+    Uword size = 0;
+    Uword alignment = 0;
+    for(Uword i = 0; i < numValues; ++i) {
+        Type valType = ObjectGetType(v[i].data);
+        Uword tSize = TypeGetFieldSize(valType);
+        Uword tAlignment = TypeGetFieldAlignment(valType);
+        size = size > tSize ? size : tSize;
+        alignment = alignment > tAlignment ? alignment : tAlignment;
+    }
+    size += sizeof(Uword); // for the variant field
+    t.var->alignment = alignment;
+    t.var->size = size;
+    return t;
+}
+
 // Uword
 
 static Uword UwordAlignOn(Uword offset, Uword on) {
@@ -655,6 +697,10 @@ static Uword UwordAlignOn(Uword offset, Uword on) {
 
 static Object ObjectGetMetaData(Address obj) {
     return *((Address*)(obj - sizeof(Address)));
+}
+
+static Type ObjectGetType(Address obj) {
+    return ObjectGetMetaData(obj)->type;
 }
 
 // Runtime
@@ -865,6 +911,14 @@ static String RuntimeInitCreateString(Runtime rt, const char* str) {
     return s;
 }
 
+static Type* RuntimeInitAllocTypeOnHeap(Runtime rt, Type copyOf) {
+    Type* t = RuntimeInitAllocRawObject(rt->heap, sizeof(struct Type_t), sizeof(Address));
+    Object om = ObjectGetMetaData(t);
+    om->type = rt->builtinTypes.variadicTypes.type;
+    (*t) = copyOf;
+    return t;
+}
+
 static void RuntimeInitInitBuiltInTypes(Runtime rt) {
     // The types have now been allocated, but not deeply. They are still missing
     // data members so they cannot be used yet.
@@ -891,6 +945,17 @@ static void RuntimeInitInitBuiltInTypes(Runtime rt) {
     sf[2].type = rt->builtinTypes.primitiveTypes.address;
     sf[2].offset = offsetof(struct Array_t, data);
     sf[2].name = RuntimeInitCreateString(rt, "data");
+    
+    // String
+    si = rt->builtinTypes.referenceTypes.string.ref->structInfo;
+    RuntimeInitInitStructInfo(rt, si, addrSize, sizeof(struct String_t), 2);
+    sf = ArrayGetFirstElement(si->structFields);
+    sf[0].type = rt->builtinTypes.primitiveTypes.uword;
+    sf[0].offset = offsetof(struct String_t, size);
+    sf[0].name = RuntimeInitCreateString(rt, "size");
+    sf[1].type = rt->builtinTypes.referenceTypes.array;
+    sf[1].offset = offsetof(struct String_t, utf8Data);
+    sf[1].name = RuntimeInitCreateString(rt, "data");
     
     // StructField
     si = rt->builtinTypes.valueTypes.structField.val->structInfo;
@@ -955,18 +1020,15 @@ static void RuntimeInitInitBuiltInTypes(Runtime rt) {
     rt->builtinTypes.variadicTypes.type.var->alignment = addrSize;
     rt->builtinTypes.variadicTypes.type.var->variants = RuntimeInitAllocRawArray(rt, rt->builtinTypes.valueTypes.value, sizeof(Address), addrSize, 3);
     Value* values = ArrayGetFirstElement(rt->builtinTypes.variadicTypes.type.var->variants);
-    values[0].data = AllocATypeInstanceOnRTHeapAndReturnIt
+    values[0].data = RuntimeInitAllocTypeOnHeap(rt, rt->builtinTypes.referenceTypes.refType);
+    values[1].data = RuntimeInitAllocTypeOnHeap(rt, rt->builtinTypes.referenceTypes.valType);
+    values[2].data = RuntimeInitAllocTypeOnHeap(rt, rt->builtinTypes.referenceTypes.varType);
     
-    // What the hell do I do with these "values"? They need to be able to be
-    // val type values and primitives as well as ref type values but the
-    // current type system only supports reference type values on the heap.
-    // Auto-boxing? It is kind of nice to have the distinction between ref and
-    // val types so that there does not need to be any special syntax for
-    // different types of allocations.
-    // Yes - auto-boxing will be fine. The Value type is treated specially, it
-    // is a "magic" type that refers to anything on the heap and may refer to
-    // heap-allocated var or val instances as well as regular ref instances.
-
+    // Now the regular allocation functions should work so we can use them when
+    // defining the rest of the built in types.
+    
+    
+    
 }
 
 static void RuntimeInitCreateBuiltInTypes(Runtime rt) {
