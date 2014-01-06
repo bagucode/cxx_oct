@@ -265,7 +265,8 @@ struct Symbol_t {
 };
 
 struct Vector_t {
-    Array data;
+    Uword size;
+    Array data; // size of data is total capacity
 };
 
 struct Object_t {
@@ -331,6 +332,7 @@ struct BuiltinTypes_t {
         Type object;
         Type namespace;
         Type runtime;
+        Type context;
     } referenceTypes;
 };
 
@@ -507,6 +509,29 @@ static Address ArrayGetFirstElement(Array arr) {
     return arr->data;
 }
 
+static Uword ArrayGetSize(Array arr) {
+    return arr->size;
+}
+
+static Type ArrayGetType(Context ctx) {
+    return ctx->runtime->builtinTypes.referenceTypes.array;
+}
+
+// Context
+
+static Context ContextGetCurrent() {
+    return (Context)TLSGet(&currentContext);
+}
+
+static Context ContextCreate(Runtime rt) {
+    Heap ctxHeap = HeapCreate(1024 * 1024);
+    Context ctx = HeapAlloc(ctxHeap, rt->builtinTypes.referenceTypes.context);
+    ctx->heap = ctxHeap;
+    ctx->runtime = rt;
+    // TODO: what to do with the operand stack?
+    return ctx;
+}
+
 // StructField
 
 static Type StructFieldGetType(Context ctx) {
@@ -515,10 +540,6 @@ static Type StructFieldGetType(Context ctx) {
 
 static Array StructFieldArrayCreate(Context ctx, Uword size) {
     return HeapAllocArray(ctx, HeapGetRuntimeHeap(ctx), StructFieldGetType(ctx), size);
-}
-
-static Context ContextGetCurrent() {
-    return (Context)TLSGet(&currentContext);
 }
 
 static Type StructFieldGetFieldType(StructField* f) {
@@ -564,6 +585,7 @@ static StructInfo StructInfoCreate(Context ctx, Array structFields) {
         Uword fieldAlignment = TypeGetFieldAlignment(fieldType);
         Uword fieldSize = TypeGetFieldSize(fieldType);
         mySize = UwordAlignOn(mySize, fieldAlignment);
+        fields[i].offset = mySize;
         mySize += fieldSize;
         myAlignment = myAlignment > fieldAlignment ? myAlignment : fieldAlignment;
     }
@@ -572,12 +594,6 @@ static StructInfo StructInfoCreate(Context ctx, Array structFields) {
     si->size = mySize;
     si->structFields = structFields;
     return si;
-}
-
-// Array
-
-static Type ArrayGetType(Context ctx) {
-    return ctx->runtime->builtinTypes.referenceTypes.array;
 }
 
 // Type
@@ -911,7 +927,7 @@ static String RuntimeInitCreateString(Runtime rt, const char* str) {
     return s;
 }
 
-static Type* RuntimeInitAllocTypeOnHeap(Runtime rt, Type copyOf) {
+static Type* RuntimeInitAllocTypeObjectOnHeap(Runtime rt, Type copyOf) {
     Type* t = RuntimeInitAllocRawObject(rt->heap, sizeof(struct Type_t), sizeof(Address));
     Object om = ObjectGetMetaData(t);
     om->type = rt->builtinTypes.variadicTypes.type;
@@ -919,12 +935,13 @@ static Type* RuntimeInitAllocTypeOnHeap(Runtime rt, Type copyOf) {
     return t;
 }
 
-static void RuntimeInitInitBuiltInTypes(Runtime rt) {
+static void RuntimeInitInitBuiltInTypes(Context ctx) {
     // The types have now been allocated, but not deeply. They are still missing
     // data members so they cannot be used yet.
     // In order to be able to use the regular heap allocation functions we have
     // to manually initialize all the types that the Type type depends upon.
     
+    Runtime rt = ctx->runtime;
     StructInfo si;
     StructField* sf;
     Uword addrSize = sizeof(Address);
@@ -1018,40 +1035,108 @@ static void RuntimeInitInitBuiltInTypes(Runtime rt) {
     // Type
     rt->builtinTypes.variadicTypes.type.var->size = sizeof(struct Type_t);
     rt->builtinTypes.variadicTypes.type.var->alignment = addrSize;
-    rt->builtinTypes.variadicTypes.type.var->variants = RuntimeInitAllocRawArray(rt, rt->builtinTypes.valueTypes.value, sizeof(Address), addrSize, 3);
+    rt->builtinTypes.variadicTypes.type.var->variants = RuntimeInitAllocRawArray(rt, rt->builtinTypes.valueTypes.value, sizeof(struct Value_t), addrSize, 3);
     Value* values = ArrayGetFirstElement(rt->builtinTypes.variadicTypes.type.var->variants);
-    values[0].data = RuntimeInitAllocTypeOnHeap(rt, rt->builtinTypes.referenceTypes.refType);
-    values[1].data = RuntimeInitAllocTypeOnHeap(rt, rt->builtinTypes.referenceTypes.valType);
-    values[2].data = RuntimeInitAllocTypeOnHeap(rt, rt->builtinTypes.referenceTypes.varType);
+    values[0].data = RuntimeInitAllocTypeObjectOnHeap(rt, rt->builtinTypes.referenceTypes.refType);
+    values[1].data = RuntimeInitAllocTypeObjectOnHeap(rt, rt->builtinTypes.referenceTypes.valType);
+    values[2].data = RuntimeInitAllocTypeObjectOnHeap(rt, rt->builtinTypes.referenceTypes.varType);
     
     // Now the regular allocation functions should work so we can use them when
-    // defining the rest of the built in types.
+    // defining the rest of the built in types but we still need to take care
+    // with the order because they may depend on each other.
     
+    // Value
+    Array fields = StructFieldArrayCreate(ctx, 1);
+    sf = ArrayGetFirstElement(fields);
+    sf[0].type = rt->builtinTypes.primitiveTypes.address;
+    // Use the RTInit String creation function because it uses the RT heap so
+    // there is no need to first create the string and then copy it.
+    sf[0].name = RuntimeInitCreateString(rt, "object");
+    rt->builtinTypes.valueTypes.value.val->structInfo = StructInfoCreate(ctx, fields);
     
+    // NamespaceEntry
+    fields = StructFieldArrayCreate(ctx, 2);
+    sf = ArrayGetFirstElement(fields);
+    sf[0].type = rt->builtinTypes.referenceTypes.string;
+    sf[0].name = RuntimeInitCreateString(rt, "key");
+    sf[1].type = rt->builtinTypes.valueTypes.value;
+    sf[1].name = RuntimeInitCreateString(rt, "value");
+    rt->builtinTypes.valueTypes.namespaceEntry.val->structInfo = StructInfoCreate(ctx, fields);
     
+    // Symbol
+    fields = StructFieldArrayCreate(ctx, 1);
+    sf = ArrayGetFirstElement(fields);
+    sf[0].type = rt->builtinTypes.referenceTypes.string;
+    sf[0].name = RuntimeInitCreateString(rt, "name");
+    rt->builtinTypes.referenceTypes.symbol.ref->structInfo = StructInfoCreate(ctx, fields);
+    
+    // Vector
+    fields = StructFieldArrayCreate(ctx, 2);
+    sf = ArrayGetFirstElement(fields);
+    sf[0].type = rt->builtinTypes.primitiveTypes.uword;
+    sf[0].name = RuntimeInitCreateString(rt, "size");
+    sf[1].type = rt->builtinTypes.referenceTypes.array;
+    sf[1].name = RuntimeInitCreateString(rt, "data");
+    rt->builtinTypes.referenceTypes.vector.ref->structInfo = StructInfoCreate(ctx, fields);
+    
+    // Object
+    fields = StructFieldArrayCreate(ctx, 1);
+    sf = ArrayGetFirstElement(fields);
+    sf[0].type = rt->builtinTypes.variadicTypes.type;
+    sf[0].name = RuntimeInitCreateString(rt, "type");
+    rt->builtinTypes.referenceTypes.object.ref->structInfo = StructInfoCreate(ctx, fields);
+
+    // Namespace
+    fields = StructFieldArrayCreate(ctx, 2);
+    sf = ArrayGetFirstElement(fields);
+    sf[0].type = rt->builtinTypes.referenceTypes.string;
+    sf[0].name = RuntimeInitCreateString(rt, "name");
+    sf[1].type = rt->builtinTypes.referenceTypes.vector;
+    sf[1].name = RuntimeInitCreateString(rt, "entries");
+    rt->builtinTypes.referenceTypes.namespace.ref->structInfo = StructInfoCreate(ctx, fields);
+    
+    // TODO: make proper types for the runtime and context. It is important that all the types
+    // used by the ovm are representable in the ovm type system or self-hosting may not be possible.
+
+    // Runtime
+    // Make the runtime opaque for now, it is handled specially in the GC anyway.
+    RuntimeInitInitPrimitive(rt, &rt->builtinTypes.referenceTypes.runtime, sizeof(struct Runtime_t), addrSize);
+    
+    // Context
+    // Make the context opaque for now, it is handled specially in the GC anyway.
+    RuntimeInitInitPrimitive(rt, &rt->builtinTypes.referenceTypes.context, sizeof(struct Context_t), addrSize);
 }
 
-static void RuntimeInitCreateBuiltInTypes(Runtime rt) {
+static void RuntimeInitCreateBuiltInTypes(Context ctx) {
     // The built in types are circular so we need to allocate memory
     // up front and use some uninitialized pointers to get it going.
-    RuntimeInitAllocBuiltInTypes(rt);
-    RuntimeInitInitBuiltInTypes(rt);
+    RuntimeInitAllocBuiltInTypes(ctx->runtime);
+    RuntimeInitInitBuiltInTypes(ctx);
 }
 
 static Runtime RuntimeCreate() {
     Heap rtHeap = HeapCreate(1024 * 1024);
-    Address rtAddr = RuntimeInitAllocRawObject(rtHeap, sizeof(struct Runtime_t), sizeof(Address));
-    Runtime rt = rtAddr;
+    Runtime rt = RuntimeInitAllocRawObject(rtHeap, sizeof(struct Runtime_t), sizeof(Address));
     rt->heap = rtHeap;
-    RuntimeInitCreateBuiltInTypes(rt);
-    Object om = ObjectGetMetaData(rtAddr);
+    Heap ctxHeap = HeapCreate(1024 * 1024);
+    Context mainCtx = RuntimeInitAllocRawObject(ctxHeap, sizeof(struct Context_t), sizeof(Address));
+    mainCtx->runtime = rt;
+    mainCtx->heap = ctxHeap;
+    RuntimeInitCreateBuiltInTypes(mainCtx);
+    Object om = ObjectGetMetaData(rt);
     om->type = rt->builtinTypes.referenceTypes.runtime;
-    
+    om = ObjectGetMetaData(mainCtx);
+    om->type = rt->builtinTypes.referenceTypes.context;
+
+    TLSCreate(&currentContext);
+    TLSSet(&currentContext, mainCtx);
+
     return rt;
 }
 
 static void RuntimeDestroy(Runtime rt) {
     HeapDestroy(rt->heap);
+    TLSDestroy(&currentContext);
     // TODO: kill all running threads and deallocate their heaps
 }
 
