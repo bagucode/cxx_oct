@@ -393,10 +393,10 @@ static Heap OvmHeapCreate(Uword initialSize) {
         return NULL;
     }
     heap = (Heap)block;
-    heap->tail = (HeapBlock)block + sizeof(struct Heap_t);
+    heap->tail = (U8*)block + sizeof(struct Heap_t);
     heap->totalSize = initialSize;
     
-    heap->tail->start = heap->tail + sizeof(struct HeapBlock_t);
+    heap->tail->start = (U8*)heap->tail + sizeof(struct HeapBlock_t);
     heap->tail->end = (U8*)heap->tail->start + initialSize;
     heap->tail->pos = heap->tail->start;
     heap->tail->prev = NULL;
@@ -438,7 +438,7 @@ start:;
             assert(False && "Out of memory");
             return NULL;
         }
-        block->start = block + sizeof(struct HeapBlock_t);
+        block->start = (U8*)block + sizeof(struct HeapBlock_t);
         block->end = (U8*)block->start + blockSize;
         block->pos = block->start;
         block->prev = heap->tail;
@@ -492,7 +492,7 @@ static Array OvmHeapAllocArray(Context ctx, Heap heap, Type elementType, Uword s
     Array arr = arrLoc;
     arr->elementType = elementType;
     arr->size = size;
-    arr->data = (Address)UwordAlignOn((Uword)(arr + sizeof(struct Array_t)), alignment);
+    arr->data = (Address)UwordAlignOn((Uword)((U8*)arr + sizeof(struct Array_t)), alignment);
     
     return arr;
 }
@@ -765,7 +765,7 @@ static Array RuntimeInitAllocRawArray(Runtime rt, Type elementType, Uword elemen
     Array arr = arrLoc;
     arr->elementType = elementType;
     arr->size = arraySize;
-    arr->data = (Address)UwordAlignOn((Uword)(arr + sizeof(struct Array_t)), elementAlignment);
+    arr->data = (Address)UwordAlignOn((Uword)((U8*)arr + sizeof(struct Array_t)), elementAlignment);
     
     return arr;
 }
