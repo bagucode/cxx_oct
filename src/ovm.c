@@ -393,7 +393,7 @@ static Heap OvmHeapCreate(Uword initialSize) {
         return NULL;
     }
     heap = (Heap)block;
-    heap->tail = (U8*)block + sizeof(struct Heap_t);
+    heap->tail = (Address)((U8*)block + sizeof(struct Heap_t));
     heap->totalSize = initialSize;
     
     heap->tail->start = (U8*)heap->tail + sizeof(struct HeapBlock_t);
@@ -422,9 +422,9 @@ start:;
     Uword alignmentSpace = UwordAlignOn((Uword)heap->tail->pos, alignment) - (Uword)heap->tail->pos;
     Uword available = (U8*)heap->tail->end - (U8*)heap->tail->pos;
     if(alignmentSpace + size <= available) {
-        (U8*)heap->tail->pos += alignmentSpace;
+        heap->tail->pos = (U8*)heap->tail->pos + alignmentSpace;
         Address ret = heap->tail->pos;
-        (U8*)heap->tail->pos += size;
+        heap->tail->pos = (U8*)heap->tail->pos + size;
         return ret;
     }
     else {
