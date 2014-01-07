@@ -384,25 +384,27 @@ static Type ObjectGetType(Address obj);
 
 // Heap
 
-static Heap HeapCreate(Uword initialSize) {
+static Heap OvmHeapCreate(Uword initialSize) {
     const Uword extra = sizeof(struct Heap_t) + sizeof(struct HeapBlock_t);
     Address block = malloc(initialSize + extra);
+	Heap heap;
+
     if(!block) {
         return NULL;
     }
-    Heap heap = (Heap)block;
-    heap->tail = block + sizeof(struct Heap_t);
+    heap = (Heap)block;
+    heap->tail = (HeapBlock)block + sizeof(struct Heap_t);
     heap->totalSize = initialSize;
     
     heap->tail->start = heap->tail + sizeof(struct HeapBlock_t);
-    heap->tail->end = heap->tail->start + initialSize;
+    heap->tail->end = (U8*)heap->tail->start + initialSize;
     heap->tail->pos = heap->tail->start;
     heap->tail->prev = NULL;
     
     return heap;
 }
 
-static void HeapDestroy(Heap heap) {
+static void OvmHeapDestroy(Heap heap) {
     HeapBlock block = heap->tail;
     while(block->prev) {
         HeapBlock prev = block->prev;
@@ -412,17 +414,17 @@ static void HeapDestroy(Heap heap) {
     free(heap);
 }
 
-static Address HeapAllocRaw(Heap heap, Uword size, Uword alignment) {
+static Address OvmHeapAllocRaw(Heap heap, Uword size, Uword alignment) {
 start:;
     // TODO: walk the chain and look for free space in all the blocks?
     // That would make better use of the space but might cause bad locality and
     // make allocations slower?
     Uword alignmentSpace = UwordAlignOn((Uword)heap->tail->pos, alignment) - (Uword)heap->tail->pos;
-    Uword available = heap->tail->end - heap->tail->pos;
+    Uword available = (U8*)heap->tail->end - (U8*)heap->tail->pos;
     if(alignmentSpace + size <= available) {
-        heap->tail->pos += alignmentSpace;
+        (U8*)heap->tail->pos += alignmentSpace;
         Address ret = heap->tail->pos;
-        heap->tail->pos += size;
+        (U8*)heap->tail->pos += size;
         return ret;
     }
     else {
@@ -437,7 +439,7 @@ start:;
             return NULL;
         }
         block->start = block + sizeof(struct HeapBlock_t);
-        block->end = block->start + blockSize;
+        block->end = (U8*)block->start + blockSize;
         block->pos = block->start;
         block->prev = heap->tail;
         
@@ -448,27 +450,27 @@ start:;
     }
 }
 
-static Address HeapAlloc(Heap heap, Type type) {
+static Address OvmHeapAlloc(Heap heap, Type type) {
     Uword alignment = TypeGetAllocationAlignment(type);
     Uword metaDataSize = sizeof(struct Object_t) + sizeof(Address);
     Uword size = metaDataSize;
     size += alignment;
     size += TypeGetAllocationSize(type);
     
-    Address block = HeapAllocRaw(heap, size, sizeof(Address));
+    Address block = OvmHeapAllocRaw(heap, size, sizeof(Address));
     if(!block) {
         return NULL;
     }
     
     Object obj = block;
     obj->type = type;
-    Address ret = (Address)UwordAlignOn((Uword)(block + metaDataSize), alignment);
-    Address* backPtrLoc = ret - sizeof(Address);
+    Address ret = (Address)UwordAlignOn((Uword)((U8*)block + metaDataSize), alignment);
+	Address* backPtrLoc = (Address*)((U8*)ret - sizeof(Address));
     (*backPtrLoc) = block;
     return ret;
 }
 
-static Array HeapAllocArray(Context ctx, Heap heap, Type elementType, Uword size) {
+static Array OvmHeapAllocArray(Context ctx, Heap heap, Type elementType, Uword size) {
     Uword alignment = TypeGetAllocationAlignment(elementType);
     Uword metaDataSize = sizeof(struct Object_t) + sizeof(Address);
     Uword allocSize = metaDataSize;
@@ -476,15 +478,15 @@ static Array HeapAllocArray(Context ctx, Heap heap, Type elementType, Uword size
     allocSize += alignment;
     allocSize += (TypeGetAllocationSize(elementType) * size);
     
-    Address block = HeapAllocRaw(heap, allocSize, sizeof(Address));
+    Address block = OvmHeapAllocRaw(heap, allocSize, sizeof(Address));
     if(!block) {
         return NULL;
     }
     
     Object obj = block;
     obj->type = ArrayGetType(ctx);
-    Address arrLoc = block + metaDataSize;
-    Address* backPtrLoc = arrLoc - sizeof(Address);
+	Address arrLoc = (U8*)block + metaDataSize;
+	Address* backPtrLoc = (Address*)((U8*)arrLoc - sizeof(Address));
     (*backPtrLoc) = block;
     
     Array arr = arrLoc;
@@ -524,8 +526,8 @@ static Context ContextGetCurrent() {
 }
 
 static Context ContextCreate(Runtime rt) {
-    Heap ctxHeap = HeapCreate(1024 * 1024);
-    Context ctx = HeapAlloc(ctxHeap, rt->builtinTypes.referenceTypes.context);
+    Heap ctxHeap = OvmHeapCreate(1024 * 1024);
+    Context ctx = OvmHeapAlloc(ctxHeap, rt->builtinTypes.referenceTypes.context);
     ctx->heap = ctxHeap;
     ctx->runtime = rt;
     // TODO: what to do with the operand stack?
@@ -539,7 +541,7 @@ static Type StructFieldGetType(Context ctx) {
 }
 
 static Array StructFieldArrayCreate(Context ctx, Uword size) {
-    return HeapAllocArray(ctx, HeapGetRuntimeHeap(ctx), StructFieldGetType(ctx), size);
+    return OvmHeapAllocArray(ctx, HeapGetRuntimeHeap(ctx), StructFieldGetType(ctx), size);
 }
 
 static Type StructFieldGetFieldType(StructField* f) {
@@ -554,7 +556,7 @@ static Type StructInfoGetType(Context ctx) {
 
 static StructInfo StructInfoCreatePrimitive(Context ctx, Uword size, Uword alignment) {
     Heap rtHeap = HeapGetRuntimeHeap(ctx);
-    StructInfo si = HeapAlloc(rtHeap, StructInfoGetType(ctx));
+    StructInfo si = OvmHeapAlloc(rtHeap, StructInfoGetType(ctx));
     if(!si) {
         assert(False && "Ouch!"); // TODO: error handling
     }
@@ -562,7 +564,7 @@ static StructInfo StructInfoCreatePrimitive(Context ctx, Uword size, Uword align
     si->size = size;
     // TODO: make structFields a Variadic type so that this object allocation can
     // be avoided.
-    si->structFields = HeapAllocArray(ctx, rtHeap, ctx->runtime->builtinTypes.primitiveTypes.nothing, 0);
+    si->structFields = OvmHeapAllocArray(ctx, rtHeap, ctx->runtime->builtinTypes.primitiveTypes.nothing, 0);
     if(!si->structFields) {
         assert(False && "Ouch!"); // TODO: error handling
     }
@@ -570,7 +572,7 @@ static StructInfo StructInfoCreatePrimitive(Context ctx, Uword size, Uword align
 }
 
 static StructInfo StructInfoCreate(Context ctx, Array structFields) {
-    StructInfo si = HeapAlloc(HeapGetRuntimeHeap(ctx), StructInfoGetType(ctx));
+    StructInfo si = OvmHeapAlloc(HeapGetRuntimeHeap(ctx), StructInfoGetType(ctx));
     if(!si) {
         assert(False && "Ouch!"); // TODO: error handling
     }
@@ -666,7 +668,7 @@ static Type TypeCreateRefType(Runtime rt, StructInfo si) {
     Type t;
     t.variant = TYPE_VARIANT_REF;
     // TODO: handle OOM
-    t.ref = HeapAlloc(rt->heap, rt->builtinTypes.referenceTypes.refType);
+    t.ref = OvmHeapAlloc(rt->heap, rt->builtinTypes.referenceTypes.refType);
     t.ref->structInfo = si;
     return t;
 }
@@ -675,7 +677,7 @@ static Type TypeCreateValType(Runtime rt, StructInfo si) {
     Type t;
     t.variant = TYPE_VARIANT_VAL;
     // TODO: handle OOM
-    t.val = HeapAlloc(rt->heap, rt->builtinTypes.referenceTypes.valType);
+    t.val = OvmHeapAlloc(rt->heap, rt->builtinTypes.referenceTypes.valType);
     t.val->structInfo = si;
     return t;
 }
@@ -684,7 +686,7 @@ static Type TypeCreateVarType(Runtime rt, Array variants) {
     Type t;
     t.variant = TYPE_VARIANT_VAR;
     // TODO: handle OOM
-    t.var = HeapAlloc(rt->heap, rt->builtinTypes.referenceTypes.varType);
+    t.var = OvmHeapAlloc(rt->heap, rt->builtinTypes.referenceTypes.varType);
     t.var->variants = variants;
     Uword numValues = ArrayGetSize(variants);
     Value* v = ArrayGetFirstElement(variants);
@@ -712,7 +714,7 @@ static Uword UwordAlignOn(Uword offset, Uword on) {
 // Object
 
 static Object ObjectGetMetaData(Address obj) {
-    return *((Address*)(obj - sizeof(Address)));
+	return *((Address*) ((U8*) obj - sizeof(Address)));
 }
 
 static Type ObjectGetType(Address obj) {
@@ -726,7 +728,7 @@ static Address RuntimeInitAllocRawObject(Heap heap, Uword size, Uword alignment)
     size += alignment;
     size += metaDataSize;
 
-    Address block = HeapAllocRaw(heap, size, sizeof(Address));
+    Address block = OvmHeapAllocRaw(heap, size, sizeof(Address));
     if(!block) {
         return NULL;
     }
@@ -734,8 +736,8 @@ static Address RuntimeInitAllocRawObject(Heap heap, Uword size, Uword alignment)
     Object obj = block;
     obj->type.variant = 0;
     obj->type.ref = NULL;
-    Address ret = (Address)UwordAlignOn((Uword)(block + metaDataSize), alignment);
-    Address* backPtrLoc = ret - sizeof(Address);
+	Address ret = (Address) UwordAlignOn((Uword) ((U8*) block + metaDataSize), alignment);
+	Address* backPtrLoc = (Address*) ((U8*) ret - sizeof(Address));
     (*backPtrLoc) = block;
     return ret;
 }
@@ -749,15 +751,15 @@ static Array RuntimeInitAllocRawArray(Runtime rt, Type elementType, Uword elemen
     allocSize += elementAlignment;
     allocSize += elementSize * arraySize;
     
-    Address block = HeapAllocRaw(rt->heap, allocSize, sizeof(Address));
+    Address block = OvmHeapAllocRaw(rt->heap, allocSize, sizeof(Address));
     if(!block) {
         return NULL;
     }
     
     Object obj = block;
     obj->type = rt->builtinTypes.referenceTypes.array;
-    Address arrLoc = block + metaDataSize;
-    Address* backPtrLoc = arrLoc - sizeof(Address);
+	Address arrLoc = (U8*) block + metaDataSize;
+	Address* backPtrLoc = (Address*)((U8*) arrLoc - sizeof(Address));
     (*backPtrLoc) = block;
     
     Array arr = arrLoc;
@@ -1115,10 +1117,10 @@ static void RuntimeInitCreateBuiltInTypes(Context ctx) {
 }
 
 static Runtime RuntimeCreate() {
-    Heap rtHeap = HeapCreate(1024 * 1024);
+    Heap rtHeap = OvmHeapCreate(1024 * 1024);
     Runtime rt = RuntimeInitAllocRawObject(rtHeap, sizeof(struct Runtime_t), sizeof(Address));
     rt->heap = rtHeap;
-    Heap ctxHeap = HeapCreate(1024 * 1024);
+    Heap ctxHeap = OvmHeapCreate(1024 * 1024);
     Context mainCtx = RuntimeInitAllocRawObject(ctxHeap, sizeof(struct Context_t), sizeof(Address));
     mainCtx->runtime = rt;
     mainCtx->heap = ctxHeap;
@@ -1135,7 +1137,7 @@ static Runtime RuntimeCreate() {
 }
 
 static void RuntimeDestroy(Runtime rt) {
-    HeapDestroy(rt->heap);
+    OvmHeapDestroy(rt->heap);
     TLSDestroy(&currentContext);
     // TODO: kill all running threads and deallocate their heaps
 }
