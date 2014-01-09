@@ -206,6 +206,9 @@ typedef struct BuiltinTypes_t BuiltinTypes;
 struct Nothing_t;
 typedef struct Nothing_t* Nothing;
 
+struct OpStack_t;
+typedef struct OpStack_t* OpStack;
+
 typedef void(*octFn)(Context ctx);
 
 // Structure definitions
@@ -333,6 +336,7 @@ struct BuiltinTypes_t {
         Type namespace;
         Type runtime;
         Type context;
+        Type opStack;
     } referenceTypes;
 };
 
@@ -353,10 +357,15 @@ struct Heap_t {
     Uword totalSize;
 };
 
+struct OpStack_t {
+    Address top;
+    Array data; // U8
+};
+
 struct Context_t {
     Runtime runtime;
     Heap heap;
-    Vector operandStack;
+    OpStack operandStack;
 };
 
 // Global variables
@@ -1097,6 +1106,15 @@ static void RuntimeInitInitBuiltInTypes(Context ctx) {
     sf[1].name = RuntimeInitCreateString(rt, "entries");
     rt->builtinTypes.referenceTypes.namespace.ref->structInfo = StructInfoCreate(ctx, fields);
     
+    // OpStack
+    fields = StructFieldArrayCreate(ctx, 2);
+    sf = ArrayGetFirstElement(fields);
+    sf[0].type = rt->builtinTypes.primitiveTypes.uword;
+    sf[0].name = RuntimeInitCreateString(rt, "top");
+    sf[1].type = rt->builtinTypes.referenceTypes.array;
+    sf[1].name = RuntimeInitCreateString(rt, "data");
+    rt->builtinTypes.referenceTypes.opStack.ref->structInfo = StructInfoCreate(ctx, fields);
+    
     // TODO: make proper types for the runtime and context. It is important that all the types
     // used by the ovm are representable in the ovm type system or self-hosting may not be possible.
 
@@ -1140,6 +1158,37 @@ static void RuntimeDestroy(Runtime rt) {
     OvmHeapDestroy(rt->heap);
     TLSDestroy(&currentContext);
     // TODO: kill all running threads and deallocate their heaps
+}
+
+// OpStack
+
+static OpStack OpStackCreate(Context ctx, Heap heap) {
+    OpStack os = OvmHeapAlloc(heap, ctx->runtime->builtinTypes.referenceTypes.opStack);
+    if(!os) {
+        assert(False && "OOM");
+    }
+    os->data = OvmHeapAllocArray(ctx, heap, ctx->runtime->builtinTypes.primitiveTypes.u8, 10000);
+    if(!os->data) {
+        assert(False && "OOM");
+    }
+    os->top = ArrayGetFirstElement(os->data);
+    return os;
+}
+
+static void OpStackPush(Context ctx, Heap heap, OpStack os, Type valueType, Address src) {
+    Uword size = TypeGetFieldSize(valueType) + TypeGetFieldSize(ctx->runtime->builtinTypes.variadicTypes.type);
+    Uword stackSize = ArrayGetSize(os->data);
+    Address endOfStack = ArrayGetFirstElement(os->data) + stackSize;
+    Uword available = endOfStack - os->top;
+    if(size > available) {
+        Uword newStackSize = stackSize * 2;
+        newStackSize = newStackSize > size ? newStackSize : size + newStackSize;
+        Array newStack = OvmHeapAllocArray(ctx, heap, ctx->runtime->builtinTypes.primitiveTypes.u8, newStackSize);
+        if(!newStack) {
+            assert(False && "OOM");
+        }
+        ArrayC
+    }
 }
 
 // TEST?
