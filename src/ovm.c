@@ -390,6 +390,7 @@ static Type ArrayGetType(Context ctx);
 static Uword ArrayGetSize(Array arr);
 static Address ArrayGetFirstElement(Array arr);
 static Type ObjectGetType(Address obj);
+static Bool TypeEquals(Type x, Type y);
 
 // Heap
 
@@ -528,6 +529,47 @@ static Type ArrayGetType(Context ctx) {
     return ctx->runtime->builtinTypes.referenceTypes.array;
 }
 
+static void ArrayPut(Array arr, Uword index, Type elementType, Address src) {
+	if (!TypeEquals(arr->elementType, elementType)) {
+		assert(False && "This error needs to be handled and set in the context");
+	}
+	if (index > arr->size - 1) {
+		assert(False && "This error needs to be handled and set in the context");
+	}
+	U8* e = (U8*) ArrayGetFirstElement(arr);
+	Uword elementFieldSize = TypeGetFieldSize(elementType);
+	e += elementFieldSize * index;
+	memcpy(e, src, elementFieldSize);
+}
+
+static void ArrayGet(Array arr, Uword index, Address dest) {
+	if (index > arr->size - 1) {
+		assert(False && "This error needs to be handled and set in the context");
+	}
+	U8* e = (U8*) ArrayGetFirstElement(arr);
+	Uword elementFieldSize = TypeGetFieldSize(arr->elementType);
+	e += elementFieldSize * index;
+	memcpy(dest, e, elementFieldSize);
+}
+
+static void ArrayCopy(Array from, Uword fromIdx, Array to, Uword toIdx, Uword length) {
+	if (!TypeEquals(from->elementType, to->elementType)) {
+		assert(False && "This error needs to be handled and set in the context");
+	}
+	if (fromIdx + length > from->size) {
+		assert(False && "This error needs to be handled and set in the context");
+	}
+	if (toIdx + length > to->size) {
+		assert(False && "This error needs to be handled and set in the context");
+	}
+	Uword elementFieldSize = TypeGetFieldSize(from->elementType);
+	U8* fromP = (U8*) ArrayGetFirstElement(from);
+	fromP += elementFieldSize * fromIdx;
+	U8* toP = (U8*) ArrayGetFirstElement(to);
+	toP += elementFieldSize * toIdx;
+	memcpy(toP, fromP, elementFieldSize * length);
+}
+
 // Context
 
 static Context ContextGetCurrent() {
@@ -608,6 +650,10 @@ static StructInfo StructInfoCreate(Context ctx, Array structFields) {
 }
 
 // Type
+
+static Bool TypeEquals(Type x, Type y) {
+	return x.variant == y.variant && x.ref == y.ref;
+}
 
 static Uword TypeGetAllocationAlignment(Type type) {
     switch (type.variant) {
@@ -728,6 +774,45 @@ static Object ObjectGetMetaData(Address obj) {
 
 static Type ObjectGetType(Address obj) {
     return ObjectGetMetaData(obj)->type;
+}
+
+// Vector
+
+static Vector VectorCreate(Context ctx, Heap heap, Type elementType, Uword initialCapacity) {
+	Vector v = (Vector) OvmHeapAlloc(heap, ctx->runtime->builtinTypes.referenceTypes.vector);
+	if (!v) {
+		assert(False && "OOM");
+	}
+	v->data = (Array) OvmHeapAllocArray(ctx, heap, elementType, initialCapacity);
+	if (!v->data) {
+		assert(False && "OOM");
+	}
+	v->size = 0;
+	return v;
+}
+
+static void VectorPush(Context ctx, Heap heap, Vector v, Type valueType, Address valueLocation) {
+start:;
+	if (v->data->size > v->size) {
+		ArrayPut(v->data, v->size, valueType, valueLocation);
+		++v->size;
+	}
+	else {
+		Array newData = OvmHeapAllocArray(ctx, heap, v->data->elementType, v->data->size * 2);
+		if (!newData) {
+			assert(False && "OOM");
+		}
+		ArrayCopy(v->data, 0, newData, 0, v->data->size);
+		v->data = newData;
+		goto start;
+	}
+}
+
+static void VectorPop(Vector v, Address dest) {
+	if (v->size > 0) {
+		--v->size;
+		ArrayGet(v->data, v->size, dest);
+	}
 }
 
 // Runtime
@@ -881,7 +966,7 @@ static void RuntimeInitAllocBuiltInTypes(Runtime rt) {
 static void RuntimeInitInitPrimitive(Runtime rt, Type* type, Uword size, Uword alignment) {
     type->val->structInfo->alignment = alignment;
     type->val->structInfo->size = size;
-    type->val->structInfo->structFields = RuntimeInitAllocRawArray(rt, rt->builtinTypes.primitiveTypes.nothing, size, alignment, 0);
+    type->val->structInfo->structFields = RuntimeInitAllocRawArray(rt, rt->builtinTypes.primitiveTypes.nothing, sizeof(struct Nothing_t), sizeof(Address), 0);
 }
 
 static void RuntimeInitInitPrimitiveTypes(Runtime rt) {
