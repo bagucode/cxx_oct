@@ -1261,19 +1261,29 @@ static OpStack OpStackCreate(Context ctx, Heap heap) {
 }
 
 static void OpStackPush(Context ctx, Heap heap, OpStack os, Type valueType, Address src) {
-    Uword size = TypeGetFieldSize(valueType) + TypeGetFieldSize(ctx->runtime->builtinTypes.variadicTypes.type);
+    // TODO: care about alignment...
+    Uword typeSize = TypeGetFieldSize(ctx->runtime->builtinTypes.variadicTypes.type);
+    Uword elementSize = TypeGetFieldSize(valueType) + typeSize;
     Uword stackSize = ArrayGetSize(os->data);
-    Address endOfStack = ArrayGetFirstElement(os->data) + stackSize;
+    Address startOfStack = ArrayGetFirstElement(os->data);
+    Address endOfStack = startOfStack + stackSize;
     Uword available = endOfStack - os->top;
-    if(size > available) {
+    if(elementSize > available) {
         Uword newStackSize = stackSize * 2;
-        newStackSize = newStackSize > size ? newStackSize : size + newStackSize;
-        Array newStack = OvmHeapAllocArray(ctx, heap, ctx->runtime->builtinTypes.primitiveTypes.u8, newStackSize);
+        newStackSize = newStackSize > elementSize ? newStackSize : elementSize + newStackSize;
+        Array newStack = OvmHeapAllocArray(ctx, heap, os->data->elementType, newStackSize);
         if(!newStack) {
             assert(False && "OOM");
         }
-        ArrayC
+        ArrayCopy(os->data, 0, newStack, 0, stackSize);
+        os->data = newStack;
+        Uword topIdx = os->top - startOfStack;
+        os->top = ArrayGetFirstElement(os->data) + topIdx;
     }
+    *((Type*)os->top) = valueType;
+    os->top += typeSize;
+    memcpy(os->top, src, elementSize);
+    os->top += elementSize;
 }
 
 // TEST?
