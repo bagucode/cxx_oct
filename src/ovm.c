@@ -872,7 +872,7 @@ static void RuntimeInitAllocBuiltInTypes(Runtime rt) {
 static void RuntimeInitInitPrimitive(Runtime rt, Type* type, Uword size, Uword alignment) {
     type->val->structInfo->alignment = alignment;
     type->val->structInfo->size = size;
-    type->val->structInfo->structFields = RuntimeInitAllocRawArray(rt, rt->builtinTypes.primitiveTypes.nothing, size, alignment, 0);
+    type->val->structInfo->structFields = RuntimeInitAllocRawArray(rt, rt->builtinTypes.primitiveTypes.nothing, sizeof(struct Nothing_t), sizeof(Address), 0);
 }
 
 static void RuntimeInitInitPrimitiveTypes(Runtime rt) {
