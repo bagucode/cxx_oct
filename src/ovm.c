@@ -391,6 +391,9 @@ static Uword ArrayGetSize(Array arr);
 static Address ArrayGetFirstElement(Array arr);
 static Type ObjectGetType(Address obj);
 static Bool TypeEquals(Type x, Type y);
+static Uword ObjectGetTotalSize(Type type, Bool asField, Address storeLocation, Uword alignmentAfterAllocation);
+static void ObjectStorageSetup(Type objType, Address storeLocation, Bool asField, Uword alignmentAfterAllocation, Address* objectLocation, Address* nextStoreLocation);
+static OpStack OpStackCreate(Context ctx, Heap heap);
 
 // Heap
 
@@ -461,23 +464,16 @@ start:;
 }
 
 static Address OvmHeapAlloc(Heap heap, Type type) {
-    Uword alignment = TypeGetAllocationAlignment(type);
-    Uword metaDataSize = sizeof(struct Object_t) + sizeof(Address);
-    Uword size = metaDataSize;
-    size += alignment;
-    size += TypeGetAllocationSize(type);
-    
-    Address block = OvmHeapAllocRaw(heap, size, sizeof(Address));
+    // TODO: change the heap->tail->pos parameter if changing how allocation works.
+    Uword allocSize = ObjectGetTotalSize(type, False, heap->tail->pos, sizeof(Address));
+    Address block = OvmHeapAllocRaw(heap, allocSize, sizeof(Address));
     if(!block) {
         return NULL;
     }
-    
-    Object obj = block;
-    obj->type = type;
-    Address ret = (Address)UwordAlignOn((Uword)((U8*)block + metaDataSize), alignment);
-	Address* backPtrLoc = (Address*)((U8*)ret - sizeof(Address));
-    (*backPtrLoc) = block;
-    return ret;
+    Address objLocation;
+    Address nextLoc;
+    ObjectStorageSetup(type, block, False, sizeof(Address), &objLocation, &nextLoc);
+    return objLocation;
 }
 
 static Array OvmHeapAllocArray(Context ctx, Heap heap, Type elementType, Uword size) {
@@ -581,7 +577,7 @@ static Context ContextCreate(Runtime rt) {
     Context ctx = OvmHeapAlloc(ctxHeap, rt->builtinTypes.referenceTypes.context);
     ctx->heap = ctxHeap;
     ctx->runtime = rt;
-    // TODO: what to do with the operand stack?
+    ctx->operandStack = OpStackCreate(ctx, ctx->heap);
     return ctx;
 }
 
@@ -774,6 +770,51 @@ static Object ObjectGetMetaData(Address obj) {
 
 static Type ObjectGetType(Address obj) {
     return ObjectGetMetaData(obj)->type;
+}
+
+static Uword ObjectGetTotalSize(Type type, Bool asField, Address storeLocation, Uword alignmentAfterAllocation) {
+    Uword objectAlignment;
+    Uword objectSize;
+    if(asField) {
+        objectAlignment = TypeGetFieldAlignment(type);
+        objectSize = TypeGetFieldSize(type);
+    }
+    else {
+        objectAlignment = TypeGetAllocationAlignment(type);
+        objectSize = TypeGetAllocationSize(type);
+    }
+    Uword alignedStoreLocation = UwordAlignOn((Uword)storeLocation, sizeof(Address));
+    Uword storeAlignmentDiff = alignedStoreLocation - (Uword)storeLocation;
+    Uword metaDataSize = sizeof(struct Object_t) + sizeof(Address);
+    return storeAlignmentDiff + metaDataSize + objectAlignment + objectSize + alignmentAfterAllocation;
+}
+
+static void ObjectStorageSetup(Type objType, Address storeLocation, Bool asField, Uword alignmentAfterAllocation, Address* objectLocation, Address* nextStoreLocation) {
+    Uword objectAlignment;
+    Uword objectSize;
+    if(asField) {
+        objectAlignment = TypeGetFieldAlignment(objType);
+        objectSize = TypeGetFieldSize(objType);
+    }
+    else {
+        objectAlignment = TypeGetAllocationAlignment(objType);
+        objectSize = TypeGetAllocationSize(objType);
+    }
+    // Align store location for storage of metadata
+    storeLocation = (Address)UwordAlignOn((Uword)storeLocation, sizeof(Address));
+    // Set type and save original allocation pointer to be able to set back pointer.
+    Object metaData = (Object)storeLocation;
+    metaData->type = objType;
+    // Skip past the metadata
+    Uword metaDataSize = sizeof(struct Object_t) + sizeof(Address);
+    storeLocation = (Address)UwordAlignOn(((Uword)metaData) + metaDataSize, objectAlignment);
+    // Set the back pointer
+	Address* backPtrLoc = (Address*)((U8*)storeLocation - sizeof(Address));
+    (*backPtrLoc) = metaData;
+    // Return address of object
+    (*objectLocation) = storeLocation;
+    // Return aligned address after allocation
+    (*nextStoreLocation) = (Address)UwordAlignOn(((Uword)storeLocation) + objectSize, alignmentAfterAllocation);
 }
 
 // Vector
@@ -1230,8 +1271,10 @@ static Runtime RuntimeCreate() {
     RuntimeInitCreateBuiltInTypes(mainCtx);
     Object om = ObjectGetMetaData(rt);
     om->type = rt->builtinTypes.referenceTypes.runtime;
+    
     om = ObjectGetMetaData(mainCtx);
     om->type = rt->builtinTypes.referenceTypes.context;
+    mainCtx->operandStack = OpStackCreate(mainCtx, ctxHeap);
 
     TLSCreate(&currentContext);
     TLSSet(&currentContext, mainCtx);
@@ -1261,16 +1304,14 @@ static OpStack OpStackCreate(Context ctx, Heap heap) {
 }
 
 static void OpStackPush(Context ctx, Heap heap, OpStack os, Type valueType, Address src) {
-    // TODO: care about alignment...
-    Uword typeSize = TypeGetFieldSize(ctx->runtime->builtinTypes.variadicTypes.type);
-    Uword elementSize = TypeGetFieldSize(valueType) + typeSize;
+    Uword allocationSize = ObjectGetTotalSize(valueType, True, os->top, sizeof(Address));
     Uword stackSize = ArrayGetSize(os->data);
     Address startOfStack = ArrayGetFirstElement(os->data);
     Address endOfStack = startOfStack + stackSize;
     Uword available = endOfStack - os->top;
-    if(elementSize > available) {
+    if(allocationSize > available) {
         Uword newStackSize = stackSize * 2;
-        newStackSize = newStackSize > elementSize ? newStackSize : elementSize + newStackSize;
+        newStackSize = newStackSize > allocationSize ? newStackSize : allocationSize + newStackSize;
         Array newStack = OvmHeapAllocArray(ctx, heap, os->data->elementType, newStackSize);
         if(!newStack) {
             assert(False && "OOM");
@@ -1280,21 +1321,16 @@ static void OpStackPush(Context ctx, Heap heap, OpStack os, Type valueType, Addr
         Uword topIdx = os->top - startOfStack;
         os->top = ArrayGetFirstElement(os->data) + topIdx;
     }
-    *((Type*)os->top) = valueType;
-    os->top += typeSize;
-    memcpy(os->top, src, elementSize);
-    os->top += elementSize;
+    Address objLocation;
+    Address newTopLocation;
+    ObjectStorageSetup(valueType, os->top, True, sizeof(Address), &objLocation, &newTopLocation);
+    memcpy(objLocation, src, TypeGetFieldSize(valueType));
+    os->top = newTopLocation;
 }
 
 // TEST?
 
-static void opStackPush(Context ctx, Type type, Address src) {
-    
-}
 
-static void opStackPop(Context ctx, Address dest) {
-    
-}
 
 // VM
 
