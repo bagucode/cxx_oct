@@ -1328,6 +1328,17 @@ static void OpStackPush(Context ctx, Heap heap, OpStack os, Type valueType, Addr
     os->top = newTopLocation;
 }
 
+static Address OpStackPeek(Context ctx, OpStack os, Type expectedType, Uword index) {
+    // TODO: have to be able to use the index to get objects beyond the top of the stack.
+    // To do that we have to be able to step backwards either by simply indexing or by
+    // following back-pointers.
+    // The easiest way to make this both possible and fast might be to change the stack
+    // to use two stacks internally. One to store pairs of type information and addresses
+    // to objects and one to store the actual objects. The indexing would then be both
+    // easy to implement and fast because it would index into the stack that holds the
+    // type info and pointers.
+}
+
 // TEST?
 
 
