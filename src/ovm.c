@@ -1333,39 +1333,51 @@ static OpStack OpStackCreate(Context ctx, Heap heap) {
 }
 
 static void OpStackPush(Context ctx, Heap heap, OpStack os, Type valueType, Address src) {
-    Uword allocationSize = ObjectGetTotalSize(valueType, True, os->top, sizeof(Address));
-    Uword stackSize = ArrayGetSize(os->data);
-    Address startOfStack = ArrayGetFirstElement(os->data);
-    Address endOfStack = startOfStack + stackSize;
-    Uword available = endOfStack - os->top;
-    if(allocationSize > available) {
-        Uword newStackSize = stackSize * 2;
-        newStackSize = newStackSize > allocationSize ? newStackSize : allocationSize + newStackSize;
-        Array newStack = OvmHeapAllocArray(ctx, heap, os->data->elementType, newStackSize);
-        if(!newStack) {
+    // Expand slots array if needed
+    if(os->slotTop == os->slots->size) {
+        Uword newSlotsSize = os->slots->size * 2;
+        Array newSlots = OvmHeapAllocArray(ctx, heap, os->slots->elementType, newSlotsSize);
+        if(!newSlots) {
             assert(False && "OOM");
         }
-        ArrayCopy(os->data, 0, newStack, 0, stackSize);
-        os->data = newStack;
-        Uword topIdx = os->top - startOfStack;
-        os->top = ArrayGetFirstElement(os->data) + topIdx;
+        ArrayCopy(os->slots, 0, newSlots, 0, os->slots->size);
+        os->slots = newSlots;
     }
-    Address objLocation;
-    Address newTopLocation;
-    ObjectStorageSetup(valueType, os->top, True, sizeof(Address), &objLocation, &newTopLocation);
-    memcpy(objLocation, src, TypeGetFieldSize(valueType));
-    os->top = newTopLocation;
+    
+    Uword dataSize = TypeGetFieldSize(valueType);
+    Uword dataAlignment = TypeGetFieldAlignment(valueType);
+    Uword dataAllocationSize = dataSize + dataAlignment;
+    Uword dataStackSize = ArrayGetSize(os->data);
+    Address startOfDataStack = ArrayGetFirstElement(os->data);
+    Address endOfDataStack = startOfDataStack + dataStackSize;
+    Uword availableDataSpace = endOfDataStack - os->dataTop;
+    // Expand data array if needed
+    if(dataAllocationSize > availableDataSpace) {
+        Uword newDataSize = dataStackSize * 2;
+        newDataSize = newDataSize > dataAllocationSize ? newDataSize : dataAllocationSize + newDataSize;
+        Array newDataStack = OvmHeapAllocArray(ctx, heap, os->data->elementType, newDataSize);
+        if(!newDataStack) {
+            assert(False && "OOM");
+        }
+        ArrayCopy(os->data, 0, newDataStack, 0, dataStackSize);
+        os->data = newDataStack;
+        Uword topIdx = os->dataTop - startOfDataStack;
+        os->dataTop = ArrayGetFirstElement(os->data) + topIdx;
+    }
+    
+    // Now there is enough space in both arrays, place value on stack.
+    Address dataLocation = (Address)UwordAlignOn((Uword)os->dataTop, dataAlignment);
+    memcpy(dataLocation, src, dataSize);
+
+    OpStackSlot* slots = ArrayGetFirstElement(os->slots);
+    slots[os->slotTop].type = valueType;
+    slots[os->slotTop].value = dataLocation;
+    
+    ++os->slotTop;
+    os->dataTop = dataLocation + dataSize;
 }
 
 static Address OpStackPeek(Context ctx, OpStack os, Type expectedType, Uword index) {
-    // TODO: have to be able to use the index to get objects beyond the top of the stack.
-    // To do that we have to be able to step backwards either by simply indexing or by
-    // following back-pointers.
-    // The easiest way to make this both possible and fast might be to change the stack
-    // to use two stacks internally. One to store pairs of type information and addresses
-    // to objects and one to store the actual objects. The indexing would then be both
-    // easy to implement and fast because it would index into the stack that holds the
-    // type info and pointers.
 }
 
 // TEST?
