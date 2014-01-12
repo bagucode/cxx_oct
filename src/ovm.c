@@ -206,6 +206,9 @@ typedef struct BuiltinTypes_t BuiltinTypes;
 struct Nothing_t;
 typedef struct Nothing_t* Nothing;
 
+struct OpStackSlot_t;
+typedef struct OpStackSlot_t OpStackSlot;
+
 struct OpStack_t;
 typedef struct OpStack_t* OpStack;
 
@@ -319,6 +322,7 @@ struct BuiltinTypes_t {
         Type value;
         Type structField;
         Type namespaceEntry;
+        Type opStackSlot;
     } valueTypes;
     struct BuiltinVariadicTypes_t {
         Type type;
@@ -357,9 +361,16 @@ struct Heap_t {
     Uword totalSize;
 };
 
+struct OpStackSlot_t {
+    Type type;
+    Address value;
+};
+
 struct OpStack_t {
-    Address top;
-    Array data; // U8
+    Uword slotTop;
+    Array slots;
+    Address dataTop;
+    Array data;
 };
 
 struct Context_t {
@@ -1231,15 +1242,28 @@ static void RuntimeInitInitBuiltInTypes(Context ctx) {
     sf[1].type = rt->builtinTypes.referenceTypes.vector;
     sf[1].name = RuntimeInitCreateString(rt, "entries");
     rt->builtinTypes.referenceTypes.namespace.ref->structInfo = StructInfoCreate(ctx, fields);
-    
+
     // OpStack
-    fields = StructFieldArrayCreate(ctx, 2);
+    fields = StructFieldArrayCreate(ctx, 4);
     sf = ArrayGetFirstElement(fields);
     sf[0].type = rt->builtinTypes.primitiveTypes.uword;
-    sf[0].name = RuntimeInitCreateString(rt, "top");
+    sf[0].name = RuntimeInitCreateString(rt, "slot-top");
     sf[1].type = rt->builtinTypes.referenceTypes.array;
-    sf[1].name = RuntimeInitCreateString(rt, "data");
+    sf[1].name = RuntimeInitCreateString(rt, "slots");
+    sf[2].type = rt->builtinTypes.primitiveTypes.address;
+    sf[2].name = RuntimeInitCreateString(rt, "data-top");
+    sf[3].type = rt->builtinTypes.referenceTypes.array;
+    sf[3].name = RuntimeInitCreateString(rt, "data");
     rt->builtinTypes.referenceTypes.opStack.ref->structInfo = StructInfoCreate(ctx, fields);
+    
+    // OpStackSlot
+    fields = StructFieldArrayCreate(ctx, 2);
+    sf = ArrayGetFirstElement(fields);
+    sf[0].type = rt->builtinTypes.variadicTypes.type;
+    sf[0].name = RuntimeInitCreateString(rt, "type");
+    sf[1].type = rt->builtinTypes.primitiveTypes.address;
+    sf[1].name = RuntimeInitCreateString(rt, "value");
+    rt->builtinTypes.valueTypes.opStackSlot.val->structInfo = StructInfoCreate(ctx, fields);
     
     // TODO: make proper types for the runtime and context. It is important that all the types
     // used by the ovm are representable in the ovm type system or self-hosting may not be possible.
@@ -1299,7 +1323,12 @@ static OpStack OpStackCreate(Context ctx, Heap heap) {
     if(!os->data) {
         assert(False && "OOM");
     }
-    os->top = ArrayGetFirstElement(os->data);
+    os->dataTop = ArrayGetFirstElement(os->data);
+    os->slots = OvmHeapAllocArray(ctx, heap, ctx->runtime->builtinTypes.valueTypes.opStackSlot, 100);
+    if(!os->slots) {
+        assert(False && "OOM");
+    }
+    os->slotTop = 0;
     return os;
 }
 
