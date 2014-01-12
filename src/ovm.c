@@ -1378,6 +1378,25 @@ static void OpStackPush(Context ctx, Heap heap, OpStack os, Type valueType, Addr
 }
 
 static Address OpStackPeek(Context ctx, OpStack os, Type expectedType, Uword index) {
+    if(index >= os->slotTop) {
+        assert(False && "Out of bounds");
+    }
+    OpStackSlot* slots = ArrayGetFirstElement(os->slots);
+    if(!TypeEquals(expectedType, slots[index].type)) {
+        assert(False && "Expected and actual types do not match");
+    }
+    return slots[index].value;
+}
+
+static void OpStackPop(Context ctx, OpStack os, Uword numSlots) {
+    if(numSlots > os->slotTop) {
+        assert(False && "Not enough stack slots to pop; stack corruption?");
+    }
+    OpStackSlot* slots = ArrayGetFirstElement(os->slots);
+    while (numSlots-- > 0) {
+        Type slotType = slots[--os->slotTop].type;
+        os->dataTop -= TypeGetFieldSize(slotType) + TypeGetFieldAlignment(slotType);
+    }
 }
 
 // TEST?
