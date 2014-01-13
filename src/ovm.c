@@ -1366,8 +1366,8 @@ static void OpStackPush(Context ctx, Heap heap, OpStack os, Type valueType, Addr
     Uword dataAllocationSize = dataSize + dataAlignment;
     Uword dataStackSize = ArrayGetSize(os->data);
     Address startOfDataStack = ArrayGetFirstElement(os->data);
-    Address endOfDataStack = startOfDataStack + dataStackSize;
-    Uword availableDataSpace = endOfDataStack - os->dataTop;
+    Address endOfDataStack = (U8*)startOfDataStack + dataStackSize;
+    Uword availableDataSpace = (U8*)endOfDataStack - (U8*)os->dataTop;
     // Expand data array if needed
     if(dataAllocationSize > availableDataSpace) {
         Uword newDataSize = dataStackSize * 2;
@@ -1378,8 +1378,8 @@ static void OpStackPush(Context ctx, Heap heap, OpStack os, Type valueType, Addr
         }
         ArrayCopy(os->data, 0, newDataStack, 0, dataStackSize);
         os->data = newDataStack;
-        Uword topIdx = os->dataTop - startOfDataStack;
-        os->dataTop = ArrayGetFirstElement(os->data) + topIdx;
+        Uword topIdx = (Uword)os->dataTop - (Uword)startOfDataStack;
+		os->dataTop = (U8*) ArrayGetFirstElement(os->data) + topIdx;
     }
     
     // Now there is enough space in both arrays, place value on stack.
@@ -1391,7 +1391,7 @@ static void OpStackPush(Context ctx, Heap heap, OpStack os, Type valueType, Addr
     slots[os->slotTop].value = dataLocation;
     
     ++os->slotTop;
-    os->dataTop = dataLocation + dataSize;
+    os->dataTop = (U8*)dataLocation + dataSize;
 }
 
 static Address OpStackPeek(Context ctx, OpStack os, Type expectedType, Uword index) {
@@ -1412,7 +1412,7 @@ static void OpStackPop(Context ctx, OpStack os, Uword numSlots) {
     OpStackSlot* slots = ArrayGetFirstElement(os->slots);
     while (numSlots-- > 0) {
         Type slotType = slots[--os->slotTop].type;
-        os->dataTop -= TypeGetFieldSize(slotType);
+        (U8*)os->dataTop -= TypeGetFieldSize(slotType);
     }
     if(os->slotTop == 0) {
         // The code above does not take alignment into account, not sure about
