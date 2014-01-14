@@ -877,6 +877,21 @@ static void VectorPop(Vector v, Address dest) {
 	}
 }
 
+// Namespace
+
+static Namespace NamespaceCreate(Context ctx, String name) {
+    Runtime rt = ContextGetRuntime(ctx);
+    Heap rtHeap = RuntimeGetHeap(rt);
+    Namespace ns = OvmHeapAlloc(rtHeap, rt->builtinTypes.referenceTypes.namespace);
+    // TODO: make sure name is in the rt heap
+    ns->name = name;
+    ns->entries = VectorCreate(ctx, rtHeap, rt->builtinTypes.valueTypes.namespaceEntry, 100);
+    if(!ns->entries) {
+        return NULL;
+    }
+    return ns;
+}
+
 // Runtime
 
 static Address RuntimeInitAllocRawObject(Heap heap, Uword size, Uword alignment) {
@@ -1294,6 +1309,10 @@ static void RuntimeInitCreateBuiltInTypes(Context ctx) {
     // up front and use some uninitialized pointers to get it going.
     RuntimeInitAllocBuiltInTypes(ContextGetRuntime(ctx));
     RuntimeInitInitBuiltInTypes(ctx);
+}
+
+static void RuntimeInitCreateOctarineNamespace(Context ctx) {
+    Namespace octNs = NamespaceCreate(ctx, String)
 }
 
 static Runtime RuntimeCreate() {
