@@ -1412,7 +1412,9 @@ static void OpStackPop(Context ctx, OpStack os, Uword numSlots) {
     OpStackSlot* slots = ArrayGetFirstElement(os->slots);
     while (numSlots-- > 0) {
         Type slotType = slots[--os->slotTop].type;
-        (U8*)os->dataTop -= TypeGetFieldSize(slotType);
+        Uword dt = (Uword)os->dataTop;
+        dt -= TypeGetFieldSize(slotType);
+        os->dataTop = (Address)dt;
     }
     if(os->slotTop == 0) {
         // The code above does not take alignment into account, not sure about
