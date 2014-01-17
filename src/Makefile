@@ -1,0 +1,2 @@
+check-syntax:
+	build.bat

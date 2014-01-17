@@ -87,9 +87,9 @@ typedef double   F64;
 typedef U8 Bool;
 #define True 1
 #define False 0
-    
+
 typedef I32 Char;
-    
+
 #ifdef OCT64
 typedef I64 Word;
 typedef U64 Uword;
@@ -97,7 +97,7 @@ typedef U64 Uword;
 typedef I32 Word;
 typedef U32 Uword;
 #endif
-    
+
 typedef void* Address;
 
 // Thread local storage
@@ -151,10 +151,10 @@ typedef struct StructField StructField;
 
 struct StructInfo_t;
 typedef struct StructInfo_t* StructInfo;
-    
+
 struct Type_t;
 typedef struct Type_t Type;
-    
+
 struct RefType_t;
 typedef struct RefType_t* RefType;
 
@@ -421,12 +421,12 @@ static Heap OvmHeapCreate(Uword initialSize) {
     heap = (Heap)block;
     heap->tail = (Address)((U8*)block + sizeof(struct Heap_t));
     heap->totalSize = initialSize;
-    
+
     heap->tail->start = (U8*)heap->tail + sizeof(struct HeapBlock_t);
     heap->tail->end = (U8*)heap->tail->start + initialSize;
     heap->tail->pos = heap->tail->start;
     heap->tail->prev = NULL;
-    
+
     return heap;
 }
 
@@ -468,10 +468,10 @@ start:;
         block->end = (U8*)block->start + blockSize;
         block->pos = block->start;
         block->prev = heap->tail;
-        
+
         heap->totalSize += blockSize;
         heap->tail = block;
-        
+
         goto start;
     }
 }
@@ -496,23 +496,23 @@ static Array OvmHeapAllocArray(Context ctx, Heap heap, Type elementType, Uword s
     allocSize += sizeof(struct Array_t);
     allocSize += alignment;
     allocSize += (TypeGetAllocationSize(elementType) * size);
-    
+
     Address block = OvmHeapAllocRaw(heap, allocSize, sizeof(Address));
     if(!block) {
         return NULL;
     }
-    
+
     Object obj = block;
     obj->type = ArrayGetType(ctx);
 	Address arrLoc = (U8*)block + metaDataSize;
 	Address* backPtrLoc = (Address*)((U8*)arrLoc - sizeof(Address));
     (*backPtrLoc) = block;
-    
+
     Array arr = arrLoc;
     arr->elementType = elementType;
     arr->size = size;
     arr->data = (Address)UwordAlignOn((Uword)((U8*)arr + sizeof(struct Array_t)), alignment);
-    
+
     return arr;
 }
 
@@ -659,7 +659,7 @@ static StructInfo StructInfoCreate(Context ctx, Array structFields) {
         mySize += fieldSize;
         myAlignment = myAlignment > fieldAlignment ? myAlignment : fieldAlignment;
     }
-    
+
     si->alignment = myAlignment;
     si->size = mySize;
     si->structFields = structFields;
@@ -892,6 +892,18 @@ static Namespace NamespaceCreate(Context ctx, String name) {
     return ns;
 }
 
+// String
+
+static String StringCreate(Context ctx, Heap heap, const char* value) {
+	Runtime rt = ContextGetRuntime(ctx);
+	String s = OvmHeapAlloc(heap, rt->builtinTypes.referenceTypes.string);
+    s->size = strlen(value);
+	s->utf8Data = OvmHeapAllocArray(ctx, heap, rt->builtinTypes.primitiveTypes.u8, s->size + 1);
+    U8* data = ArrayGetFirstElement(s->utf8Data);
+    memcpy(data, value, s->size + 1);
+    return s;
+}
+
 // Runtime
 
 static Address RuntimeInitAllocRawObject(Heap heap, Uword size, Uword alignment) {
@@ -903,7 +915,7 @@ static Address RuntimeInitAllocRawObject(Heap heap, Uword size, Uword alignment)
     if(!block) {
         return NULL;
     }
-    
+
     Object obj = block;
     obj->type.variant = 0;
     obj->type.ref = NULL;
@@ -921,23 +933,23 @@ static Array RuntimeInitAllocRawArray(Runtime rt, Type elementType, Uword elemen
     allocSize += sizeof(struct Array_t);
     allocSize += elementAlignment;
     allocSize += elementSize * arraySize;
-    
+
     Address block = OvmHeapAllocRaw(RuntimeGetHeap(rt), allocSize, sizeof(Address));
     if(!block) {
         return NULL;
     }
-    
+
     Object obj = block;
     obj->type = rt->builtinTypes.referenceTypes.array;
 	Address arrLoc = (U8*) block + metaDataSize;
 	Address* backPtrLoc = (Address*)((U8*) arrLoc - sizeof(Address));
     (*backPtrLoc) = block;
-    
+
     Array arr = arrLoc;
     arr->elementType = elementType;
     arr->size = arraySize;
     arr->data = (Address)UwordAlignOn((Uword)((U8*)arr + sizeof(struct Array_t)), elementAlignment);
-    
+
     return arr;
 }
 
@@ -1021,9 +1033,9 @@ static void RuntimeInitAllocBuiltInTypes(Runtime rt) {
 
     // Allocate the types for Type and StructInfo up front so that they
     // can be used in the init functions.
-    
+
     Heap rtHeap = RuntimeGetHeap(rt);
-    
+
     rt->builtinTypes.variadicTypes.type.variant = TYPE_VARIANT_VAR;
     Address obj = RuntimeInitAllocRawObject(rtHeap, sizeof(struct VarType_t), sizeof(Address));
     rt->builtinTypes.variadicTypes.type.var = obj;
@@ -1035,7 +1047,7 @@ static void RuntimeInitAllocBuiltInTypes(Runtime rt) {
     rt->builtinTypes.referenceTypes.structInfo.ref = obj;
     om = ObjectGetMetaData(obj);
     om->type = rt->builtinTypes.variadicTypes.type;
-    
+
     RuntimeInitAllocAllPrimitiveTypes(rt);
     RuntimeInitAllocAllVarTypes(rt);
     RuntimeInitAllocAllReferenceTypes(rt);
@@ -1115,15 +1127,15 @@ static void RuntimeInitInitBuiltInTypes(Context ctx) {
     // data members so they cannot be used yet.
     // In order to be able to use the regular heap allocation functions we have
     // to manually initialize all the types that the Type type depends upon.
-    
+
     Runtime rt = ContextGetRuntime(ctx);
     StructInfo si;
     StructField* sf;
     Uword addrSize = sizeof(Address);
-    
+
     // Primitives
     RuntimeInitInitPrimitiveTypes(rt);
-    
+
     // Array
     si = rt->builtinTypes.referenceTypes.array.ref->structInfo;
     RuntimeInitInitStructInfo(rt, si, addrSize, sizeof(struct Array_t), 3);
@@ -1137,7 +1149,7 @@ static void RuntimeInitInitBuiltInTypes(Context ctx) {
     sf[2].type = rt->builtinTypes.primitiveTypes.address;
     sf[2].offset = offsetof(struct Array_t, data);
     sf[2].name = RuntimeInitCreateString(rt, "data");
-    
+
     // String
     si = rt->builtinTypes.referenceTypes.string.ref->structInfo;
     RuntimeInitInitStructInfo(rt, si, addrSize, sizeof(struct String_t), 2);
@@ -1148,7 +1160,7 @@ static void RuntimeInitInitBuiltInTypes(Context ctx) {
     sf[1].type = rt->builtinTypes.referenceTypes.array;
     sf[1].offset = offsetof(struct String_t, utf8Data);
     sf[1].name = RuntimeInitCreateString(rt, "data");
-    
+
     // StructField
     si = rt->builtinTypes.valueTypes.structField.val->structInfo;
     RuntimeInitInitStructInfo(rt, si, addrSize, sizeof(StructField), 3);
@@ -1162,7 +1174,7 @@ static void RuntimeInitInitBuiltInTypes(Context ctx) {
     sf[2].type = rt->builtinTypes.primitiveTypes.uword;
     sf[2].offset = offsetof(StructField, offset);
     sf[2].name = RuntimeInitCreateString(rt, "offset");
-    
+
     // StructInfo
     si = rt->builtinTypes.referenceTypes.structInfo.ref->structInfo;
     RuntimeInitInitStructInfo(rt, si, addrSize, sizeof(struct StructInfo_t), 3);
@@ -1206,7 +1218,7 @@ static void RuntimeInitInitBuiltInTypes(Context ctx) {
     sf[2].type = rt->builtinTypes.primitiveTypes.uword;
     sf[2].offset = offsetof(struct VarType_t, size);
     sf[2].name = RuntimeInitCreateString(rt, "size");
-    
+
     // Type
     rt->builtinTypes.variadicTypes.type.var->size = sizeof(struct Type_t);
     rt->builtinTypes.variadicTypes.type.var->alignment = addrSize;
@@ -1215,11 +1227,11 @@ static void RuntimeInitInitBuiltInTypes(Context ctx) {
     values[0].data = RuntimeInitAllocTypeObjectOnHeap(rt, rt->builtinTypes.referenceTypes.refType);
     values[1].data = RuntimeInitAllocTypeObjectOnHeap(rt, rt->builtinTypes.referenceTypes.valType);
     values[2].data = RuntimeInitAllocTypeObjectOnHeap(rt, rt->builtinTypes.referenceTypes.varType);
-    
+
     // Now the regular allocation functions should work so we can use them when
     // defining the rest of the built in types but we still need to take care
     // with the order because they may depend on each other.
-    
+
     // Value
     Array fields = StructFieldArrayCreate(ctx, 1);
     sf = ArrayGetFirstElement(fields);
@@ -1228,7 +1240,7 @@ static void RuntimeInitInitBuiltInTypes(Context ctx) {
     // there is no need to first create the string and then copy it.
     sf[0].name = RuntimeInitCreateString(rt, "object");
     rt->builtinTypes.valueTypes.value.val->structInfo = StructInfoCreate(ctx, fields);
-    
+
     // NamespaceEntry
     fields = StructFieldArrayCreate(ctx, 2);
     sf = ArrayGetFirstElement(fields);
@@ -1237,14 +1249,14 @@ static void RuntimeInitInitBuiltInTypes(Context ctx) {
     sf[1].type = rt->builtinTypes.valueTypes.value;
     sf[1].name = RuntimeInitCreateString(rt, "value");
     rt->builtinTypes.valueTypes.namespaceEntry.val->structInfo = StructInfoCreate(ctx, fields);
-    
+
     // Symbol
     fields = StructFieldArrayCreate(ctx, 1);
     sf = ArrayGetFirstElement(fields);
     sf[0].type = rt->builtinTypes.referenceTypes.string;
     sf[0].name = RuntimeInitCreateString(rt, "name");
     rt->builtinTypes.referenceTypes.symbol.ref->structInfo = StructInfoCreate(ctx, fields);
-    
+
     // Vector
     fields = StructFieldArrayCreate(ctx, 2);
     sf = ArrayGetFirstElement(fields);
@@ -1253,7 +1265,7 @@ static void RuntimeInitInitBuiltInTypes(Context ctx) {
     sf[1].type = rt->builtinTypes.referenceTypes.array;
     sf[1].name = RuntimeInitCreateString(rt, "data");
     rt->builtinTypes.referenceTypes.vector.ref->structInfo = StructInfoCreate(ctx, fields);
-    
+
     // Object
     fields = StructFieldArrayCreate(ctx, 1);
     sf = ArrayGetFirstElement(fields);
@@ -1282,7 +1294,7 @@ static void RuntimeInitInitBuiltInTypes(Context ctx) {
     sf[3].type = rt->builtinTypes.referenceTypes.array;
     sf[3].name = RuntimeInitCreateString(rt, "data");
     rt->builtinTypes.referenceTypes.opStack.ref->structInfo = StructInfoCreate(ctx, fields);
-    
+
     // OpStackSlot
     fields = StructFieldArrayCreate(ctx, 2);
     sf = ArrayGetFirstElement(fields);
@@ -1291,14 +1303,14 @@ static void RuntimeInitInitBuiltInTypes(Context ctx) {
     sf[1].type = rt->builtinTypes.primitiveTypes.address;
     sf[1].name = RuntimeInitCreateString(rt, "value");
     rt->builtinTypes.valueTypes.opStackSlot.val->structInfo = StructInfoCreate(ctx, fields);
-    
+
     // TODO: make proper types for the runtime and context. It is important that all the types
     // used by the ovm are representable in the ovm type system or self-hosting may not be possible.
 
     // Runtime
     // Make the runtime opaque for now, it is handled specially in the GC anyway.
     RuntimeInitInitPrimitive(rt, &rt->builtinTypes.referenceTypes.runtime, sizeof(struct Runtime_t), addrSize);
-    
+
     // Context
     // Make the context opaque for now, it is handled specially in the GC anyway.
     RuntimeInitInitPrimitive(rt, &rt->builtinTypes.referenceTypes.context, sizeof(struct Context_t), addrSize);
@@ -1312,7 +1324,11 @@ static void RuntimeInitCreateBuiltInTypes(Context ctx) {
 }
 
 static void RuntimeInitCreateOctarineNamespace(Context ctx) {
-    Namespace octNs = NamespaceCreate(ctx, String)
+	Runtime rt = ContextGetRuntime(ctx);
+	Heap rtHeap = RuntimeGetHeap(rt);
+	String name = StringCreate(ctx, rtHeap, "octarine");
+	Namespace octNs = NamespaceCreate(ctx, name);
+	// TODO: actually assign this to the current context ;)
 }
 
 static Runtime RuntimeCreate() {
@@ -1326,7 +1342,7 @@ static Runtime RuntimeCreate() {
     RuntimeInitCreateBuiltInTypes(mainCtx);
     Object om = ObjectGetMetaData(rt);
     om->type = rt->builtinTypes.referenceTypes.runtime;
-    
+
     om = ObjectGetMetaData(mainCtx);
     om->type = rt->builtinTypes.referenceTypes.context;
     mainCtx->operandStack = OpStackCreate(mainCtx, ctxHeap);
@@ -1379,7 +1395,7 @@ static void OpStackPush(Context ctx, Heap heap, OpStack os, Type valueType, Addr
         ArrayCopy(os->slots, 0, newSlots, 0, os->slots->size);
         os->slots = newSlots;
     }
-    
+
     Uword dataSize = TypeGetFieldSize(valueType);
     Uword dataAlignment = TypeGetFieldAlignment(valueType);
     Uword dataAllocationSize = dataSize + dataAlignment;
@@ -1400,7 +1416,7 @@ static void OpStackPush(Context ctx, Heap heap, OpStack os, Type valueType, Addr
         Uword topIdx = (Uword)os->dataTop - (Uword)startOfDataStack;
 		os->dataTop = (U8*) ArrayGetFirstElement(os->data) + topIdx;
     }
-    
+
     // Now there is enough space in both arrays, place value on stack.
     Address dataLocation = (Address)UwordAlignOn((Uword)os->dataTop, dataAlignment);
     memcpy(dataLocation, src, dataSize);
@@ -1408,7 +1424,7 @@ static void OpStackPush(Context ctx, Heap heap, OpStack os, Type valueType, Addr
     OpStackSlot* slots = ArrayGetFirstElement(os->slots);
     slots[os->slotTop].type = valueType;
     slots[os->slotTop].value = dataLocation;
-    
+
     ++os->slotTop;
     os->dataTop = (U8*)dataLocation + dataSize;
 }
@@ -1471,7 +1487,7 @@ static void testAdd(Context ctx) {
 }
 
 int main(int argc, char* argv[]) {
-    
+
     Runtime rt = RuntimeCreate();
 
     U8 program[1000];
@@ -1482,35 +1498,35 @@ int main(int argc, char* argv[]) {
     Uword uwordSize = TypeGetFieldSize(uwordType);
     Uword typeSize = TypeGetFieldSize(typeType);
     Uword addressSize = TypeGetFieldSize(addressType);
-    
+
     program[i++] = OP_PUSH;
-    
+
     Type* t = (Type*)&program[i];
     (*t) = uwordType;
     i += typeSize;
-    
+
     Uword* uw = (Uword*)&program[i];
     (*uw) = 67;
     i += uwordSize;
-    
+
     program[i++] = OP_PUSH;
-    
+
     t = (Type*)&program[i];
     (*t) = uwordType;
     i += typeSize;
-    
+
     uw = (Uword*)&program[i];
     (*uw) = 3;
     i += uwordSize;
-    
+
     program[i++] = OP_CALL;
-    
+
     Address* a = (Address*)&program[i];
     (*a) = testAdd;
     i += addressSize;
-    
+
     program[i++] = OP_HALT;
-    
+
     i = 0;
 
     Context ctx = ContextGetCurrent();
@@ -1547,14 +1563,13 @@ int main(int argc, char* argv[]) {
         }
     }
 end:;
-    
-    uw = OpStackPeek(ctx, os, uwordType, 0);
-    
-    printf("Result is: %llu\n", *uw);
-    
-    RuntimeDestroy(rt);
-    
-    return 0;
-    
-}
 
+    uw = OpStackPeek(ctx, os, uwordType, 0);
+
+    printf("Result is: %llu\n", *uw);
+
+    RuntimeDestroy(rt);
+
+    return 0;
+
+}
