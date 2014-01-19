@@ -1349,6 +1349,8 @@ static Runtime RuntimeCreate() {
 
     TLSCreate(&currentContext);
     TLSSet(&currentContext, mainCtx);
+    
+    RuntimeInitCreateOctarineNamespace(mainCtx);
 
     return rt;
 }
