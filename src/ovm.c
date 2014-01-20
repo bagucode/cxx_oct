@@ -1581,7 +1581,7 @@ end:;
 
     uw = OpStackPeek(ctx, os, uwordType, 0);
 
-    printf("Result is: %llu\n", *uw);
+    printf("Result is: %lu\n", *uw);
 
     RuntimeDestroy(rt);
 

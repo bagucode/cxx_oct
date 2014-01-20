@@ -29,3 +29,5 @@ octarine_generated.cpp
 
 # Dependencies
 3pp/
+/src/a.out
+/src/ovm
