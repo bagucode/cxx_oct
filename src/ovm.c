@@ -1361,7 +1361,7 @@ static Runtime RuntimeCreate() {
 
     TLSCreate(&currentContext);
     TLSSet(&currentContext, mainCtx);
-    
+
     RuntimeInitCreateOctarineNamespace(mainCtx);
 	rt->namespaces = VectorCreate(mainCtx, rtHeap, rt->builtinTypes.referenceTypes.namespace, 100);
 
