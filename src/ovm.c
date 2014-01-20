@@ -322,6 +322,7 @@ struct BuiltinTypes_t {
         Type value;
         Type structField;
         Type namespaceEntry;
+		Type namespaceListEntry;
         Type opStackSlot;
     } valueTypes;
     struct BuiltinVariadicTypes_t {
@@ -347,6 +348,7 @@ struct BuiltinTypes_t {
 struct Runtime_t {
     Heap heap;
     BuiltinTypes builtinTypes;
+	Vector namespaces;
 };
 
 struct HeapBlock_t {
@@ -377,6 +379,7 @@ struct Context_t {
     Runtime runtime;
     Heap heap;
     OpStack operandStack;
+	Namespace currentNs;
 };
 
 // Global variables
@@ -577,12 +580,13 @@ static Context ContextGetCurrent() {
     return (Context)TLSGet(&currentContext);
 }
 
-static Context ContextCreate(Runtime rt) {
+static Context ContextCreate(Runtime rt, Namespace initialNs) {
     Heap ctxHeap = OvmHeapCreate(1024 * 1024);
     Context ctx = OvmHeapAlloc(ctxHeap, rt->builtinTypes.referenceTypes.context);
     ctx->heap = ctxHeap;
     ctx->runtime = rt;
     ctx->operandStack = OpStackCreate(ctx, ctx->heap);
+	ctx->currentNs = initialNs;
     return ctx;
 }
 
@@ -596,6 +600,14 @@ static Runtime ContextGetRuntime(Context ctx) {
 
 static Heap ContextGetHeap(Context ctx) {
     return ctx->heap;
+}
+
+static Namespace ContextGetCurrentNamespace(Context ctx) {
+	return ctx->currentNs;
+}
+
+static void ContextSetCurrentNamespace(Context ctx, Namespace ns) {
+	ctx->currentNs = ns;
 }
 
 // StructField
@@ -1328,7 +1340,7 @@ static void RuntimeInitCreateOctarineNamespace(Context ctx) {
 	Heap rtHeap = RuntimeGetHeap(rt);
 	String name = StringCreate(ctx, rtHeap, "octarine");
 	Namespace octNs = NamespaceCreate(ctx, name);
-	// TODO: actually assign this to the current context ;)
+	ContextSetCurrentNamespace(ctx, octNs);
 }
 
 static Runtime RuntimeCreate() {
@@ -1351,6 +1363,7 @@ static Runtime RuntimeCreate() {
     TLSSet(&currentContext, mainCtx);
     
     RuntimeInitCreateOctarineNamespace(mainCtx);
+	rt->namespaces = VectorCreate(mainCtx, rtHeap, rt->builtinTypes.referenceTypes.namespace, 100);
 
     return rt;
 }
