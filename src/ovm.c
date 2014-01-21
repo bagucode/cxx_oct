@@ -931,19 +931,18 @@ static String NamespaceGetName(Namespace ns) {
     return ns->name;
 }
 
-static Value NamespaceFindValue(Context ctx, Namespace ns, String name) {
-  // TODO: implement
-  This should return the index of the value if found, or something like that
-  so that it can be used in NamespaceBind
-}
-
 static Value NamespaceBind(Context ctx, Namespace ns, String name, Type t, Address value) {
   NamespaceEntry entry;
   Runtime rt = ContextGetRuntime(ctx);
   Heap rtHeap = RuntimeGetHeap(rt);
   entry.value = ValueCreate(ctx, rtHeap, t, value);
   entry.key = name; // TODO: make sure the name is in the correct heap!
-  
+  // If there is an existing entry with the given name, replace it
+  Array entries = VectorGetBackingArray(ns->entries);
+  Uword numEntries = VectorGetSize(ns->entries);
+  for(Uword i = 0; i < numEntries; ++i) {
+    WIP here
+  }
 }
 
 // String
@@ -956,6 +955,16 @@ static String StringCreate(Context ctx, Heap heap, const char* value) {
     U8* data = ArrayGetFirstElement(s->utf8Data);
     memcpy(data, value, s->size + 1);
     return s;
+}
+
+static Bool StringEquals(Context ctx, String s1, String s2) {
+  if(s1->size != s2->size) {
+    return False;
+  }
+  // TODO: This might crash if the internal format of the data arrays is not the same
+  // but it should be the same even when the data is correct utf-8 because the intention
+  // is to normalize the data in composed form when creating a string from bytes/c-string.
+  return memcmp(s1->utf8Data->data, s2->utf8Data->data, s1->utf8Data->size) == 0;
 }
 
 // Runtime
