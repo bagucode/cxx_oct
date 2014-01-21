@@ -889,6 +889,14 @@ static void VectorPop(Vector v, Address dest) {
 	}
 }
 
+static Array VectorGetBackingArray(Vector v) {
+    return v->data;
+}
+
+static Uword VectorGetSize(Vector v) {
+    return v->size;
+}
+
 // Namespace
 
 static Namespace NamespaceCreate(Context ctx, String name) {
@@ -902,6 +910,10 @@ static Namespace NamespaceCreate(Context ctx, String name) {
         return NULL;
     }
     return ns;
+}
+
+static String NamespaceGetName(Namespace ns) {
+    return ns->name;
 }
 
 // String
@@ -1341,6 +1353,28 @@ static void RuntimeInitCreateOctarineNamespace(Context ctx) {
 	String name = StringCreate(ctx, rtHeap, "octarine");
 	Namespace octNs = NamespaceCreate(ctx, name);
 	ContextSetCurrentNamespace(ctx, octNs);
+}
+
+static Namespace RuntimeFindNamespace(Runtime rt, String name) {
+    // TODO: don't return NULL when not found, make an option type
+    
+}
+
+static void RuntimeAddOrMergeNamespace(Context ctx, Namespace ns) {
+    Runtime rt = ContextGetRuntime(ctx);
+    Heap rtHeap = RuntimeGetHeap(rt);
+    Namespace existing = RuntimeFindNamespace(rt, NamespaceGetName(ns));
+    if(!existing) {
+        VectorPush(ctx, rtHeap, rt->namespaces, rt->builtinTypes.referenceTypes.namespace, &ns);
+    }
+    else {
+        Array entriesArray = VectorGetBackingArray(ns->entries);
+        NamespaceEntry* newEntries = (NamespaceEntry*)ArrayGetFirstElement(entriesArray);
+        Uword numEntries = VectorGetSize(ns->entries);
+        for(Uword i = 0; i < numEntries; ++i) {
+            WIP here!
+        }
+    }
 }
 
 static Runtime RuntimeCreate() {
