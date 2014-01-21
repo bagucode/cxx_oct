@@ -1,0 +1,4 @@
+-DDEBUG
+-lpthread
+-c
+

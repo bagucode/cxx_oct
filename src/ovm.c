@@ -897,6 +897,21 @@ static Uword VectorGetSize(Vector v) {
     return v->size;
 }
 
+// Value
+
+static Value ValueCreate(Context ctx, Heap heap, Type t, Address src) {
+  Runtime rt = ContextGetRuntime(ctx);
+  Value v;
+  v.data = OvmHeapAlloc(heap, t);
+  if(!v.data) {
+    // TODO: handle OOM
+    return v;
+  }
+  // TODO: deep copy of object to make sure the whole graph is actually in the correct heap!
+  memcpy(v.data, src, TypeGetFieldSize(t));
+  return v;
+}
+
 // Namespace
 
 static Namespace NamespaceCreate(Context ctx, String name) {
@@ -914,6 +929,21 @@ static Namespace NamespaceCreate(Context ctx, String name) {
 
 static String NamespaceGetName(Namespace ns) {
     return ns->name;
+}
+
+static Value NamespaceFindValue(Context ctx, Namespace ns, String name) {
+  // TODO: implement
+  This should return the index of the value if found, or something like that
+  so that it can be used in NamespaceBind
+}
+
+static Value NamespaceBind(Context ctx, Namespace ns, String name, Type t, Address value) {
+  NamespaceEntry entry;
+  Runtime rt = ContextGetRuntime(ctx);
+  Heap rtHeap = RuntimeGetHeap(rt);
+  entry.value = ValueCreate(ctx, rtHeap, t, value);
+  entry.key = name; // TODO: make sure the name is in the correct heap!
+  
 }
 
 // String
@@ -1357,7 +1387,7 @@ static void RuntimeInitCreateOctarineNamespace(Context ctx) {
 
 static Namespace RuntimeFindNamespace(Runtime rt, String name) {
     // TODO: don't return NULL when not found, make an option type
-    
+
 }
 
 static void RuntimeAddOrMergeNamespace(Context ctx, Namespace ns) {
@@ -1372,7 +1402,7 @@ static void RuntimeAddOrMergeNamespace(Context ctx, Namespace ns) {
         NamespaceEntry* newEntries = (NamespaceEntry*)ArrayGetFirstElement(entriesArray);
         Uword numEntries = VectorGetSize(ns->entries);
         for(Uword i = 0; i < numEntries; ++i) {
-            WIP here!
+          
         }
     }
 }

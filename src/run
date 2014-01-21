@@ -1,0 +1,6 @@
+#!/bin/bash
+./compile
+if [ $? -eq 0 ]; then
+./ovm
+fi
+
