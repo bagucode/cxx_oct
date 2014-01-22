@@ -410,6 +410,7 @@ static void ObjectStorageSetup(Type objType, Address storeLocation, Bool asField
 static OpStack OpStackCreate(Context ctx, Heap heap);
 static Runtime ContextGetRuntime(Context ctx);
 static Heap RuntimeGetHeap(Runtime rt);
+static Bool StringEquals(Context ctx, String s1, String s2);
 
 // Heap
 
@@ -938,11 +939,19 @@ static Value NamespaceBind(Context ctx, Namespace ns, String name, Type t, Addre
   entry.value = ValueCreate(ctx, rtHeap, t, value);
   entry.key = name; // TODO: make sure the name is in the correct heap!
   // If there is an existing entry with the given name, replace it
-  Array entries = VectorGetBackingArray(ns->entries);
+  Array entriesArray = VectorGetBackingArray(ns->entries);
   Uword numEntries = VectorGetSize(ns->entries);
+  NamespaceEntry* entries = ArrayGetFirstElement(entriesArray);
+  // TODO: Contains function for Vector.
   for(Uword i = 0; i < numEntries; ++i) {
-    WIP here
+    if(StringEquals(ctx, entries[i].key, entry.key)) {
+      entries[i] = entry;
+      return entry.value;
+    }
   }
+  // Not found, just push it.
+  VectorPush(ctx, rtHeap, ns->entries, rt->builtinTypes.valueTypes.namespaceEntry, entry.value.data);
+  return entry.value;
 }
 
 // String
@@ -1396,7 +1405,6 @@ static void RuntimeInitCreateOctarineNamespace(Context ctx) {
 
 static Namespace RuntimeFindNamespace(Runtime rt, String name) {
     // TODO: don't return NULL when not found, make an option type
-
 }
 
 static void RuntimeAddOrMergeNamespace(Context ctx, Namespace ns) {
@@ -1404,14 +1412,14 @@ static void RuntimeAddOrMergeNamespace(Context ctx, Namespace ns) {
     Heap rtHeap = RuntimeGetHeap(rt);
     Namespace existing = RuntimeFindNamespace(rt, NamespaceGetName(ns));
     if(!existing) {
-        VectorPush(ctx, rtHeap, rt->namespaces, rt->builtinTypes.referenceTypes.namespace, &ns);
+        VectorPush(ctx, rtHeap, rt->namespaces, rt->builtinTypes.referenceTypes.namespace, ns);
     }
     else {
         Array entriesArray = VectorGetBackingArray(ns->entries);
         NamespaceEntry* newEntries = (NamespaceEntry*)ArrayGetFirstElement(entriesArray);
         Uword numEntries = VectorGetSize(ns->entries);
         for(Uword i = 0; i < numEntries; ++i) {
-          
+          WIP here
         }
     }
 }
