@@ -1494,6 +1494,21 @@ static void RuntimeInitBindBuiltinTypes(Context ctx, Namespace ns) {
 	Type tt = rt->builtinTypes.variadicTypes.type;
 
 	RuntimeInitNSBind(ctx, ns, "U8", tt, &rt->builtinTypes.primitiveTypes.u8);
+	RuntimeInitNSBind(ctx, ns, "I8", tt, &rt->builtinTypes.primitiveTypes.i8);
+	RuntimeInitNSBind(ctx, ns, "U16", tt, &rt->builtinTypes.primitiveTypes.u16);
+	RuntimeInitNSBind(ctx, ns, "I16", tt, &rt->builtinTypes.primitiveTypes.i16);
+	RuntimeInitNSBind(ctx, ns, "U32", tt, &rt->builtinTypes.primitiveTypes.u32);
+	RuntimeInitNSBind(ctx, ns, "I32", tt, &rt->builtinTypes.primitiveTypes.i32);
+	RuntimeInitNSBind(ctx, ns, "U64", tt, &rt->builtinTypes.primitiveTypes.u64);
+	RuntimeInitNSBind(ctx, ns, "I64", tt, &rt->builtinTypes.primitiveTypes.i64);
+	RuntimeInitNSBind(ctx, ns, "F32", tt, &rt->builtinTypes.primitiveTypes.f32);
+	RuntimeInitNSBind(ctx, ns, "F64", tt, &rt->builtinTypes.primitiveTypes.f64);
+	RuntimeInitNSBind(ctx, ns, "Uword", tt, &rt->builtinTypes.primitiveTypes.uword);
+	RuntimeInitNSBind(ctx, ns, "Word", tt, &rt->builtinTypes.primitiveTypes.word);
+	RuntimeInitNSBind(ctx, ns, "Char", tt, &rt->builtinTypes.primitiveTypes.character);
+	RuntimeInitNSBind(ctx, ns, "Bool", tt, &rt->builtinTypes.primitiveTypes.boolean);
+	RuntimeInitNSBind(ctx, ns, "Address", tt, &rt->builtinTypes.primitiveTypes.address);
+	RuntimeInitNSBind(ctx, ns, "Nothing", tt, &rt->builtinTypes.primitiveTypes.nothing);
 }
 
 static void RuntimeInitBindBuiltinFunctions(Context ctx, Namespace ns) {
