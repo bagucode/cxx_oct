@@ -1509,6 +1509,8 @@ static void RuntimeInitBindBuiltinTypes(Context ctx, Namespace ns) {
 	RuntimeInitNSBind(ctx, ns, "Bool", tt, &rt->builtinTypes.primitiveTypes.boolean);
 	RuntimeInitNSBind(ctx, ns, "Address", tt, &rt->builtinTypes.primitiveTypes.address);
 	RuntimeInitNSBind(ctx, ns, "Nothing", tt, &rt->builtinTypes.primitiveTypes.nothing);
+
+    
 }
 
 static void RuntimeInitBindBuiltinFunctions(Context ctx, Namespace ns) {
