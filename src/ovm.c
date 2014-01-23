@@ -1404,14 +1404,23 @@ static Namespace RuntimeInitCreateOctarineNamespace(Context ctx) {
     return octNs;
 }
 
-static Namespace RuntimeFindNamespace(Runtime rt, String name) {
-    // TODO: don't return NULL when not found, make an option type
+static Namespace RuntimeFindNamespace(Context ctx, String name) {
+    Runtime rt = ContextGetRuntime(ctx);
+    Array nsArray = VectorGetBackingArray(rt->namespaces);
+    Uword size = VectorGetSize(rt->namespaces);
+    Namespace* ns = ArrayGetFirstElement(nsArray);
+    for(Uword i = 0; i < size; ++i) {
+        if(StringEquals(ctx, ns[i]->name, name)) {
+            return ns[i];
+        }
+    }
+    return NULL;
 }
 
 static void RuntimeAddOrMergeNamespace(Context ctx, Namespace ns) {
     Runtime rt = ContextGetRuntime(ctx);
     Heap rtHeap = RuntimeGetHeap(rt);
-    Namespace existing = RuntimeFindNamespace(rt, NamespaceGetName(ns));
+    Namespace existing = RuntimeFindNamespace(ctx, NamespaceGetName(ns));
     if(!existing) {
         VectorPush(ctx, rtHeap, rt->namespaces, rt->builtinTypes.referenceTypes.namespace, ns);
     }
@@ -1450,6 +1459,8 @@ static Runtime RuntimeCreate() {
 	rt->namespaces = VectorCreate(mainCtx, rtHeap, rt->builtinTypes.referenceTypes.namespace, 100);
 
     RuntimeAddOrMergeNamespace(mainCtx, octNs);
+    
+    Namespace test = RuntimeFindNamespace(mainCtx, StringCreate(mainCtx, rtHeap, "octarine"));
 
     return rt;
 }
