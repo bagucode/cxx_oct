@@ -1491,7 +1491,7 @@ static Runtime RuntimeCreate() {
 	rt->namespaces = VectorCreate(mainCtx, rtHeap, rt->builtinTypes.referenceTypes.namespace, 100);
 
     RuntimeAddOrMergeNamespace(mainCtx, octNs);
-	
+
 	return rt;
 }
 
