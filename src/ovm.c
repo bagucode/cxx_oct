@@ -212,6 +212,12 @@ typedef struct OpStackSlot_t OpStackSlot;
 struct OpStack_t;
 typedef struct OpStack_t* OpStack;
 
+struct FunctionSignature_t;
+typedef struct FunctionSignature_t* FunctionSignature;
+
+struct Function_t;
+typedef struct Function_t* Function;
+
 typedef void(*octFn)(Context ctx);
 
 // Structure definitions
@@ -322,7 +328,6 @@ struct BuiltinTypes_t {
         Type value;
         Type structField;
         Type namespaceEntry;
-		Type namespaceListEntry;
         Type opStackSlot;
     } valueTypes;
     struct BuiltinVariadicTypes_t {
@@ -380,6 +385,15 @@ struct Context_t {
     Heap heap;
     OpStack operandStack;
 	Namespace currentNs;
+};
+
+struct FunctionSignature_t {
+    Vector argTypes;
+    Vector retTypes;
+};
+
+struct Function_t {
+    Uword IDontKnowWhatToPutHere;
 };
 
 // Global variables
@@ -1510,7 +1524,23 @@ static void RuntimeInitBindBuiltinTypes(Context ctx, Namespace ns) {
 	RuntimeInitNSBind(ctx, ns, "Address", tt, &rt->builtinTypes.primitiveTypes.address);
 	RuntimeInitNSBind(ctx, ns, "Nothing", tt, &rt->builtinTypes.primitiveTypes.nothing);
 
+    RuntimeInitNSBind(ctx, ns, "NSEntry", tt, &rt->builtinTypes.valueTypes.namespaceEntry);
+    RuntimeInitNSBind(ctx, ns, "Value", tt, &rt->builtinTypes.valueTypes.value);
+    RuntimeInitNSBind(ctx, ns, "StructField", tt, &rt->builtinTypes.valueTypes.structField);
     
+    RuntimeInitNSBind(ctx, ns, "Type", tt, &rt->builtinTypes.variadicTypes.type);
+
+    RuntimeInitNSBind(ctx, ns, "Array", tt, &rt->builtinTypes.referenceTypes.array);
+    RuntimeInitNSBind(ctx, ns, "Context", tt, &rt->builtinTypes.referenceTypes.context);
+    RuntimeInitNSBind(ctx, ns, "Namespace", tt, &rt->builtinTypes.referenceTypes.namespace);
+    RuntimeInitNSBind(ctx, ns, "ReferenceType", tt, &rt->builtinTypes.referenceTypes.refType);
+    RuntimeInitNSBind(ctx, ns, "Runtime", tt, &rt->builtinTypes.referenceTypes.runtime);
+    RuntimeInitNSBind(ctx, ns, "String", tt, &rt->builtinTypes.referenceTypes.string);
+    RuntimeInitNSBind(ctx, ns, "StructInfo", tt, &rt->builtinTypes.referenceTypes.structInfo);
+    RuntimeInitNSBind(ctx, ns, "Symbol", tt, &rt->builtinTypes.referenceTypes.symbol);
+    RuntimeInitNSBind(ctx, ns, "ValueType", tt, &rt->builtinTypes.referenceTypes.valType);
+    RuntimeInitNSBind(ctx, ns, "VariadicType", tt, &rt->builtinTypes.referenceTypes.varType);
+    RuntimeInitNSBind(ctx, ns, "Vector", tt, &rt->builtinTypes.referenceTypes.vector);
 }
 
 static void RuntimeInitBindBuiltinFunctions(Context ctx, Namespace ns) {
