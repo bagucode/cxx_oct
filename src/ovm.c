@@ -182,8 +182,8 @@ typedef struct Object_t* Object;
 struct Value_t;
 typedef struct Value_t Value;
 
-struct NamespaceEntry;
-typedef struct NamespaceEntry NamespaceEntry;
+struct NameValuePair;
+typedef struct NameValuePair NameValuePair;
 
 struct Namespace_t;
 typedef struct Namespace_t* Namespace;
@@ -289,8 +289,8 @@ struct Value_t {
     Address data;
 };
 
-struct NamespaceEntry {
-    String key;
+struct NameValuePair {
+    String name;
     Value value;
 };
 
@@ -327,7 +327,7 @@ struct BuiltinTypes_t {
     struct BuiltinValueTypes_t {
         Type value;
         Type structField;
-        Type namespaceEntry;
+        Type nameValuePair;
         Type opStackSlot;
     } valueTypes;
     struct BuiltinVariadicTypes_t {
@@ -964,7 +964,7 @@ static Namespace NamespaceCreate(Context ctx, String name) {
     Namespace ns = OvmHeapAlloc(rtHeap, rt->builtinTypes.referenceTypes.namespace);
     // TODO: make sure name is in the rt heap
     ns->name = name;
-    ns->entries = VectorCreate(ctx, rtHeap, rt->builtinTypes.valueTypes.namespaceEntry, 100);
+    ns->entries = VectorCreate(ctx, rtHeap, rt->builtinTypes.valueTypes.nameValuePair, 100);
     if(!ns->entries) {
         return NULL;
     }
@@ -976,33 +976,33 @@ static String NamespaceGetName(Namespace ns) {
 }
 
 static Value NamespaceBind(Context ctx, Namespace ns, String name, Type t, Address value) {
-  NamespaceEntry entry;
+  NameValuePair entry;
   Runtime rt = ContextGetRuntime(ctx);
   Heap rtHeap = RuntimeGetHeap(rt);
   entry.value = ValueCreate(ctx, rtHeap, t, value);
-  entry.key = name; // TODO: make sure the name is in the correct heap!
+  entry.name = name; // TODO: make sure the name is in the correct heap!
   // If there is an existing entry with the given name, replace it
   Array entriesArray = VectorGetBackingArray(ns->entries);
   Uword numEntries = VectorGetSize(ns->entries);
-  NamespaceEntry* entries = ArrayGetFirstElement(entriesArray);
+  NameValuePair* entries = ArrayGetFirstElement(entriesArray);
   // TODO: Contains function for Vector.
   for(Uword i = 0; i < numEntries; ++i) {
-    if(StringEquals(ctx, entries[i].key, entry.key)) {
+    if(StringEquals(ctx, entries[i].name, entry.name)) {
       entries[i] = entry;
       return entry.value;
     }
   }
   // Not found, just push it.
-  VectorPush(ctx, rtHeap, ns->entries, rt->builtinTypes.valueTypes.namespaceEntry, &entry);
+  VectorPush(ctx, rtHeap, ns->entries, rt->builtinTypes.valueTypes.nameValuePair, &entry);
   return entry.value;
 }
 
 static Value NamespaceFind(Context ctx, Namespace ns, String name) {
 	Array entriesArray = VectorGetBackingArray(ns->entries);
 	Uword numEntries = VectorGetSize(ns->entries);
-	NamespaceEntry* entries = ArrayGetFirstElement(entriesArray);
+	NameValuePair* entries = ArrayGetFirstElement(entriesArray);
 	for (Uword i = 0; i < numEntries; ++i) {
-		if (StringEquals(ctx, entries[i].key, name)) {
+		if (StringEquals(ctx, entries[i].name, name)) {
 			return entries[i].value;
 		}
 	}
@@ -1035,6 +1035,10 @@ static Bool StringEquals(Context ctx, String s1, String s2) {
 	// is to normalize the data in composed form when creating a string from bytes/c-string.
 	return memcmp(s1->utf8Data->data, s2->utf8Data->data, s1->utf8Data->size) == 0;
 }
+
+// Function
+
+//static FunctionSignature FunctionSignatureCreate(Context ctx, Vector argTypes, )
 
 // Runtime
 
@@ -1373,14 +1377,14 @@ static void RuntimeInitInitBuiltInTypes(Context ctx) {
     sf[0].name = RuntimeInitCreateString(rt, "object");
     rt->builtinTypes.valueTypes.value.val->structInfo = StructInfoCreate(ctx, fields);
 
-    // NamespaceEntry
+    // NameValuePair
     fields = StructFieldArrayCreate(ctx, 2);
     sf = ArrayGetFirstElement(fields);
     sf[0].type = rt->builtinTypes.referenceTypes.string;
-    sf[0].name = RuntimeInitCreateString(rt, "key");
+    sf[0].name = RuntimeInitCreateString(rt, "name");
     sf[1].type = rt->builtinTypes.valueTypes.value;
     sf[1].name = RuntimeInitCreateString(rt, "value");
-    rt->builtinTypes.valueTypes.namespaceEntry.val->structInfo = StructInfoCreate(ctx, fields);
+    rt->builtinTypes.valueTypes.nameValuePair.val->structInfo = StructInfoCreate(ctx, fields);
 
     // Symbol
     fields = StructFieldArrayCreate(ctx, 1);
@@ -1477,12 +1481,12 @@ static void RuntimeAddOrMergeNamespace(Context ctx, Namespace ns) {
 	}
 	else {
 		Array entriesArray = VectorGetBackingArray(ns->entries);
-		NamespaceEntry* newEntries = (NamespaceEntry*) ArrayGetFirstElement(entriesArray);
+		NameValuePair* newEntries = (NameValuePair*) ArrayGetFirstElement(entriesArray);
 		Uword numEntries = VectorGetSize(ns->entries);
 		for (Uword i = 0; i < numEntries; ++i) {
 			Address val = newEntries[i].value.data;
 			Type valueType = ObjectGetType(val);
-			NamespaceBind(ctx, existing, newEntries[i].key, valueType, val);
+			NamespaceBind(ctx, existing, newEntries[i].name, valueType, val);
 		}
 	}
 }
@@ -1524,7 +1528,7 @@ static void RuntimeInitBindBuiltinTypes(Context ctx, Namespace ns) {
 	RuntimeInitNSBind(ctx, ns, "Address", tt, &rt->builtinTypes.primitiveTypes.address);
 	RuntimeInitNSBind(ctx, ns, "Nothing", tt, &rt->builtinTypes.primitiveTypes.nothing);
 
-    RuntimeInitNSBind(ctx, ns, "NSEntry", tt, &rt->builtinTypes.valueTypes.namespaceEntry);
+    RuntimeInitNSBind(ctx, ns, "NameValuePair", tt, &rt->builtinTypes.valueTypes.nameValuePair);
     RuntimeInitNSBind(ctx, ns, "Value", tt, &rt->builtinTypes.valueTypes.value);
     RuntimeInitNSBind(ctx, ns, "StructField", tt, &rt->builtinTypes.valueTypes.structField);
     
