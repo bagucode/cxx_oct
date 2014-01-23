@@ -399,6 +399,9 @@ static Uword TypeGetAllocationSize(Type type);
 static Uword TypeGetFieldSize(Type type);
 static Uword TypeGetAllocationAlignment(Type type);
 static Uword TypeGetFieldAlignment(Type type);
+static Bool TypeIsRefType(Type type);
+static Bool TypeIsValType(Type type);
+static Bool TypeIsVarType(Type type);
 static Uword UwordAlignOn(Uword x, Uword alignOn);
 static Type ArrayGetType(Context ctx);
 static Uword ArrayGetSize(Array arr);
@@ -544,7 +547,14 @@ static void ArrayPut(Array arr, Uword index, Type elementType, Address src) {
 	U8* e = (U8*) ArrayGetFirstElement(arr);
 	Uword elementFieldSize = TypeGetFieldSize(elementType);
 	e += elementFieldSize * index;
-	memcpy(e, src, elementFieldSize);
+	Address copyFrom;
+	if (TypeIsRefType(elementType)) {
+		copyFrom = &src;
+	}
+	else {
+		copyFrom = src;
+	}
+	memcpy(e, copyFrom, elementFieldSize);
 }
 
 static void ArrayGet(Array arr, Uword index, Address dest) {
@@ -788,6 +798,18 @@ static Type TypeCreateVarType(Runtime rt, Array variants) {
     t.var->alignment = alignment;
     t.var->size = size;
     return t;
+}
+
+static Bool TypeIsRefType(Type t) {
+	return t.variant == TYPE_VARIANT_REF;
+}
+
+static Bool TypeIsValType(Type t) {
+	return t.variant == TYPE_VARIANT_VAL;
+}
+
+static Bool TypeIsVarType(Type t) {
+	return t.variant == TYPE_VARIANT_VAR;
 }
 
 // Uword
@@ -1460,8 +1482,6 @@ static Runtime RuntimeCreate() {
 
     RuntimeAddOrMergeNamespace(mainCtx, octNs);
     
-    Namespace test = RuntimeFindNamespace(mainCtx, StringCreate(mainCtx, rtHeap, "octarine"));
-
     return rt;
 }
 
