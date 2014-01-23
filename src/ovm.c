@@ -983,6 +983,20 @@ static Value NamespaceBind(Context ctx, Namespace ns, String name, Type t, Addre
   return entry.value;
 }
 
+static Value NamespaceFind(Context ctx, Namespace ns, String name) {
+	Array entriesArray = VectorGetBackingArray(ns->entries);
+	Uword numEntries = VectorGetSize(ns->entries);
+	NamespaceEntry* entries = ArrayGetFirstElement(entriesArray);
+	for (Uword i = 0; i < numEntries; ++i) {
+		if (StringEquals(ctx, entries[i].key, name)) {
+			return entries[i].value;
+		}
+	}
+	Value nothing;
+	nothing.data = NULL;
+	return nothing; // TODO: return nil
+}
+
 // String
 
 static String StringCreate(Context ctx, Heap heap, const char* value) {
@@ -1427,45 +1441,63 @@ static void RuntimeInitCreateBuiltInTypes(Context ctx) {
     RuntimeInitInitBuiltInTypes(ctx);
 }
 
+static Namespace RuntimeFindNamespace(Context ctx, String name) {
+	Runtime rt = ContextGetRuntime(ctx);
+	Array nsArray = VectorGetBackingArray(rt->namespaces);
+	Uword size = VectorGetSize(rt->namespaces);
+	Namespace* ns = ArrayGetFirstElement(nsArray);
+	for (Uword i = 0; i < size; ++i) {
+		if (StringEquals(ctx, ns[i]->name, name)) {
+			return ns[i];
+		}
+	}
+	return NULL;
+}
+
+static void RuntimeAddOrMergeNamespace(Context ctx, Namespace ns) {
+	Runtime rt = ContextGetRuntime(ctx);
+	Heap rtHeap = RuntimeGetHeap(rt);
+	Namespace existing = RuntimeFindNamespace(ctx, NamespaceGetName(ns));
+	if (!existing) {
+		VectorPush(ctx, rtHeap, rt->namespaces, rt->builtinTypes.referenceTypes.namespace, ns);
+	}
+	else {
+		Array entriesArray = VectorGetBackingArray(ns->entries);
+		NamespaceEntry* newEntries = (NamespaceEntry*) ArrayGetFirstElement(entriesArray);
+		Uword numEntries = VectorGetSize(ns->entries);
+		for (Uword i = 0; i < numEntries; ++i) {
+			Address val = newEntries[i].value.data;
+			Type valueType = ObjectGetType(val);
+			NamespaceBind(ctx, existing, newEntries[i].key, valueType, val);
+		}
+	}
+}
+
 static Namespace RuntimeInitCreateOctarineNamespace(Context ctx) {
 	Runtime rt = ContextGetRuntime(ctx);
 	Heap rtHeap = RuntimeGetHeap(rt);
 	String name = StringCreate(ctx, rtHeap, "octarine");
 	Namespace octNs = NamespaceCreate(ctx, name);
+	RuntimeAddOrMergeNamespace(ctx, octNs);
 	ContextSetCurrentNamespace(ctx, octNs);
     return octNs;
 }
 
-static Namespace RuntimeFindNamespace(Context ctx, String name) {
-    Runtime rt = ContextGetRuntime(ctx);
-    Array nsArray = VectorGetBackingArray(rt->namespaces);
-    Uword size = VectorGetSize(rt->namespaces);
-    Namespace* ns = ArrayGetFirstElement(nsArray);
-    for(Uword i = 0; i < size; ++i) {
-        if(StringEquals(ctx, ns[i]->name, name)) {
-            return ns[i];
-        }
-    }
-    return NULL;
+static void RuntimeInitNSBind(Context ctx, Namespace ns, const char* name, Type type, Address value) {
+	Runtime rt = ContextGetRuntime(ctx);
+	Heap rtHeap = RuntimeGetHeap(rt);
+	NamespaceBind(ctx, ns, StringCreate(ctx, rtHeap, name), type, value);
 }
 
-static void RuntimeAddOrMergeNamespace(Context ctx, Namespace ns) {
-    Runtime rt = ContextGetRuntime(ctx);
-    Heap rtHeap = RuntimeGetHeap(rt);
-    Namespace existing = RuntimeFindNamespace(ctx, NamespaceGetName(ns));
-    if(!existing) {
-        VectorPush(ctx, rtHeap, rt->namespaces, rt->builtinTypes.referenceTypes.namespace, ns);
-    }
-    else {
-        Array entriesArray = VectorGetBackingArray(ns->entries);
-        NamespaceEntry* newEntries = (NamespaceEntry*)ArrayGetFirstElement(entriesArray);
-        Uword numEntries = VectorGetSize(ns->entries);
-        for(Uword i = 0; i < numEntries; ++i) {
-          Address val = newEntries[i].value.data;
-          Type valueType = ObjectGetType(val);
-          NamespaceBind(ctx, existing, newEntries[i].key, valueType, val);
-        }
-    }
+static void RuntimeInitBindBuiltinTypes(Context ctx, Namespace ns) {
+	Runtime rt = ContextGetRuntime(ctx);
+	Type tt = rt->builtinTypes.variadicTypes.type;
+
+	RuntimeInitNSBind(ctx, ns, "U8", tt, &rt->builtinTypes.primitiveTypes.u8);
+}
+
+static void RuntimeInitBindBuiltinFunctions(Context ctx, Namespace ns) {
+
 }
 
 static Runtime RuntimeCreate() {
@@ -1487,10 +1519,10 @@ static Runtime RuntimeCreate() {
     TLSCreate(&currentContext);
     TLSSet(&currentContext, mainCtx);
 
-    Namespace octNs = RuntimeInitCreateOctarineNamespace(mainCtx);
 	rt->namespaces = VectorCreate(mainCtx, rtHeap, rt->builtinTypes.referenceTypes.namespace, 100);
-
-    RuntimeAddOrMergeNamespace(mainCtx, octNs);
+    Namespace octNs = RuntimeInitCreateOctarineNamespace(mainCtx);
+	RuntimeInitBindBuiltinTypes(mainCtx, octNs);
+	RuntimeInitBindBuiltinFunctions(mainCtx, octNs);
 
 	return rt;
 }
