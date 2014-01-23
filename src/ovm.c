@@ -1395,12 +1395,13 @@ static void RuntimeInitCreateBuiltInTypes(Context ctx) {
     RuntimeInitInitBuiltInTypes(ctx);
 }
 
-static void RuntimeInitCreateOctarineNamespace(Context ctx) {
+static Namespace RuntimeInitCreateOctarineNamespace(Context ctx) {
 	Runtime rt = ContextGetRuntime(ctx);
 	Heap rtHeap = RuntimeGetHeap(rt);
 	String name = StringCreate(ctx, rtHeap, "octarine");
 	Namespace octNs = NamespaceCreate(ctx, name);
 	ContextSetCurrentNamespace(ctx, octNs);
+    return octNs;
 }
 
 static Namespace RuntimeFindNamespace(Runtime rt, String name) {
@@ -1419,7 +1420,9 @@ static void RuntimeAddOrMergeNamespace(Context ctx, Namespace ns) {
         NamespaceEntry* newEntries = (NamespaceEntry*)ArrayGetFirstElement(entriesArray);
         Uword numEntries = VectorGetSize(ns->entries);
         for(Uword i = 0; i < numEntries; ++i) {
-          WIP here
+          Address val = newEntries[i].value.data;
+          Type valueType = ObjectGetType(val);
+          NamespaceBind(ctx, existing, newEntries[i].key, valueType, val);
         }
     }
 }
@@ -1443,8 +1446,10 @@ static Runtime RuntimeCreate() {
     TLSCreate(&currentContext);
     TLSSet(&currentContext, mainCtx);
 
-    RuntimeInitCreateOctarineNamespace(mainCtx);
+    Namespace octNs = RuntimeInitCreateOctarineNamespace(mainCtx);
 	rt->namespaces = VectorCreate(mainCtx, rtHeap, rt->builtinTypes.referenceTypes.namespace, 100);
+
+    RuntimeAddOrMergeNamespace(mainCtx, octNs);
 
     return rt;
 }

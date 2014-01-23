@@ -1,2 +1,2 @@
 #!/bin/bash
-clang -o ovm -DDEBUG -lpthread ovm.c
+clang -g -o ovm -DDEBUG -lpthread ovm.c
