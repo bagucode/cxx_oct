@@ -923,16 +923,23 @@ static Uword VectorGetSize(Vector v) {
 // Value
 
 static Value ValueCreate(Context ctx, Heap heap, Type t, Address src) {
-  Runtime rt = ContextGetRuntime(ctx);
-  Value v;
-  v.data = OvmHeapAlloc(heap, t);
-  if(!v.data) {
-    // TODO: handle OOM
-    return v;
-  }
-  // TODO: deep copy of object to make sure the whole graph is actually in the correct heap!
-  memcpy(v.data, src, TypeGetFieldSize(t));
-  return v;
+	Value v;
+	// Don't copy ref types.
+	// TODO: copy if the destination and source heaps are different.
+	if (TypeIsRefType(t)) {
+		v.data = src;
+	}
+	else {
+		Runtime rt = ContextGetRuntime(ctx);
+		v.data = OvmHeapAlloc(heap, t);
+		if (!v.data) {
+			// TODO: handle OOM
+			return v;
+		}
+		// TODO: deep copy of object to make sure the whole graph is actually in the correct heap!
+		memcpy(v.data, src, TypeGetAllocationSize(t));
+	}
+	return v;
 }
 
 // Namespace
@@ -972,7 +979,7 @@ static Value NamespaceBind(Context ctx, Namespace ns, String name, Type t, Addre
     }
   }
   // Not found, just push it.
-  VectorPush(ctx, rtHeap, ns->entries, rt->builtinTypes.valueTypes.namespaceEntry, entry.value.data);
+  VectorPush(ctx, rtHeap, ns->entries, rt->builtinTypes.valueTypes.namespaceEntry, &entry);
   return entry.value;
 }
 
@@ -989,13 +996,16 @@ static String StringCreate(Context ctx, Heap heap, const char* value) {
 }
 
 static Bool StringEquals(Context ctx, String s1, String s2) {
-  if(s1->size != s2->size) {
-    return False;
-  }
-  // TODO: This might crash if the internal format of the data arrays is not the same
-  // but it should be the same even when the data is correct utf-8 because the intention
-  // is to normalize the data in composed form when creating a string from bytes/c-string.
-  return memcmp(s1->utf8Data->data, s2->utf8Data->data, s1->utf8Data->size) == 0;
+	if (s1 == s2) {
+		return True;
+	}
+	if(s1->size != s2->size) {
+		return False;
+	}
+	// TODO: This might crash if the internal format of the data arrays is not the same
+	// but it should be the same even when the data is correct utf-8 because the intention
+	// is to normalize the data in composed form when creating a string from bytes/c-string.
+	return memcmp(s1->utf8Data->data, s2->utf8Data->data, s1->utf8Data->size) == 0;
 }
 
 // Runtime
@@ -1481,8 +1491,8 @@ static Runtime RuntimeCreate() {
 	rt->namespaces = VectorCreate(mainCtx, rtHeap, rt->builtinTypes.referenceTypes.namespace, 100);
 
     RuntimeAddOrMergeNamespace(mainCtx, octNs);
-    
-    return rt;
+	
+	return rt;
 }
 
 static void RuntimeDestroy(Runtime rt) {
