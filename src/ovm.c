@@ -347,6 +347,8 @@ struct BuiltinTypes_t {
         Type runtime;
         Type context;
         Type opStack;
+        Type functionSignature;
+        Type function;
     } referenceTypes;
 };
 
@@ -1038,7 +1040,11 @@ static Bool StringEquals(Context ctx, String s1, String s2) {
 
 // Function
 
-//static FunctionSignature FunctionSignatureCreate(Context ctx, Vector argTypes, )
+static FunctionSignature FunctionSignatureCreate(Context ctx, Vector argTypes, Vector retTypes) {
+    Runtime rt = ContextGetRuntime(ctx);
+    Heap rtHeap = RuntimeGetHeap(rt);
+    FunctionSignature sig = OvmHeapAlloc(rtHeap, rt->builtinTypes.referenceTypes.functionSignature);
+}
 
 // Runtime
 
@@ -1438,6 +1444,15 @@ static void RuntimeInitInitBuiltInTypes(Context ctx) {
     sf[0].name = RuntimeInitCreateString(rt, "type");
     sf[1].type = rt->builtinTypes.primitiveTypes.address;
     sf[1].name = RuntimeInitCreateString(rt, "value");
+    rt->builtinTypes.valueTypes.opStackSlot.val->structInfo = StructInfoCreate(ctx, fields);
+
+    // FunctionSignature
+    fields = StructFieldArrayCreate(ctx, 2);
+    sf = ArrayGetFirstElement(fields);
+    sf[0].type = rt->builtinTypes.referenceTypes.vector;
+    sf[0].name = RuntimeInitCreateString(rt, "argument-types");
+    sf[1].type = rt->builtinTypes.referenceTypes.vector;
+    sf[1].name = RuntimeInitCreateString(rt, "return-types");
     rt->builtinTypes.valueTypes.opStackSlot.val->structInfo = StructInfoCreate(ctx, fields);
 
     // TODO: make proper types for the runtime and context. It is important that all the types
