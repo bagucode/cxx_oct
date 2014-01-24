@@ -1593,6 +1593,12 @@ static Runtime RuntimeCreate() {
 	RuntimeInitBindBuiltinTypes(mainCtx, octNs);
 	RuntimeInitBindBuiltinFunctions(mainCtx, octNs);
 
+    Vector argTypes = VectorCreate(mainCtx, rtHeap, rt->builtinTypes.variadicTypes.type, 1);
+    Vector retTypes = VectorCreate(mainCtx, rtHeap, rt->builtinTypes.variadicTypes.type, 1);
+    VectorPush(mainCtx, rtHeap, argTypes, rt->builtinTypes.variadicTypes.type, &rt->builtinTypes.primitiveTypes.f64);
+    VectorPush(mainCtx, rtHeap, retTypes, rt->builtinTypes.variadicTypes.type, &rt->builtinTypes.primitiveTypes.f64);
+    FunctionSignature testSig = FunctionSignatureCreate(mainCtx, argTypes, retTypes);
+
 	return rt;
 }
 
