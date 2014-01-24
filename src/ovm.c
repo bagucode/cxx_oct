@@ -1044,6 +1044,9 @@ static FunctionSignature FunctionSignatureCreate(Context ctx, Vector argTypes, V
     Runtime rt = ContextGetRuntime(ctx);
     Heap rtHeap = RuntimeGetHeap(rt);
     FunctionSignature sig = OvmHeapAlloc(rtHeap, rt->builtinTypes.referenceTypes.functionSignature);
+    sig->argTypes = argTypes;
+    sig->retTypes = retTypes;
+    return sig;
 }
 
 // Runtime
