@@ -1456,7 +1456,7 @@ static void RuntimeInitInitBuiltInTypes(Context ctx) {
     sf[0].name = RuntimeInitCreateString(rt, "argument-types");
     sf[1].type = rt->builtinTypes.referenceTypes.vector;
     sf[1].name = RuntimeInitCreateString(rt, "return-types");
-    rt->builtinTypes.valueTypes.opStackSlot.val->structInfo = StructInfoCreate(ctx, fields);
+    rt->builtinTypes.referenceTypes.functionSignature.ref->structInfo = StructInfoCreate(ctx, fields);
 
     // TODO: make proper types for the runtime and context. It is important that all the types
     // used by the ovm are representable in the ovm type system or self-hosting may not be possible.
