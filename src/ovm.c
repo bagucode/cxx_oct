@@ -416,17 +416,6 @@ struct FunctionSignature_t {
     Vector retTypes;
 };
 
-struct FunctionOverload_t {
-    FunctionSignature signature;
-    Address address;
-    Bool isNative; // TODO: calling conventions, right now only cdecl?
-};
-
-struct Function_t {
-    String name;
-    Vector overloads;
-};
-
 struct ProtocolFunction_t {
     String name;
     FunctionSignature signature;
@@ -437,6 +426,8 @@ struct Protocol_t {
     Vector placeholders; // Vector<String>
     Vector functions;    // Vector<ProtocolFunction>
 };
+
+//struct 
 
 struct Equals_t {
     Address self;
@@ -954,7 +945,7 @@ static Bool EqualsApply(Context ctx, Equals eq, Address other) {
 }
 
 static ProtocolFunction EqualsFindForType(Context ctx, Type t) {
-    
+
 }
 
 // Vector
@@ -1019,15 +1010,15 @@ static Bool VectorEquals(Context ctx, Vector v1, Vector v2) {
         return False;
     }
     // Find equals function for type. Error if there is none.
-    
-    
+
+
     Array v1Array = VectorGetBackingArray(v1);
     Array v2Array = VectorGetBackingArray(v2);
     U8* v1Ptr = ArrayGetFirstElement(v1Array);
     U8* v2Ptr = ArrayGetFirstElement(v2Array);
-    
+
     Uword elementSize = TypeGetFieldSize(v1ElementType);
-    
+
 
 }
 
@@ -1556,7 +1547,7 @@ static void RuntimeInitInitBuiltInTypes(Context ctx) {
     sf[1].type = rt->builtinTypes.referenceTypes.vector;
     sf[1].name = RuntimeInitCreateString(rt, "return-types");
     rt->builtinTypes.referenceTypes.functionSignature.ref->structInfo = StructInfoCreate(ctx, fields);
-    
+
     // Protocol
     fields = StructFieldArrayCreate(ctx, 3);
     sf = ArrayGetFirstElement(fields);
@@ -1668,7 +1659,7 @@ static void RuntimeInitBindBuiltinTypes(Context ctx, Namespace ns) {
     RuntimeInitNSBind(ctx, ns, "NameValuePair", tt, &rt->builtinTypes.valueTypes.nameValuePair);
     RuntimeInitNSBind(ctx, ns, "Value", tt, &rt->builtinTypes.valueTypes.value);
     RuntimeInitNSBind(ctx, ns, "StructField", tt, &rt->builtinTypes.valueTypes.structField);
-    
+
     RuntimeInitNSBind(ctx, ns, "Type", tt, &rt->builtinTypes.variadicTypes.type);
 
     RuntimeInitNSBind(ctx, ns, "Array", tt, &rt->builtinTypes.referenceTypes.array);
