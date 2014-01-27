@@ -203,6 +203,9 @@ typedef struct Heap_t* Heap;
 struct BuiltinTypes_t;
 typedef struct BuiltinTypes_t BuiltinTypes;
 
+struct BuiltinProtocols_t;
+typedef struct BuiltinProtocols_t BuiltinProtocols;
+
 struct Nothing_t;
 typedef struct Nothing_t* Nothing;
 
@@ -215,8 +218,19 @@ typedef struct OpStack_t* OpStack;
 struct FunctionSignature_t;
 typedef struct FunctionSignature_t* FunctionSignature;
 
-struct Function_t;
-typedef struct Function_t* Function;
+struct ProtocolFunction_t;
+typedef struct ProtocolFunction_t ProtocolFunction;
+
+struct Protocol_t;
+typedef struct Protocol_t* Protocol;
+
+// Protocols
+
+struct Equals_t;
+typedef struct Equals_t Equals;
+typedef Bool(*EqualsFn)(Context, Address, Address);
+
+// This is the C-signature of all interpreted ovm functions
 
 typedef void(*octFn)(Context ctx);
 
@@ -329,6 +343,7 @@ struct BuiltinTypes_t {
         Type structField;
         Type nameValuePair;
         Type opStackSlot;
+        Type protocolFunction;
     } valueTypes;
     struct BuiltinVariadicTypes_t {
         Type type;
@@ -348,13 +363,18 @@ struct BuiltinTypes_t {
         Type context;
         Type opStack;
         Type functionSignature;
-        Type function;
+        Type protocol;
     } referenceTypes;
+};
+
+struct BuiltinProtocols_t {
+    Protocol equals;
 };
 
 struct Runtime_t {
     Heap heap;
     BuiltinTypes builtinTypes;
+    BuiltinProtocols builtinProtocols;
 	Vector namespaces;
 };
 
@@ -390,12 +410,37 @@ struct Context_t {
 };
 
 struct FunctionSignature_t {
+    // TODO: need a lot more info in a function signature.
+    // for example, we probably need to know if an argument is passed by value or reference
     Vector argTypes;
     Vector retTypes;
 };
 
+struct FunctionOverload_t {
+    FunctionSignature signature;
+    Address address;
+    Bool isNative; // TODO: calling conventions, right now only cdecl?
+};
+
 struct Function_t {
-    Uword IDontKnowWhatToPutHere;
+    String name;
+    Vector overloads;
+};
+
+struct ProtocolFunction_t {
+    String name;
+    FunctionSignature signature;
+};
+
+struct Protocol_t {
+    String name;
+    Vector placeholders; // Vector<String>
+    Vector functions;    // Vector<ProtocolFunction>
+};
+
+struct Equals_t {
+    Address self;
+    EqualsFn eq;
 };
 
 // Global variables
@@ -430,6 +475,8 @@ static OpStack OpStackCreate(Context ctx, Heap heap);
 static Runtime ContextGetRuntime(Context ctx);
 static Heap RuntimeGetHeap(Runtime rt);
 static Bool StringEquals(Context ctx, String s1, String s2);
+static FunctionSignature FunctionSignatureCreate(Context ctx, Vector argTypes, Vector retTypes);
+static Uword VectorGetSize(Vector v);
 
 // Heap
 
@@ -599,6 +646,10 @@ static void ArrayCopy(Array from, Uword fromIdx, Array to, Uword toIdx, Uword le
 	U8* toP = (U8*) ArrayGetFirstElement(to);
 	toP += elementFieldSize * toIdx;
 	memcpy(toP, fromP, elementFieldSize * length);
+}
+
+static Type ArrayGetElementType(Array a) {
+    return a->elementType;
 }
 
 // Context
@@ -889,6 +940,23 @@ static void ObjectStorageSetup(Type objType, Address storeLocation, Bool asField
     (*nextStoreLocation) = (Address)UwordAlignOn(((Uword)storeLocation) + objectSize, alignmentAfterAllocation);
 }
 
+// Equals
+
+static Equals EqualsCreate(Context ctx, Address self, EqualsFn eqFn) {
+    Equals eq;
+    eq.eq = eqFn;
+    eq.self = self;
+    return eq;
+}
+
+static Bool EqualsApply(Context ctx, Equals eq, Address other) {
+    return eq.eq(ctx, eq.self, other);
+}
+
+static ProtocolFunction EqualsFindForType(Context ctx, Type t) {
+    
+}
+
 // Vector
 
 static Vector VectorCreate(Context ctx, Heap heap, Type elementType, Uword initialCapacity) {
@@ -934,6 +1002,33 @@ static Array VectorGetBackingArray(Vector v) {
 
 static Uword VectorGetSize(Vector v) {
     return v->size;
+}
+
+static Bool VectorEquals(Context ctx, Vector v1, Vector v2) {
+    if(v1 == v2) {
+        return True;
+    }
+    if(v1->size != v2->size) {
+        return False;
+    }
+    // Don't just do an ArrayEquals because we don't care if the backing
+    // arrays are not of equal size.
+    Type v1ElementType = ArrayGetElementType(v1->data);
+    Type v2ElementType = ArrayGetElementType(v2->data);
+    if(!TypeEquals(v1ElementType, v2ElementType)) {
+        return False;
+    }
+    // Find equals function for type. Error if there is none.
+    
+    
+    Array v1Array = VectorGetBackingArray(v1);
+    Array v2Array = VectorGetBackingArray(v2);
+    U8* v1Ptr = ArrayGetFirstElement(v1Array);
+    U8* v2Ptr = ArrayGetFirstElement(v2Array);
+    
+    Uword elementSize = TypeGetFieldSize(v1ElementType);
+    
+
 }
 
 // Value
@@ -1047,6 +1142,10 @@ static FunctionSignature FunctionSignatureCreate(Context ctx, Vector argTypes, V
     sig->argTypes = argTypes;
     sig->retTypes = retTypes;
     return sig;
+}
+
+static Bool FunctionSignatureEquals(Context ctx, FunctionSignature sig1, FunctionSignature sig2) {
+    //return VectorEquals
 }
 
 // Runtime
@@ -1457,6 +1556,26 @@ static void RuntimeInitInitBuiltInTypes(Context ctx) {
     sf[1].type = rt->builtinTypes.referenceTypes.vector;
     sf[1].name = RuntimeInitCreateString(rt, "return-types");
     rt->builtinTypes.referenceTypes.functionSignature.ref->structInfo = StructInfoCreate(ctx, fields);
+    
+    // Protocol
+    fields = StructFieldArrayCreate(ctx, 3);
+    sf = ArrayGetFirstElement(fields);
+    sf[0].type = rt->builtinTypes.referenceTypes.string;
+    sf[0].name = RuntimeInitCreateString(rt, "name");
+    sf[1].type = rt->builtinTypes.referenceTypes.vector;
+    sf[1].name = RuntimeInitCreateString(rt, "placeholders");
+    sf[2].type = rt->builtinTypes.referenceTypes.vector;
+    sf[2].name = RuntimeInitCreateString(rt, "functions");
+    rt->builtinTypes.referenceTypes.protocol.ref->structInfo = StructInfoCreate(ctx, fields);
+
+    // ProtocolFunction
+    fields = StructFieldArrayCreate(ctx, 2);
+    sf = ArrayGetFirstElement(fields);
+    sf[0].type = rt->builtinTypes.referenceTypes.string;
+    sf[0].name = RuntimeInitCreateString(rt, "name");
+    sf[1].type = rt->builtinTypes.referenceTypes.functionSignature;
+    sf[1].name = RuntimeInitCreateString(rt, "signature");
+    rt->builtinTypes.valueTypes.protocolFunction.ref->structInfo = StructInfoCreate(ctx, fields);
 
     // TODO: make proper types for the runtime and context. It is important that all the types
     // used by the ovm are representable in the ovm type system or self-hosting may not be possible.
@@ -1592,12 +1711,6 @@ static Runtime RuntimeCreate() {
     Namespace octNs = RuntimeInitCreateOctarineNamespace(mainCtx);
 	RuntimeInitBindBuiltinTypes(mainCtx, octNs);
 	RuntimeInitBindBuiltinFunctions(mainCtx, octNs);
-
-    Vector argTypes = VectorCreate(mainCtx, rtHeap, rt->builtinTypes.variadicTypes.type, 1);
-    Vector retTypes = VectorCreate(mainCtx, rtHeap, rt->builtinTypes.variadicTypes.type, 1);
-    VectorPush(mainCtx, rtHeap, argTypes, rt->builtinTypes.variadicTypes.type, &rt->builtinTypes.primitiveTypes.f64);
-    VectorPush(mainCtx, rtHeap, retTypes, rt->builtinTypes.variadicTypes.type, &rt->builtinTypes.primitiveTypes.f64);
-    FunctionSignature testSig = FunctionSignatureCreate(mainCtx, argTypes, retTypes);
 
 	return rt;
 }
