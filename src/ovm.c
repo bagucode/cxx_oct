@@ -224,6 +224,9 @@ typedef struct ProtocolFunction_t ProtocolFunction;
 struct Protocol_t;
 typedef struct Protocol_t* Protocol;
 
+struct ProtocolImpl_t;
+typedef struct ProtocolImpl_t* ProtocolImpl;
+
 // Protocols
 
 struct Equals_t;
@@ -427,7 +430,9 @@ struct Protocol_t {
     Vector functions;    // Vector<ProtocolFunction>
 };
 
-//struct 
+struct ProtocolImpl_t {
+    Address
+};
 
 struct Equals_t {
     Address self;
@@ -945,7 +950,8 @@ static Bool EqualsApply(Context ctx, Equals eq, Address other) {
 }
 
 static ProtocolFunction EqualsFindForType(Context ctx, Type t) {
-
+    Runtime rt = ContextGetRuntime(ctx);
+    Uword count = rt->builtinProtocols.equals->
 }
 
 // Vector
