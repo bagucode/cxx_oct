@@ -371,7 +371,7 @@ struct BuiltinTypes_t {
 };
 
 struct BuiltinProtocols_t {
-    Protocol equals;
+    ProtocolImpl equals;
 };
 
 struct Runtime_t {
@@ -412,26 +412,39 @@ struct Context_t {
 	Namespace currentNs;
 };
 
-struct FunctionSignature_t {
-    // TODO: need a lot more info in a function signature.
-    // for example, we probably need to know if an argument is passed by value or reference
-    Vector argTypes;
-    Vector retTypes;
+struct FunctionParameter_t {
+  String name;
+  Type type;
+  // TODO: store in metadata?
+  Bool byRef;
+  Bool mutates;
+  Bool escapes;
 };
 
-struct ProtocolFunction_t {
-    String name;
-    FunctionSignature signature;
+struct FunctionSignature_t {
+  String name;
+  Vector arguments; // Vector<FunctionParameter>
+  Vector returns;   // Vector<FunctionParameter>
+  // TODO: store in metadata?
+  Bool isPure;
+  Bool triggersGc;
+  Bool allocatesMemory;
+};
+
+struct FunctionImplementation_t {
+  FunctionSignature signature;
+  Address function; // octFn or a C function
+  Bool isNative; // cdecl?
 };
 
 struct Protocol_t {
-    String name;
-    Vector placeholders; // Vector<String>
-    Vector functions;    // Vector<ProtocolFunction>
+  String name;
+  Vector functions; // Vector<FunctionSignature>
 };
 
-struct ProtocolImpl_t {
-    Address
+struct ProtocolImplementation_t {
+  Protocol protocol;
+  
 };
 
 struct Equals_t {
@@ -950,6 +963,7 @@ static Bool EqualsApply(Context ctx, Equals eq, Address other) {
 }
 
 static ProtocolFunction EqualsFindForType(Context ctx, Type t) {
+  WIP
     Runtime rt = ContextGetRuntime(ctx);
     Uword count = rt->builtinProtocols.equals->
 }
