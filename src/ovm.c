@@ -215,17 +215,29 @@ typedef struct OpStackSlot_t OpStackSlot;
 struct OpStack_t;
 typedef struct OpStack_t* OpStack;
 
+struct FunctionParameter_t;
+typedef struct FunctionParameter_t* FunctionParameter;
+
 struct FunctionSignature_t;
 typedef struct FunctionSignature_t* FunctionSignature;
 
+struct FunctionImplementation_t;
+typedef struct FunctionImplementation_t* FunctionImplementation;
+
 struct ProtocolFunction_t;
-typedef struct ProtocolFunction_t ProtocolFunction;
+typedef struct ProtocolFunction_t* ProtocolFunction;
+
+struct ProtocolSignature_t;
+typedef struct ProtocolSignature_t* ProtocolSignature;
+
+struct ProtocolImplementation_t;
+typedef struct ProtocolImplementation_t* ProtocolImplementation;
 
 struct Protocol_t;
 typedef struct Protocol_t* Protocol;
 
-struct ProtocolImpl_t;
-typedef struct ProtocolImpl_t* ProtocolImpl;
+struct Self_t;
+typedef struct Self_t* Self;
 
 // Protocols
 
@@ -371,7 +383,7 @@ struct BuiltinTypes_t {
 };
 
 struct BuiltinProtocols_t {
-    ProtocolImpl equals;
+    Protocol equals;
 };
 
 struct Runtime_t {
@@ -417,7 +429,8 @@ struct FunctionParameter_t {
   Type type;
   // TODO: store in metadata?
   Bool byRef;
-  Bool mutates;
+  Bool isRead;
+  Bool isWritten;
   Bool escapes;
 };
 
@@ -427,8 +440,8 @@ struct FunctionSignature_t {
   Vector returns;   // Vector<FunctionParameter>
   // TODO: store in metadata?
   Bool isPure;
-  Bool triggersGc;
   Bool allocatesMemory;
+  Bool triggersGc; // redundant? Maybe allocatesMemory is enough?
 };
 
 struct FunctionImplementation_t {
@@ -437,14 +450,27 @@ struct FunctionImplementation_t {
   Bool isNative; // cdecl?
 };
 
-struct Protocol_t {
+struct Function_t {
   String name;
+  Vector implementations; // Vector<FunctionImplementation>
+};
+
+struct ProtocolSignature_t {
+  String name;
+  // The signatures below must have the Self placeholder as the
+  // type of the first parameter and they must have at least one
+  // parameter.
   Vector functions; // Vector<FunctionSignature>
 };
 
 struct ProtocolImplementation_t {
-  Protocol protocol;
-  
+  ProtocolSignature signature;
+  Vector functions; // Vector<FunctionImplementation>
+};
+
+struct Protocol_t {
+  String name;
+  Vector implementations;
 };
 
 struct Equals_t {
