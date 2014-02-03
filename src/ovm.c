@@ -516,6 +516,8 @@ static Uword VectorGetSize(Vector v);
 static Array VectorGetBackingArray(Vector v);
 static void OpStackPush(Context ctx, Heap heap, OpStack os, Type valueType, Address src);
 static Address OpStackPeek(Context ctx, OpStack os, Type expectedType, Uword index);
+static Bool FunctionImplementationIsNative(FunctionImplementation fi);
+static Address FunctionImplementationGetFunctionPointer(FunctionImplementation fi);
 
 // Heap
 
@@ -1233,6 +1235,16 @@ static FunctionSignature FunctionSignatureCreate(Context ctx, String name, Vecto
 
 static Bool FunctionSignatureEquals(Context ctx, FunctionSignature sig1, FunctionSignature sig2) {
     //return VectorEquals
+}
+
+// FunctionImplementation
+
+static Bool FunctionImplementationIsNative(FunctionImplementation fi) {
+  return fi->isNative;
+}
+
+static Address FunctionImplementationGetFunctionPointer(FunctionImplementation fi) {
+  return fi->function;
 }
 
 // Runtime
