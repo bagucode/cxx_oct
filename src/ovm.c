@@ -511,9 +511,11 @@ static OpStack OpStackCreate(Context ctx, Heap heap);
 static Runtime ContextGetRuntime(Context ctx);
 static Heap RuntimeGetHeap(Runtime rt);
 static Bool StringEquals(Context ctx, String s1, String s2);
-static FunctionSignature FunctionSignatureCreate(Context ctx, Vector argTypes, Vector retTypes);
+static FunctionSignature FunctionSignatureCreate(Context ctx, String name, Vector argTypes, Vector retTypes);
 static Uword VectorGetSize(Vector v);
 static Array VectorGetBackingArray(Vector v);
+static void OpStackPush(Context ctx, Heap heap, OpStack os, Type valueType, Address src);
+static Address OpStackPeek(Context ctx, OpStack os, Type expectedType, Uword index);
 
 // Heap
 
@@ -1057,27 +1059,58 @@ static Bool VectorEquals(Context ctx, Vector v1, Vector v2) {
     if(v1 == v2) {
         return True;
     }
-    if(v1->size != v2->size) {
+    Uword v1Size = VectorGetSize(v1);
+    Uword v2Size = VectorGetSize(v2);
+    if(v1Size != v2Size) {
         return False;
     }
     // Don't just do an ArrayEquals because we don't care if the backing
     // arrays are not of equal size.
-    Type v1ElementType = ArrayGetElementType(v1->data);
-    Type v2ElementType = ArrayGetElementType(v2->data);
+    Array v1Arr = VectorGetBackingArray(v1);
+    Array v2Arr = VectorGetBackingArray(v2);
+    Type v1ElementType = ArrayGetElementType(v1Arr);
+    Type v2ElementType = ArrayGetElementType(v2Arr);
     if(!TypeEquals(v1ElementType, v2ElementType)) {
         return False;
     }
     // Find equals function for type. Error if there is none.
-
-
-    Array v1Array = VectorGetBackingArray(v1);
-    Array v2Array = VectorGetBackingArray(v2);
-    U8* v1Ptr = ArrayGetFirstElement(v1Array);
-    U8* v2Ptr = ArrayGetFirstElement(v2Array);
-
+    FunctionImplementation fi = EqualsFindForType(ctx, v1ElementType);
+    if(!fi) {
+      assert(False && "Type with no equals function. I give up!");
+    }
+    Bool isNativeFn = FunctionImplementationIsNative(fi);
+    U8* v1Ptr = ArrayGetFirstElement(v1Arr);
+    U8* v2Ptr = ArrayGetFirstElement(v2Arr);
     Uword elementSize = TypeGetFieldSize(v1ElementType);
-
-
+    Bool isRefType = TypeIsRefType(v1ElementType);
+    for(Uword i = 0; i < v1Size; ++i) {
+      U8* actualV1Pointer = v1Ptr + (elementSize * i);
+      U8* actualV2Pointer = v2Ptr + (elementSize * i);
+      if(isRefType) {
+        actualV1Pointer = *((U8**)actualV1Pointer);
+        actualV2Pointer = *((U8**)actualV2Pointer);
+      }
+      Bool result;
+      if(isNativeFn) {
+        Bool(*fn)(Context ctx, U8* x, U8* y) = FunctionImplementationGetFunctionPointer(fi);
+        result = fn(ctx, actualV1Pointer, actualV2Pointer);
+      }
+      else {
+        Runtime rt = ContextGetRuntime(ctx);
+        OpStack opStack = ContextGetOpStack(ctx);
+        Heap heap = ContextGetHeap(ctx);
+        OpStackPush(ctx, heap, opStack, rt->builtinTypes.primitiveTypes.address, actualV2Pointer);
+        OpStackPush(ctx, heap, opStack, rt->builtinTypes.primitiveTypes.address, actualV1Pointer);
+        octFn fn = (octFn)FunctionImplementationGetFunctionPointer(fi);
+        fn(ctx);
+        Bool* tmp = (Bool*)OpStackPeek(ctx, opStack, rt->builtinTypes.primitiveTypes.boolean, 0);
+        result = *tmp;
+      }
+      if(!result) {
+        return False;
+      }
+    }
+    return True;
 }
 
 // Value
@@ -1184,12 +1217,17 @@ static Bool StringEquals(Context ctx, String s1, String s2) {
 
 // Function
 
-static FunctionSignature FunctionSignatureCreate(Context ctx, Vector argTypes, Vector retTypes) {
+static FunctionSignature FunctionSignatureCreate(Context ctx, String name, Vector argTypes, Vector retTypes) {
     Runtime rt = ContextGetRuntime(ctx);
     Heap rtHeap = RuntimeGetHeap(rt);
     FunctionSignature sig = OvmHeapAlloc(rtHeap, rt->builtinTypes.referenceTypes.functionSignature);
-    sig->argTypes = argTypes;
-    sig->retTypes = retTypes;
+    sig->arguments = argTypes;
+    sig->returns = retTypes;
+    sig->name = name;
+    // TODO: take these as arguments?
+    sig->isPure = False;
+    sig->triggersGc = True;
+    sig->allocatesMemory = True;
     return sig;
 }
 
