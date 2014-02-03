@@ -465,12 +465,13 @@ struct ProtocolSignature_t {
 
 struct ProtocolImplementation_t {
   ProtocolSignature signature;
+  Type selfType;
   Vector functions; // Vector<FunctionImplementation>
 };
 
 struct Protocol_t {
   String name;
-  Vector implementations;
+  Vector implementations; // Vector<ProtocolImplementation>
 };
 
 struct Equals_t {
@@ -512,6 +513,7 @@ static Heap RuntimeGetHeap(Runtime rt);
 static Bool StringEquals(Context ctx, String s1, String s2);
 static FunctionSignature FunctionSignatureCreate(Context ctx, Vector argTypes, Vector retTypes);
 static Uword VectorGetSize(Vector v);
+static Array VectorGetBackingArray(Vector v);
 
 // Heap
 
@@ -988,10 +990,20 @@ static Bool EqualsApply(Context ctx, Equals eq, Address other) {
     return eq.eq(ctx, eq.self, other);
 }
 
-static ProtocolFunction EqualsFindForType(Context ctx, Type t) {
-  WIP
+static FunctionImplementation EqualsFindForType(Context ctx, Type t) {
     Runtime rt = ContextGetRuntime(ctx);
-    Uword count = rt->builtinProtocols.equals->
+    Vector implVec = rt->builtinProtocols.equals->implementations;
+    Uword implCount = VectorGetSize(implVec);
+    Array arr = VectorGetBackingArray(implVec);
+    ProtocolImplementation* pis = ArrayGetFirstElement(arr);
+    for(Uword i = 0; i < implCount; ++i) {
+      if(TypeEquals(pis[i]->selfType, t)) {
+        Array fns = VectorGetBackingArray(pis[i]->functions);
+        FunctionImplementation* fis = ArrayGetFirstElement(fns);
+        return fis[0]; // Assume there is a single function
+      }
+    }
+    return NULL; // TODO: return something more sane here. Option type?
 }
 
 // Vector
