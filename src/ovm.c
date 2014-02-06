@@ -1234,7 +1234,13 @@ static FunctionSignature FunctionSignatureCreate(Context ctx, String name, Vecto
 }
 
 static Bool FunctionSignatureEquals(Context ctx, FunctionSignature sig1, FunctionSignature sig2) {
-    //return VectorEquals
+  if(sig1 == sig2) {
+    return True;
+  }
+  if(!StringEquals(ctx, sig1->name, sig2->name)) {
+    return False;
+  }
+  sig1->n
 }
 
 // FunctionImplementation
