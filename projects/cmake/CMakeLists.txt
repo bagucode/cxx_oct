@@ -1,12 +1,18 @@
+
+cmake_minimum_required(VERSION 2.8)
+
 project(octarine)
 
-add_executable(${PROJECT_NAME} ../src/ovm.c)
+# include(projects/cmake/incLLVM.cmake)
+set(SOURCE_DIR ../../src)
+include(globfiles.cmake)
+
+add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_h} ${${PROJECT_NAME}_c})
 
 target_link_libraries(${PROJECT_NAME} pthread)
 
-# include(projects/cmake/incLLVM.cmake)
-# set(SOURCE_DIR src)
-# include(projects/cmake/globfiles.cmake)
+
+
 
 # # The _EXPORTING definition is for windows dll export support
 # add_definitions(-D_EXPORTING)
