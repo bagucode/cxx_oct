@@ -36,7 +36,8 @@ octarine_generated.cpp
 
 # CMake build directory
 build/
-
-
-
-
+CMakeFiles/
+CMakeCache.txt
+octarine
+cmake_install.cmake
+Makefile
