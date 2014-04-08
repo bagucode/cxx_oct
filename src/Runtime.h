@@ -5,8 +5,7 @@
 
 namespace octarine {
 
-    CallstubTable callstubTable(Runtime rt);
-    
+
 }
 
 #endif
