@@ -6,10 +6,9 @@
 
 namespace octarine {
 
-  // Create Reader class even though it is stateless?
-
-  Object ReadObject();
-
+  struct Reader {
+	Object ReadObject(Context* ctx, CharStream* stream);
+  }
 
 }
 
