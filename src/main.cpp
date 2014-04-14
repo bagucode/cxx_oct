@@ -6,7 +6,12 @@ using namespace octarine;
 
 int main(int argc, char** argv) {
 
-  cout << "Hello World!" << endl;
+  char test[] = "symbol (list of symbols)";
+
+  Object symbol;
+  Object list;
+
+  
 
   return 0;
 }
