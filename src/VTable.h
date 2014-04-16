@@ -12,6 +12,10 @@ namespace octarine {
 	FNs* _functions;
 
   public:
+	VTable(Type* type, FNs* functions):
+	  _type(type), _functions(functions) {
+	}
+
 	Type* getType() {
 	  return _type;
 	}
