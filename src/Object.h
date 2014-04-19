@@ -6,20 +6,46 @@
 namespace octarine {
 
   struct ObjectFunctions;
-  //typedef Protocol<ObjectFunctions> Object;
-  struct Object: public Protocol<ObjectFunctions> {
-	public:
-	Object(Address object, VTable<ObjectFunctions>* vtable):
-	  Protocol(object, vtable) {
-	}
-  };
+
+  typedef Protocol<ObjectFunctions> Object;
+
+  typedef Object (*ObjectCopyFn)();
+  typedef Object (*ObjectCopyToHeapFn)();
+  typedef Uword (*ObjectGetSizeFn)();
+  typedef void (*ObjectTraceFn)();
 
   struct ObjectFunctions {
-	public:
-	Object (*copy)();
-	Object (*copyToHeap)();
-	Uword (*getSize)();
-	void (*trace)();
+  private:
+	ObjectCopyFn _copy;
+	ObjectCopyToHeapFn _copyToHeap;
+	ObjectGetSizeFn _getSize;
+	ObjectTraceFn _trace;
+  public:
+	ObjectFunctions(ObjectCopyFn copy,
+					ObjectCopyToHeapFn copyToHeap,
+					ObjectGetSizeFn getSize,
+					ObjectTraceFn trace):
+	  _copy(copy),
+	  _copyToHeap(copyToHeap),
+	  _getSize(getSize),
+	  _trace(trace) {
+	}
+
+	Object copy() {
+	  return _copy();
+	}
+
+	Object copyToHeap() {
+	  return _copyToHeap();
+	}
+
+	Uword getSize() {
+	  return _getSize();
+	}
+
+	void trace() {
+	  _trace();
+	}
   };
 
 }
