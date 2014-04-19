@@ -1,6 +1,7 @@
 #ifndef OCT_PROTOCOL_H
 #define OCT_PROTOCOL_H
 
+#include "Primitives.h"
 #include "VTable.h"
 
 namespace octarine {
