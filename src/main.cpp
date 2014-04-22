@@ -6,11 +6,30 @@
 using namespace std;
 using namespace octarine;
 
+Object copyTest(Object obj) {
+  cout << "copy" << endl;
+  return obj; // Should copy the whole graph
+}
+
+Object copyToHeapTest(Object obj) {
+  cout << "copyToHeap" << endl;
+  return obj;
+}
+
+Uword getSizeTest(Object obj) {
+  cout << "getSize" << endl;
+  return 100;
+}
+
+void traceTest(Object obj) {
+  cout << "trace" << endl;
+}
+
 ObjectFunctions dummyFns = {
-  NULL,
-  NULL,
-  NULL,
-  NULL
+  copyTest,
+  copyToHeapTest,
+  getSizeTest,
+  traceTest
 };
 
 VTable<ObjectFunctions> dummyVTable = {
