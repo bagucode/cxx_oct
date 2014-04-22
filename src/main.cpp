@@ -46,9 +46,6 @@ int main(int argc, char** argv) {
   Object symbol = { dummyObj, &dummyVTable };
   Object list = {dummyObj, &dummyVTable };
 
-  // will crash because copy is NULL but this compiles :)
-  // need to be able to call copy on the object itself though,
-  // this is too cumbersome
   Object objCopy = copy(symbol);
   Object objCopy2 = copyToHeap(symbol);
   Uword objCopy3 = getSize(symbol);
