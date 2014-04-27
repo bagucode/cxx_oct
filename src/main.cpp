@@ -6,22 +6,22 @@
 using namespace std;
 using namespace octarine;
 
-Object copyTest(Object obj) {
+Object copyTest(Context* ctx, Object obj) {
   cout << "copy" << endl;
   return obj; // Should copy the whole graph
 }
 
-Object copyToHeapTest(Object obj) {
+Object copyToHeapTest(Context* ctx, Object obj) {
   cout << "copyToHeap" << endl;
   return obj;
 }
 
-Uword getSizeTest(Object obj) {
+Uword getSizeTest(Context* ctx, Object obj) {
   cout << "getSize" << endl;
   return 100;
 }
 
-void traceTest(Object obj) {
+void traceTest(Context* ctx, Object obj) {
   cout << "trace" << endl;
 }
 
@@ -46,10 +46,10 @@ int main(int argc, char** argv) {
   Object symbol = { dummyObj, &dummyVTable };
   Object list = {dummyObj, &dummyVTable };
 
-  Object objCopy = copy(symbol);
-  Object objCopy2 = copyToHeap(symbol);
-  Uword objCopy3 = getSize(symbol);
-  trace(symbol);
+  Object objCopy = copy(NULL, symbol);
+  Object objCopy2 = copyToHeap(NULL,symbol);
+  Uword objCopy3 = getSize(NULL,symbol);
+  trace(NULL,symbol);
 
   return 0;
 }

@@ -5,31 +5,32 @@
 
 namespace octarine {
 
+  struct Context;
   struct ObjectFunctions;
 
   typedef ProtocolObject<ObjectFunctions> Object;
 
   struct ObjectFunctions {
-	Object (*copy)(Object self);
-	Object (*copyToHeap)(Object self);
-	Uword (*getSize)(Object self);
-	void (*trace)(Object self);
+	Object (*copy)(Context* ctx, Object self);
+	Object (*copyToHeap)(Context* ctx, Object self);
+	Uword (*getSize)(Context* ctx, Object self);
+	void (*trace)(Context* ctx, Object self);
   };
 
-  Object copy(Object o) {
-	return o.vtable->functions.copy(o);
+  Object copy(Context* ctx, Object o) {
+	return o.vtable->functions.copy(ctx, o);
   }
 
-  Object copyToHeap(Object o) {
-	return o.vtable->functions.copyToHeap(o);
+  Object copyToHeap(Context* ctx, Object o) {
+	return o.vtable->functions.copyToHeap(ctx, o);
   }
 
-  Uword getSize(Object o) {
-	return o.vtable->functions.getSize(o);
+  Uword getSize(Context* ctx, Object o) {
+	return o.vtable->functions.getSize(ctx, o);
   }
 
-  void trace(Object o) {
-	o.vtable->functions.trace(o);
+  void trace(Context* ctx, Object o) {
+	o.vtable->functions.trace(ctx, o);
   }
 
 }
