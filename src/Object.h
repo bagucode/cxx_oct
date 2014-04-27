@@ -17,19 +17,19 @@ namespace octarine {
 	void (*trace)(Context* ctx, Object self);
   };
 
-  Object copy(Context* ctx, Object o) {
+  inline Object copy(Context* ctx, Object o) {
 	return o.vtable->functions.copy(ctx, o);
   }
 
-  Object copyToHeap(Context* ctx, Object o) {
+  inline Object copyToHeap(Context* ctx, Object o) {
 	return o.vtable->functions.copyToHeap(ctx, o);
   }
 
-  Uword getSize(Context* ctx, Object o) {
+  inline Uword getSize(Context* ctx, Object o) {
 	return o.vtable->functions.getSize(ctx, o);
   }
 
-  void trace(Context* ctx, Object o) {
+  inline void trace(Context* ctx, Object o) {
 	o.vtable->functions.trace(ctx, o);
   }
 

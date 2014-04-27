@@ -1,7 +1,7 @@
 #ifndef OCT_ARRAY_H
 #define OCT_ARRAY_H
 
-#include "Primitives.h"
+#include "Object.h"
 
 namespace octarine {
 
