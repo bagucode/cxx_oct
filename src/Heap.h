@@ -1,11 +1,11 @@
-#ifndef OCT_OBJECT_H
-#define OCT_OBJECT_H
+#ifndef OCT_HEAP_H
+#define OCT_HEAP_H
 
 #include "Primitives.h"
 
 namespace octarine {
 
-  struct Object {
+  struct Heap {
 	Address object;
 	Address vtable;
   };

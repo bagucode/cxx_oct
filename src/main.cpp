@@ -1,7 +1,7 @@
 #include <iostream>
 //#include "Reader.h"
 
-#include "Object.h"
+#include "ObjectFunctions.h"
 
 using namespace std;
 using namespace octarine;
@@ -11,7 +11,7 @@ Object copyTest(Context* ctx, Object obj) {
   return obj; // Should copy the whole graph
 }
 
-Object copyToHeapTest(Context* ctx, Object obj) {
+Object copyToHeapTest(Context* ctx, Heap heap, Object obj) {
   cout << "copyToHeap" << endl;
   return obj;
 }
@@ -32,7 +32,7 @@ ObjectFunctions dummyFns = {
   traceTest
 };
 
-VTable<ObjectFunctions> dummyVTable = {
+ObjectVTable dummyVTable = {
   NULL,
   dummyFns
 };
@@ -47,7 +47,8 @@ int main(int argc, char** argv) {
   Object list = {dummyObj, &dummyVTable };
 
   Object objCopy = copy(NULL, symbol);
-  Object objCopy2 = copyToHeap(NULL,symbol);
+  Heap dummyHeap;
+  Object objCopy2 = copyToHeap(NULL, dummyHeap, symbol);
   Uword objCopy3 = getSize(NULL,symbol);
   trace(NULL,symbol);
 
