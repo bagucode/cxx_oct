@@ -2,6 +2,7 @@
 //#include "Reader.h"
 
 #include "ObjectFunctions.h"
+#include "HeapFunctions.h"
 
 using namespace std;
 using namespace octarine;
