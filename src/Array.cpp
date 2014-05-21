@@ -2,6 +2,12 @@
 
 namespace octarine {
 
+  struct Array {
+	Type* elementType;
+	Uword size;
+	Address data;
+  };
+
   void _initArrayType(Context* ctx) {
 	// TBD
   }

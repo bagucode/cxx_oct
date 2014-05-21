@@ -6,13 +6,10 @@
 namespace octarine {
 
   struct Runtime;
-
-  struct Context {
-	Runtime* runtime;
-	Heap heap;
-  };
+  struct Context;
 
   Runtime* getRuntime(Context* ctx);
+  Heap getHeap(Context* ctx, Context* heapCtx);
 
 }
 

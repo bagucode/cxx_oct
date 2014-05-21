@@ -7,12 +7,7 @@ namespace octarine {
 
   struct Type;
   struct Context;
-
-  struct Array {
-	Type* elementType;
-	Uword size;
-	Address data;
-  };
+  struct Array;
 
   void _initArrayType(Context* ctx);
 
