@@ -12,6 +12,8 @@ namespace octarine {
 	Heap heap;
   };
 
+  Runtime* getRuntime(Context* ctx);
+
 }
 
 #endif
