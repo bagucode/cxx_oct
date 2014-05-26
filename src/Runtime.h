@@ -7,8 +7,11 @@ namespace octarine {
 
   struct Context;
   struct Runtime;
+  struct Protocol;
+  struct Symbol;
 
   Heap getHeap(Context* ctx, Runtime* rt);
+  Protocol* getProtocol(Context* ctx, Runtime* rt, Symbol* protocolName);
 
 }
 
