@@ -9,8 +9,6 @@ namespace octarine {
   struct Array;
   struct Symbol;
 
-  void _initProtocolType(Context* ctx);
-
   Protocol* createProtocol(Context* ctx, Symbol* name, Array* signatures);
 
   Object asObject(Context* ctx, Protocol* protocol);
