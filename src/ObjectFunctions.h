@@ -10,6 +10,7 @@ namespace octarine {
   struct Type;
 
   struct ObjectFunctions {
+	void (*construct)(Context* ctx, Object self, Object arg);
 	Object (*copy)(Context* ctx, Object self);
 	Object (*copyToHeap)(Context* ctx, Heap heap, Object self);
 	Uword (*getSize)(Context* ctx, Object self);
@@ -20,6 +21,10 @@ namespace octarine {
 	Type* type;
 	ObjectFunctions functions;
   };
+
+  inline void construct(Context* ctx, Object self, Object arg) {
+	return ((ObjectVTable*)self.vtable)->functions.construct(ctx, self, arg);
+  }
 
   inline Object copy(Context* ctx, Object o) {
 	return ((ObjectVTable*)o.vtable)->functions.copy(ctx, o);

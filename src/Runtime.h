@@ -9,9 +9,15 @@ namespace octarine {
   struct Runtime;
   struct Protocol;
   struct Symbol;
+  struct Type;
+
+  Runtime* createRuntime();
 
   Heap getHeap(Context* ctx, Runtime* rt);
+
   Protocol* getProtocol(Context* ctx, Runtime* rt, Symbol* protocolName);
+
+  Type* getType(Context* ctx, Runtime* rt, Symbol* typeName);
 
 }
 

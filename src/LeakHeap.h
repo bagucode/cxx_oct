@@ -7,7 +7,9 @@ namespace octarine {
 
   struct LeakHeap;
 
-  Object alloc(Context* ctx, LeakHeap* heap, Type* type);
+  LeakHeap* createLeakHeap(Context* ctx);
+  void destroy(Context* ctx, LeakHeap* heap);
+  Object alloc(Context* ctx, LeakHeap* heap, Type* type, Object constructArg);
   Address rawAlloc(Context* ctx, LeakHeap* heap, Uword size);
   void setType(Context* ctx, LeakHeap* heap, Address location, Type* type);
 

@@ -4,6 +4,7 @@
 #include "Context.h"
 #include "Runtime.h"
 #include "HeapFunctions.h"
+#include "ObjectFunctions.h"
 
 namespace octarine {
 
@@ -20,7 +21,10 @@ namespace octarine {
   Type* createType(Context* ctx, Uword size, Array* fields, ObjectFunctions ofns) {
 	Runtime* rt = getRuntime(ctx);
 	Heap heap = getHeap(ctx, rt); // Types are always global
-	Object typeObj = alloc(ctx, heap, &typeOfType);
+	Object nil;
+	nil.object = 0;
+	nil.vtable = 0;
+	Object typeObj = alloc(ctx, heap, &typeOfType, nil);
 	Type* t = (Type*)typeObj.object;
 	t->size = size;
 	t->fields = fields;

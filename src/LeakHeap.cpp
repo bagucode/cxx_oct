@@ -1,6 +1,11 @@
 #include "LeakHeap.h"
 #include "Type.h"
 #include "ObjectFunctions.h"
+#include "String.h"
+#include "Symbol.h"
+#include "Protocol.h"
+#include "Context.h"
+#include "Runtime.h"
 #include <stdlib.h>
 
 namespace octarine {
@@ -9,18 +14,26 @@ namespace octarine {
 	Uword size; // or something...
   };
 
-  Object alloc(Context* ctx, LeakHeap* heap, Type* type) {
+  LeakHeap* createLeakHeap(Context* ctx) {
+	LeakHeap* lh = (LeakHeap*)malloc(sizeof(LeakHeap));
+	lh->size = 0;
+	return lh;
+  }
+
+  void destroy(Context* ctx, LeakHeap* heap) {
+	free(heap);
+  }
+
+  Object alloc(Context* ctx, LeakHeap* heap, Type* type, Object constructArg) {
 	Uword size = getSize(ctx, type);
 	Object o;
 	o.object = malloc(size);
-	((ObjectVTable*)o.vtable)->type = type;
-	// TODO: get the object protocol here and look up the Object protocol
-	// implementation for the given type.
-	ObjectFunctions* fns = &(((ObjectVTable*)o.vtable)->functions);
-	fns->copy = 0;
-	fns->copyToHeap = 0;
-	fns->getSize = 0;
-	fns->trace = 0;
+	Runtime* rt = getRuntime(ctx);
+	String* objStr = createString(ctx, (U8*)"Object");
+	Symbol* objSym = createSymbol(ctx, objStr);
+	Protocol* objProtocol = getProtocol(ctx, rt, objSym);
+	o.vtable = getVTable(ctx, objProtocol, type);
+	construct(ctx, o, constructArg);
 	heap->size += size;
 	return o;
   }

@@ -7,6 +7,11 @@
 using namespace std;
 using namespace octarine;
 
+void constructTest(Context* ctx, Object self, Object arg) {
+  cout << "construct" << endl;
+}
+
+
 Object copyTest(Context* ctx, Object obj) {
   cout << "copy" << endl;
   return obj; // Should copy the whole graph
@@ -27,6 +32,7 @@ void traceTest(Context* ctx, Object obj) {
 }
 
 ObjectFunctions dummyFns = {
+  constructTest,
   copyTest,
   copyToHeapTest,
   getSizeTest,
@@ -46,7 +52,9 @@ int main(int argc, char** argv) {
 
   Object symbol = { dummyObj, &dummyVTable };
   Object list = {dummyObj, &dummyVTable };
+  Object nil = {0, 0};
 
+  construct(NULL, symbol, nil);
   Object objCopy = copy(NULL, symbol);
   Heap dummyHeap;
   Object objCopy2 = copyToHeap(NULL, dummyHeap, symbol);

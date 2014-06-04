@@ -10,7 +10,7 @@ namespace octarine {
   struct Type;
 
   struct HeapFunctions {
-	Object (*alloc)(Context* ctx, Heap heap, Type* type);
+	Object (*alloc)(Context* ctx, Heap heap, Type* type, Object constructArg);
 	Address (*rawAlloc)(Context* ctx, Heap heap, Uword size);
 	void (*setType)(Context* ctx, Heap heap, Address location, Type* type);
   };
@@ -20,8 +20,8 @@ namespace octarine {
 	HeapFunctions functions;
   };
 
-  inline Object alloc(Context* ctx, Heap heap, Type* type) {
-	return ((HeapVTable*)heap.vtable)->functions.alloc(ctx, heap, type);
+  inline Object alloc(Context* ctx, Heap heap, Type* type, Object constructArg) {
+	return ((HeapVTable*)heap.vtable)->functions.alloc(ctx, heap, type, constructArg);
   }
 
   inline Address rawAlloc(Context* ctx, Heap heap, Uword size) {
