@@ -29,5 +29,14 @@ octarine_generated.cpp
 
 # Dependencies
 3pp/
+
+# In-source compilation output
 /src/a.out
 /src/ovm
+
+# CMake build directory
+build/
+
+
+
+

@@ -780,8 +780,9 @@ static StructInfo StructInfoCreate(Context ctx, Array structFields) {
     StructField* fields = ArrayGetFirstElement(structFields);
     Uword mySize = 0;
     Uword myAlignment = 0;
+    Uword i;
 
-    for(Uword i = 0; i < arrSize; ++i) {
+    for(i = 0; i < arrSize; ++i) {
         Type fieldType = StructFieldGetFieldType(&fields[i]);
         Uword fieldAlignment = TypeGetFieldAlignment(fieldType);
         Uword fieldSize = TypeGetFieldSize(fieldType);
@@ -895,7 +896,8 @@ static Type TypeCreateVarType(Runtime rt, Array variants) {
     Value* v = ArrayGetFirstElement(variants);
     Uword size = 0;
     Uword alignment = 0;
-    for(Uword i = 0; i < numValues; ++i) {
+    Uword i;
+    for(i = 0; i < numValues; ++i) {
         Type valType = ObjectGetType(v[i].data);
         Uword tSize = TypeGetFieldSize(valType);
         Uword tAlignment = TypeGetFieldAlignment(valType);
@@ -1000,7 +1002,8 @@ static FunctionImplementation EqualsFindForType(Context ctx, Type t) {
     Uword implCount = VectorGetSize(implVec);
     Array arr = VectorGetBackingArray(implVec);
     ProtocolImplementation* pis = ArrayGetFirstElement(arr);
-    for(Uword i = 0; i < implCount; ++i) {
+    Uword i;
+    for(i = 0; i < implCount; ++i) {
       if(TypeEquals(pis[i]->selfType, t)) {
         Array fns = VectorGetBackingArray(pis[i]->functions);
         FunctionImplementation* fis = ArrayGetFirstElement(fns);
@@ -1085,7 +1088,8 @@ static Bool VectorEquals(Context ctx, Vector v1, Vector v2) {
     U8* v2Ptr = ArrayGetFirstElement(v2Arr);
     Uword elementSize = TypeGetFieldSize(v1ElementType);
     Bool isRefType = TypeIsRefType(v1ElementType);
-    for(Uword i = 0; i < v1Size; ++i) {
+    Uword i;
+    for(i = 0; i < v1Size; ++i) {
       U8* actualV1Pointer = v1Ptr + (elementSize * i);
       U8* actualV2Pointer = v2Ptr + (elementSize * i);
       if(isRefType) {
@@ -1167,7 +1171,8 @@ static Value NamespaceBind(Context ctx, Namespace ns, String name, Type t, Addre
   Uword numEntries = VectorGetSize(ns->entries);
   NameValuePair* entries = ArrayGetFirstElement(entriesArray);
   // TODO: Contains function for Vector.
-  for(Uword i = 0; i < numEntries; ++i) {
+  Uword i;
+  for(i = 0; i < numEntries; ++i) {
     if(StringEquals(ctx, entries[i].name, entry.name)) {
       entries[i] = entry;
       return entry.value;
@@ -1182,7 +1187,8 @@ static Value NamespaceFind(Context ctx, Namespace ns, String name) {
 	Array entriesArray = VectorGetBackingArray(ns->entries);
 	Uword numEntries = VectorGetSize(ns->entries);
 	NameValuePair* entries = ArrayGetFirstElement(entriesArray);
-	for (Uword i = 0; i < numEntries; ++i) {
+	Uword i;
+	for (i = 0; i < numEntries; ++i) {
 		if (StringEquals(ctx, entries[i].name, name)) {
 			return entries[i].value;
 		}
@@ -1333,7 +1339,8 @@ static StructInfo RuntimeInitAllocStructInfoObject(Runtime rt) {
 static void RuntimeInitAllocAllPrimitiveTypes(Runtime rt) {
     Type* types = (Type*)&rt->builtinTypes.primitiveTypes;
     Uword numTypes = sizeof(struct BuiltinPrimitiveTypes_t) / sizeof(Type);
-    for(Uword i = 0; i < numTypes; ++i) {
+    Uword i;
+    for(i = 0; i < numTypes; ++i) {
         types[i].variant = TYPE_VARIANT_VAL;
         types[i].val = RuntimeInitAllocValTypeObject(rt);
         types[i].val->structInfo = RuntimeInitAllocStructInfoObject(rt);
@@ -1343,7 +1350,8 @@ static void RuntimeInitAllocAllPrimitiveTypes(Runtime rt) {
 static void RuntimeInitAllocAllVarTypes(Runtime rt) {
     Type* types = (Type*)&rt->builtinTypes.variadicTypes;
     Uword numTypes = sizeof(struct BuiltinVariadicTypes_t) / sizeof(Type);
-    for(Uword i = 0; i < numTypes; ++i) {
+    Uword i;
+    for(i = 0; i < numTypes; ++i) {
         // Skip type, it has already been allocated
         if((&types[i]) == (&rt->builtinTypes.variadicTypes.type)) {
             continue;
@@ -1356,7 +1364,8 @@ static void RuntimeInitAllocAllVarTypes(Runtime rt) {
 static void RuntimeInitAllocAllReferenceTypes(Runtime rt) {
     Type* types = (Type*)&rt->builtinTypes.referenceTypes;
     Uword numTypes = sizeof(struct BuiltinReferenceTypes_t) / sizeof(Type);
-    for(Uword i = 0; i < numTypes; ++i) {
+    Uword i;
+    for(i = 0; i < numTypes; ++i) {
         // For structInfo we just need to allocate the structInfo :)
         if((&types[i]) == (&rt->builtinTypes.referenceTypes.structInfo)) {
             types[i].ref->structInfo = RuntimeInitAllocStructInfoObject(rt);
@@ -1371,7 +1380,8 @@ static void RuntimeInitAllocAllReferenceTypes(Runtime rt) {
 static void RuntimeInitAllocAllValueTypes(Runtime rt) {
     Type* types = (Type*)&rt->builtinTypes.valueTypes;
     Uword numTypes = sizeof(struct BuiltinValueTypes_t) / sizeof(Type);
-    for(Uword i = 0; i < numTypes; ++i) {
+    Uword i;
+    for(i = 0; i < numTypes; ++i) {
         types[i].variant = TYPE_VARIANT_VAL;
         types[i].val = RuntimeInitAllocValTypeObject(rt);
         types[i].val->structInfo = RuntimeInitAllocStructInfoObject(rt);
@@ -1706,7 +1716,8 @@ static Namespace RuntimeFindNamespace(Context ctx, String name) {
 	Array nsArray = VectorGetBackingArray(rt->namespaces);
 	Uword size = VectorGetSize(rt->namespaces);
 	Namespace* ns = ArrayGetFirstElement(nsArray);
-	for (Uword i = 0; i < size; ++i) {
+	Uword i;
+	for (i = 0; i < size; ++i) {
 		if (StringEquals(ctx, ns[i]->name, name)) {
 			return ns[i];
 		}
@@ -1725,7 +1736,8 @@ static void RuntimeAddOrMergeNamespace(Context ctx, Namespace ns) {
 		Array entriesArray = VectorGetBackingArray(ns->entries);
 		NameValuePair* newEntries = (NameValuePair*) ArrayGetFirstElement(entriesArray);
 		Uword numEntries = VectorGetSize(ns->entries);
-		for (Uword i = 0; i < numEntries; ++i) {
+		Uword i;
+		for (i = 0; i < numEntries; ++i) {
 			Address val = newEntries[i].value.data;
 			Type valueType = ObjectGetType(val);
 			NamespaceBind(ctx, existing, newEntries[i].name, valueType, val);
